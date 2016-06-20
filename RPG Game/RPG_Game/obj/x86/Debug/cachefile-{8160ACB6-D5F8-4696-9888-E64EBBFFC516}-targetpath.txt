@@ -3,3 +3,5 @@ Content\Fonts\Calibri.xnb
 Content\Textures\Button.xnb
 Content\Textures\Pointer.xnb
 Content\Textures\Enemy1.xnb
+Content\Textures\ActionBar.xnb
+Content\Textures\BarBlot.xnb

@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
+using System;
 
 namespace RPG_Game
 {
@@ -31,25 +32,30 @@ namespace RPG_Game
         Texture2D buttonTexture;
         Button button;
 
+        Texture2D meterTexture;
+        Texture2D meterBlotTexture;
+
         Character target = new Character();
         List<Character> targets = new List<Character>(0);
+
+        Character actor = new Character();
 
         SpriteFont calibri;
 
         List<Character> heroes = new List<Character>(4);
-        LinkedList<Character> enemies = new LinkedList<Character>();
-        List<Character> priority = new List<Character>();
+        List<Character> enemies = new List<Character>(4);
+        List<Character> battlers = new List<Character>();
 
-        LinkedList<Button> allButtons = new LinkedList<Button>();
+        List<Button> allButtons = new List<Button>(2);
         List<Button> fightButtons = new List<Button>(2);
-
-        bool menuActive = true;
+        
         int targetIndex = 0;
         int buttonIndex = 0;
-        int turn;
         float damageDealt;
         float damageLocation;
         double timer;
+
+        Random rand = new Random();
 
         enum BattleButtons
         {
@@ -98,6 +104,8 @@ namespace RPG_Game
             heroTexture = Content.Load<Texture2D>("Textures\\Just a Box");
             demonTexture = Content.Load<Texture2D>("Textures\\Enemy1");
             buttonTexture = Content.Load<Texture2D>("Textures\\Button");
+            meterTexture = Content.Load<Texture2D>("Textures\\ActionBar");
+            meterBlotTexture = Content.Load<Texture2D>("Textures\\BarBlot");
 
             pointerTexture = Content.Load<Texture2D>("Textures\\Pointer");
 
@@ -107,12 +115,16 @@ namespace RPG_Game
             hero.battleOrigin = new Vector2(400, 400);
             hero.health = 1000;
             hero.PhAtk = 10;
-            hero.PhDef = 100;
+            hero.PhDef = 75;
             hero.speed = 5;
             hero.Acc = 100;
             hero.Eva = 0;
             hero.friendly = true;
-            hero.attacking = false;
+            hero.meterBlot.SetTexture(meterBlotTexture);
+            hero.meterSprite.SetTexture(meterTexture);
+            hero.meterBlot.UpperLeft = new Vector2(hero.UpperLeft.X - hero.meterBlot.GetWidth(),
+                                                    hero.UpperLeft.Y + hero.meterBlot.GetHeight() + (hero.GetHeight()) + 20);
+            hero.meterSprite.UpperLeft = hero.meterBlot.UpperLeft;
             heroes.Add(hero);
 
             hero = new Character();
@@ -126,50 +138,135 @@ namespace RPG_Game
             hero.Acc = 100;
             hero.Eva = 0;
             hero.friendly = true;
-            hero.attacking = false;
+            hero.meterBlot.SetTexture(meterBlotTexture);
+            hero.meterSprite.SetTexture(meterTexture);
+            hero.meterBlot.UpperLeft = new Vector2(hero.UpperLeft.X - hero.meterBlot.GetWidth(),
+                                                    hero.UpperLeft.Y + hero.meterBlot.GetHeight() + (hero.GetHeight()) + 20);
+            hero.meterSprite.UpperLeft = hero.meterBlot.UpperLeft;
             heroes.Add(hero);
 
+            hero = new Character();
+            hero.SetTexture(heroTexture);
+            hero.UpperLeft = new Vector2(400, 700);
+            hero.battleOrigin = new Vector2(400, 700);
+            hero.health = 5;
+            hero.PhAtk = 2;
+            hero.PhDef = 0;
+            hero.speed = 50;
+            hero.Acc = 100;
+            hero.Eva = 50;
+            hero.friendly = true;
+            hero.meterBlot.SetTexture(meterBlotTexture);
+            hero.meterSprite.SetTexture(meterTexture);
+            hero.meterBlot.UpperLeft = new Vector2(hero.UpperLeft.X - hero.meterBlot.GetWidth(),
+                                                    hero.UpperLeft.Y + hero.meterBlot.GetHeight() + (hero.GetHeight()) + 20);
+            hero.meterSprite.UpperLeft = hero.meterBlot.UpperLeft;
+            heroes.Add(hero);
+
+            hero = new Character();
+            hero.SetTexture(heroTexture);
+            hero.UpperLeft = new Vector2(400, 850);
+            hero.battleOrigin = new Vector2(400, 850);
+            hero.health = 50;
+            hero.PhAtk = 5;
+            hero.PhDef = 70;
+            hero.speed = 10;
+            hero.Acc = 100;
+            hero.Eva = 0;
+            hero.friendly = true;
+            hero.meterBlot.SetTexture(meterBlotTexture);
+            hero.meterSprite.SetTexture(meterTexture);
+            hero.meterBlot.UpperLeft = new Vector2(hero.UpperLeft.X - hero.meterBlot.GetWidth(),
+                                                    hero.UpperLeft.Y + hero.meterBlot.GetHeight() + (hero.GetHeight()) + 20);
+            hero.meterSprite.UpperLeft = hero.meterBlot.UpperLeft;
+            heroes.Add(hero);
+
+            //Enemy initialisation
             demon = new Character();
             demon.SetTexture(demonTexture);
-            demon.UpperLeft = new Vector2(800, 350);
-            demon.battleOrigin = new Vector2(800, 350);
+            demon.UpperLeft = new Vector2(800, 300);
+            demon.battleOrigin = new Vector2(800, 300);
             demon.health = 20;
-            demon.PhAtk = 5;
+            demon.PhAtk = 99999;
             demon.PhDef = 0;
             demon.speed = 1;
             demon.Acc = 100;
             demon.Eva = 0;
             demon.friendly = false;
-            demon.attacking = true;
-            enemies.AddFirst(demon);
+            demon.meterBlot.SetTexture(meterBlotTexture);
+            demon.meterSprite.SetTexture(meterTexture);
+            demon.meterBlot.UpperLeft = new Vector2(demon.UpperLeft.X - demon.meterBlot.GetWidth(),
+                                                    demon.UpperLeft.Y + demon.meterBlot.GetHeight() + (demon.GetHeight()) + 20);
+            demon.meterSprite.UpperLeft = demon.meterBlot.UpperLeft;
+            enemies.Add(demon);
 
             demon = new Character();
             demon.SetTexture(demonTexture);
             demon.UpperLeft = new Vector2(800, 500);
             demon.battleOrigin = new Vector2(800, 500);
-            demon.health = 5;
-            demon.PhAtk = 1;
+            demon.health = 35;
+            demon.PhAtk = 100;
             demon.PhDef = 50;
             demon.speed = 10;
             demon.Acc = 100;
             demon.Eva = 0;
-            demon.attacking = true;
             demon.friendly = false;
-            enemies.AddFirst(demon);
+            demon.meterBlot.SetTexture(meterBlotTexture);
+            demon.meterSprite.SetTexture(meterTexture);
+            demon.meterBlot.UpperLeft = new Vector2(demon.UpperLeft.X - demon.meterBlot.GetWidth(),
+                                                    demon.UpperLeft.Y + demon.meterBlot.GetHeight() + (demon.GetHeight()) + 20);
+            demon.meterSprite.UpperLeft = demon.meterBlot.UpperLeft;
+            enemies.Add(demon);
+
+            demon = new Character();
+            demon.SetTexture(demonTexture);
+            demon.UpperLeft = new Vector2(800, 700);
+            demon.battleOrigin = new Vector2(800, 700);
+            demon.health = 5;
+            demon.PhAtk = 2;
+            demon.PhDef = 0;
+            demon.speed = 49;
+            demon.Acc = 100;
+            demon.Eva = 0;
+            demon.friendly = false;
+            demon.meterBlot.SetTexture(meterBlotTexture);
+            demon.meterSprite.SetTexture(meterTexture);
+            demon.meterBlot.UpperLeft = new Vector2(demon.UpperLeft.X - demon.meterBlot.GetWidth(),
+                                                    demon.UpperLeft.Y + demon.meterBlot.GetHeight() + (demon.GetHeight()) + 20);
+            demon.meterSprite.UpperLeft = demon.meterBlot.UpperLeft;
+            enemies.Add(demon);
+
+            demon = new Character();
+            demon.SetTexture(demonTexture);
+            demon.UpperLeft = new Vector2(800, 900);
+            demon.battleOrigin = new Vector2(800, 900);
+            demon.health = 50;
+            demon.PhAtk = 10;
+            demon.PhDef = -50;
+            demon.speed = 5;
+            demon.Acc = 100;
+            demon.Eva = 0;
+            demon.friendly = false;
+            demon.meterBlot.SetTexture(meterBlotTexture);
+            demon.meterSprite.SetTexture(meterTexture);
+            demon.meterBlot.UpperLeft = new Vector2(demon.UpperLeft.X - demon.meterBlot.GetWidth(),
+                                                    demon.UpperLeft.Y + demon.meterBlot.GetHeight() + (demon.GetHeight()) + 20);
+            demon.meterSprite.UpperLeft = demon.meterBlot.UpperLeft;
+            enemies.Add(demon);
 
 
             button = new Button();
             button.SetTexture(buttonTexture);
             button.UpperLeft = new Vector2(5, graphics.PreferredBackBufferHeight - button.GetHeight() - 60);
             button.action = "FIGHT";
-            allButtons.AddFirst(button);
+            allButtons.Add(button);
             fightButtons.Add(button);
 
             button = new Button();
             button.SetTexture(buttonTexture);
             button.UpperLeft = new Vector2(5, graphics.PreferredBackBufferHeight - button.GetHeight() - 5);
             button.action = "QUIT";
-            allButtons.AddFirst(button);
+            allButtons.Add(button);
             fightButtons.Add(button);
 
             target.IsAlive = false;
@@ -209,32 +306,41 @@ namespace RPG_Game
             }
 
             pointer.IsAlive = false;
-
-            if (turn >= priority.Count)
-            {
-                turn = 0;
-            }
-            if (targetIndex >= targets.Count)
-            {
-                targetIndex = 0;
-            }
-
+            
             if (battleButtons == BattleButtons.idle)
             {
-                if(priority[turn].friendly)
+                for(int i = 0; i < battlers.Count; i++)
                 {
-                    battleButtons = BattleButtons.battleMenu;
-                }
-                else
-                {
-                    battleButtons = BattleButtons.animating;
-                    target = heroes[0];
-                    timer = gameTime.TotalGameTime.TotalSeconds;
+                    battlers[i].meter += battlers[i].speed / 100;
+
+                    if (battlers[i].meter >= 100)
+                    {
+                        battlers[i].meter = 0;
+                        actor = battlers[i];
+
+                        if (actor.friendly)
+                        {
+                            battleButtons = BattleButtons.battleMenu;
+                        }
+                        else
+                        {
+                            battleButtons = BattleButtons.animating;
+                            target = heroes[rand.Next(0, 3)];
+                            timer = gameTime.TotalGameTime.TotalSeconds;
+                        }
+                    }
+
+                    battlers[i].meterSprite.UpperLeft = new Vector2(battlers[i].meterBlot.UpperLeft.X + battlers[i].meter, battlers[i].meterBlot.UpperLeft.Y);
                 }
             }
 
             if(battleButtons == BattleButtons.targetMenu)
             {
+                if (targetIndex >= targets.Count)
+                {
+                    targetIndex = 0;
+                }
+
                 if (targets.Count <= 1)
                 {
                     battleButtons = BattleButtons.animating;
@@ -245,7 +351,7 @@ namespace RPG_Game
                 }
                 else
                 {
-                    pointer.UpperLeft = new Vector2(targets[targetIndex].UpperLeft.X + 5, targets[targetIndex].UpperLeft.Y + 5);
+                    pointer.UpperLeft = new Vector2(targets[targetIndex].UpperLeft.X - pointer.GetWidth() - 5, targets[targetIndex].UpperLeft.Y + targets[targetIndex].GetHeight() - 5);
                     pointer.IsAlive = true;
 
                     if ((currentKeyState.IsKeyDown(Keys.W)) && (oldKeyState.IsKeyUp(Keys.W)))
@@ -304,10 +410,10 @@ namespace RPG_Game
                     {
                         battleButtons = BattleButtons.targetMenu;
 
-                        foreach(Character enemy in enemies)
+                        for(int i = 0; i < enemies.Count; i++)
                         {
                             targets.Capacity += 1;
-                            targets.Add(enemy);
+                            targets.Add(enemies[i]);
                         }
                     }
                     if (fightButtons[buttonIndex].action == "QUIT")
@@ -339,24 +445,28 @@ namespace RPG_Game
 
             if (battleButtons == BattleButtons.battleMenu)
             {
-                foreach (Button button in allButtons)
+                for (int i = 0; i < allButtons.Count; i++)
                 {
                     button.Draw(spriteBatch);
 
-                    spriteBatch.DrawString(calibri, button.action, new Vector2(button.UpperLeft.X + 70, button.UpperLeft.Y + 8), Color.Black, 0, new Vector2(0, 0), 1.5f, SpriteEffects.None, 0);
+                    spriteBatch.DrawString(calibri, allButtons[i].action, new Vector2(allButtons[i].UpperLeft.X + 70, allButtons[i].UpperLeft.Y + 8), Color.Black, 0, new Vector2(0, 0), 1.5f, SpriteEffects.None, 0);
                 }
             }
 
-            foreach (Character enemy in enemies)
+            for (int i = enemies.Count - 1; i > -1; i--)
             {
-                enemy.Draw(spriteBatch);
-                spriteBatch.DrawString(calibri, enemy.health.ToString(), new Vector2(enemy.UpperLeft.X, enemy.UpperLeft.Y + enemy.GetHeight() + 5), Color.Black);
+                enemies[i].Draw(spriteBatch);
+                spriteBatch.DrawString(calibri, enemies[i].health.ToString(), new Vector2(enemies[i].UpperLeft.X, enemies[i].UpperLeft.Y + enemies[i].GetHeight() + 5), Color.Black);
+                enemies[i].meterSprite.Draw(spriteBatch);
+                enemies[i].meterBlot.Draw(spriteBatch);
             }
 
             for (int i = 0; i < heroes.Count; i++)
             {
                 heroes[i].Draw(spriteBatch);
                 spriteBatch.DrawString(calibri, heroes[i].health.ToString(), new Vector2(heroes[i].UpperLeft.X, heroes[i].UpperLeft.Y + heroes[i].GetHeight() + 5), Color.Black);
+                heroes[i].meterSprite.Draw(spriteBatch);
+                heroes[i].meterBlot.Draw(spriteBatch);
             }
 
             pointer.Draw(spriteBatch);
@@ -372,72 +482,39 @@ namespace RPG_Game
             base.Draw(gameTime);
         }
 
+        //Initialises the beginning of a fight, including generating enemies and adding all fighters to the battlers<> list for processing
         void FightBegin()
         {
 
-            LinkedList<Character> temp = new LinkedList<Character>();
+            List<Character> temp = new List<Character>();
 
-            Character dummy = new Character();
-            dummy.speed = 0;
-            temp.AddLast(dummy);
-
-            //Determine turn order and place contents in priority<>
-            //Determine hero turn order
             for (int i = 0; i < heroes.Count; i++)
             {
-                if (temp.Count == 0)
-                {
-                    temp.AddFirst(heroes[i]);
-                }
-                else for (LinkedListNode<Character> tempNode = temp.First; tempNode != null; tempNode = tempNode.Next)
-                    {
-
-                        if (heroes[i].speed > tempNode.Value.speed)
-                        {
-                            temp.AddBefore(tempNode, heroes[i]);
-                            break;
-                        }
-                    }
+                temp.Capacity += 1;
+                temp.Add(heroes[i]);
             }
-            //Determine enemy turn order
-            foreach (Character enemy in enemies)
+            for (int i = 0; i < enemies.Count; i++)
             {
-                if (temp.Count == 0)
-                {
-                    temp.AddFirst(enemy);
-                }
-                else for (LinkedListNode<Character> tempNode = temp.First; tempNode != null; tempNode = tempNode.Next)
-                    {
-                        if (enemy.speed > tempNode.Value.speed)
-                        {
-                            temp.AddBefore(tempNode, enemy);
-                            break;
-                        }
-                    }
+                temp.Capacity += 1;
+                temp.Add(enemies[i]);
             }
-            temp.RemoveLast();
+            battlers.Clear();
+            battlers.Capacity = (temp.Count);
 
-            //Clear and change size of priority to fit actors
-            priority.Clear();
-            priority.Capacity = (temp.Count);
-
-            //Place all actors into main collection
-            foreach (Character character in temp)
+            for (int i = 0; i < temp.Count; i++)
             {
-                priority.Add(character);
+                battlers.Add(temp[i]);
             }
-
-            turn = 0;
         }
 
+        //Animates a basic attack, moving the object stored in actor, and removing health from the object stored in target
         void Attack(GameTime gameTime)
         {
-            priority[turn].Move();
-
-            Character attacker = priority[turn];
+            actor.Move();
+            
             int modifier;
 
-            if (priority[turn].friendly)
+            if (actor.friendly)
             {
                 modifier = 1;
             }
@@ -450,47 +527,40 @@ namespace RPG_Game
             {
                 battleButtons = BattleButtons.idle;
 
-                turn++;
-
                 damageDealt = 0;
                 damageLocation = 0;
                 timer = 0;
-
-                if (turn >= 1)
-                {
-                    priority[turn - 1].velocity = new Vector2(0, 0);
-                    priority[turn - 1].UpperLeft = priority[turn - 1].battleOrigin;
-                }
+                actor.velocity = new Vector2(0, 0);
+                actor.UpperLeft = actor.battleOrigin;
             }
             else if (gameTime.TotalGameTime.TotalSeconds >= timer + 1.5)
             {
-                priority[turn].velocity = new Vector2(-2 * modifier, 0);
+                actor.velocity = new Vector2(-2 * modifier, 0);
             }
             else if (gameTime.TotalGameTime.TotalSeconds >= timer + 1)
             {
-                priority[turn].velocity = new Vector2(0, 0);
+                actor.velocity = new Vector2(0, 0);
 
                 if (damageDealt == 0)
                 {
-                    damageDealt = (priority[turn].PhAtk);
-                    target.health -= damageDealt;
+                    damageDealt = (actor.PhAtk * ((100 - target.PhDef) / 100));
+                    damageDealt = (float)Math.Round(damageDealt, 0, MidpointRounding.AwayFromZero);
+                    target.health -= (int)damageDealt;
                     damageLocation = 30;
 
                     if (target.health <= 0)
                     {
                         target.IsAlive = false;
 
-                        priority.Remove(target);
+                        battlers.Remove(target);
                         enemies.Remove(target);
                         heroes.Remove(target);
-
-                        turn = priority.IndexOf(attacker);
                     }
                 }
             }
             else
             {
-                priority[turn].velocity = new Vector2(2 * modifier, 0);
+                actor.velocity = new Vector2(2 * modifier, 0);
             }
 
         }
