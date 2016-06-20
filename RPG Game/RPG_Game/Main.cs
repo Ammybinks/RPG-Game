@@ -10,7 +10,6 @@ namespace RPG_Game
     /// </summary>
     public class Main : Microsoft.Xna.Framework.Game
     {
-        //test
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
@@ -19,6 +18,9 @@ namespace RPG_Game
 
         MouseState currentMouseState;
         MouseState oldMouseState;
+
+        Texture2D pointerTexture;
+        Sprite pointer = new Sprite();
 
         Texture2D heroTexture;
         Character hero;
@@ -29,7 +31,8 @@ namespace RPG_Game
         Texture2D buttonTexture;
         Button button;
 
-        Character victim = new Character();
+        Character target = new Character();
+        List<Character> targets = new List<Character>(0);
 
         SpriteFont calibri;
 
@@ -38,20 +41,26 @@ namespace RPG_Game
         List<Character> priority = new List<Character>();
 
         LinkedList<Button> allButtons = new LinkedList<Button>();
-        List<Button> activeButtons;
-        List<Button> battleButtons = new List<Button>(2);
+        List<Button> fightButtons = new List<Button>(2);
 
         bool menuActive = true;
+        int targetIndex = 0;
         int buttonIndex = 0;
         int turn;
         float damageDealt;
         float damageLocation;
         double timer;
 
-        //temp
-        Texture2D pointerTexture;
-        Sprite pointer = new Sprite();
-        //temp
+        enum BattleButtons
+        {
+            idle,
+            targetMenu,
+            animating,
+            battleMenu,
+            skillsMenu,
+            itemsMenu,
+        }
+        BattleButtons battleButtons = BattleButtons.idle;
 
         public Main()
         {
@@ -106,6 +115,20 @@ namespace RPG_Game
             hero.attacking = false;
             heroes.Add(hero);
 
+            hero = new Character();
+            hero.SetTexture(heroTexture);
+            hero.UpperLeft = new Vector2(400, 550);
+            hero.battleOrigin = new Vector2(400, 550);
+            hero.health = 100;
+            hero.PhAtk = 5;
+            hero.PhDef = 50;
+            hero.speed = 20;
+            hero.Acc = 100;
+            hero.Eva = 0;
+            hero.friendly = true;
+            hero.attacking = false;
+            heroes.Add(hero);
+
             demon = new Character();
             demon.SetTexture(demonTexture);
             demon.UpperLeft = new Vector2(800, 350);
@@ -127,12 +150,12 @@ namespace RPG_Game
             demon.health = 5;
             demon.PhAtk = 1;
             demon.PhDef = 50;
-            demon.speed = 5;
+            demon.speed = 10;
             demon.Acc = 100;
             demon.Eva = 0;
             demon.attacking = true;
             demon.friendly = false;
-            //enemies.AddFirst(demon);
+            enemies.AddFirst(demon);
 
 
             button = new Button();
@@ -140,19 +163,17 @@ namespace RPG_Game
             button.UpperLeft = new Vector2(5, graphics.PreferredBackBufferHeight - button.GetHeight() - 60);
             button.action = "FIGHT";
             allButtons.AddFirst(button);
-            battleButtons.Add(button);
+            fightButtons.Add(button);
 
             button = new Button();
             button.SetTexture(buttonTexture);
             button.UpperLeft = new Vector2(5, graphics.PreferredBackBufferHeight - button.GetHeight() - 5);
             button.action = "QUIT";
             allButtons.AddFirst(button);
-            battleButtons.Add(button);
+            fightButtons.Add(button);
 
-            victim.IsAlive = false;
-
-            activeButtons = battleButtons;
-
+            target.IsAlive = false;
+            
             pointer.SetTexture(pointerTexture);
             pointer.Scale = new Vector2(0.8f, 0.8f);
 
@@ -187,166 +208,118 @@ namespace RPG_Game
                 oldMouseState = currentMouseState;
             }
 
+            pointer.IsAlive = false;
 
             if (turn >= priority.Count)
             {
                 turn = 0;
             }
-
-            if (priority[turn].friendly)
+            if (targetIndex >= targets.Count)
             {
-                menuActive = true;
+                targetIndex = 0;
+            }
 
-                if (priority[turn].attacking)
+            if (battleButtons == BattleButtons.idle)
+            {
+                if(priority[turn].friendly)
                 {
-                    priority[turn].Move();
-
-                    if (priority[turn].UpperLeft.X >= priority[turn].battleOrigin.X + 50)
-                    {
-                        priority[turn].velocity = new Vector2(0, 0);
-
-                        if (damageDealt == 0)
-                        {
-                            damageDealt = (priority[turn].PhAtk);
-                            victim = enemies.First.Value;
-                            victim.health -= damageDealt;
-                            damageLocation = 30;
-
-                            if (victim.health <= 0)
-                            {
-                                victim.IsAlive = false;
-                                priority.Remove(victim);
-                            }
-                        }
-                        if (gameTime.TotalGameTime.TotalSeconds >= timer + 0.5)
-                        {
-                            priority[turn].velocity = new Vector2(-2, 0);
-                        }
-                    }
-                    else if ((priority[turn].UpperLeft.X < priority[turn].battleOrigin.X) && (priority[turn].velocity == new Vector2(-2, 0)))
-                    {
-                        priority[turn].attacking = false;
-
-                        turn++;
-
-                        if (turn >= 1)
-                        {
-                            priority[turn - 1].velocity = new Vector2(0, 0);
-                            priority[turn - 1].UpperLeft = priority[turn - 1].battleOrigin;
-                            damageDealt = 0;
-                            damageLocation = 0;
-                            victim = new Character();
-                            victim.IsAlive = false;
-                        }
-                    }
-                    else if (priority[turn].velocity == new Vector2(-2, 0))
-                    {
-                    }
-                    else
-                    {
-                        priority[turn].velocity = new Vector2(2, 0);
-                        timer = gameTime.TotalGameTime.TotalSeconds;
-                    }
+                    battleButtons = BattleButtons.battleMenu;
+                }
+                else
+                {
+                    battleButtons = BattleButtons.animating;
+                    target = heroes[0];
+                    timer = gameTime.TotalGameTime.TotalSeconds;
                 }
             }
-            else
+
+            if(battleButtons == BattleButtons.targetMenu)
             {
-                menuActive = false;
-
-                if (priority[turn].attacking)
+                if (targets.Count <= 1)
                 {
-                    priority[turn].Move();
+                    battleButtons = BattleButtons.animating;
+                    target = targets[targetIndex];
+                    targets.Clear();
+                    targets.Capacity = 0;
+                    timer = gameTime.TotalGameTime.TotalSeconds;
+                }
+                else
+                {
+                    pointer.UpperLeft = new Vector2(targets[targetIndex].UpperLeft.X + 5, targets[targetIndex].UpperLeft.Y + 5);
+                    pointer.IsAlive = true;
 
-                    if (priority[turn].UpperLeft.X <= priority[turn].battleOrigin.X - 50)
+                    if ((currentKeyState.IsKeyDown(Keys.W)) && (oldKeyState.IsKeyUp(Keys.W)))
                     {
-                        priority[turn].velocity = new Vector2(0, 0);
-                        if (damageDealt == 0)
+                        targetIndex -= 1;
+                        if (targetIndex < 0)
                         {
-                            damageDealt = (priority[turn].PhAtk);
-                            victim = heroes[0];
-                            victim.health -= damageDealt;
-                            damageLocation = 30;
-
-                            if (victim.health <= 0)
-                            {
-                                victim.IsAlive = false;
-                                priority.Remove(victim);
-                            }
-                        }
-                        if (gameTime.TotalGameTime.TotalSeconds >= timer + 0.5)
-                        {
-                            priority[turn].velocity = new Vector2(2, 0);
+                            targetIndex = targets.Capacity - 1;
                         }
                     }
-                    else if ((priority[turn].UpperLeft.X > priority[turn].battleOrigin.X) && (priority[turn].velocity == new Vector2(2, 0)))
+                    if ((currentKeyState.IsKeyDown(Keys.S)) && (oldKeyState.IsKeyUp(Keys.S)))
                     {
-                        turn++;
-
-                        if (turn >= 1)
+                        targetIndex += 1;
+                        if (targetIndex > targets.Capacity - 1)
                         {
-                            priority[turn - 1].velocity = new Vector2(0, 0);
-                            priority[turn - 1].UpperLeft = priority[turn - 1].battleOrigin;
-                            damageDealt = 0;
-                            damageLocation = 0;
-                            victim = new Character();
-                            victim.IsAlive = false;
+                            targetIndex = 0;
                         }
                     }
-                    else if (priority[turn].velocity == new Vector2(2, 0))
+                    if (((currentKeyState.IsKeyDown(Keys.Z)) && (oldKeyState.IsKeyUp(Keys.Z))) || ((currentKeyState.IsKeyDown(Keys.Space)) && (oldKeyState.IsKeyUp(Keys.Space))))
                     {
-                    }
-                    else
-                    {
-                        priority[turn].velocity = new Vector2(-2, 0);
+                        battleButtons = BattleButtons.animating;
+                        target = targets[targetIndex];
+                        targets.Clear();
+                        targets.Capacity = 0;
                         timer = gameTime.TotalGameTime.TotalSeconds;
                     }
                 }
             }
 
-            if(menuActive)
+            if (battleButtons == BattleButtons.animating)
             {
-                foreach (Button button in battleButtons)
-                {
-                    button.IsAlive = true;
-                }
-
+                Attack(gameTime);
+            }
+            
+            if(battleButtons == BattleButtons.battleMenu)
+            {
                 if ((currentKeyState.IsKeyDown(Keys.W)) && (oldKeyState.IsKeyUp(Keys.W)))
                 {
                     buttonIndex -= 1;
                     if (buttonIndex < 0)
                     {
-                        buttonIndex = battleButtons.Capacity - 1;
+                        buttonIndex = fightButtons.Capacity - 1;
                     }
                 }
                 if ((currentKeyState.IsKeyDown(Keys.S)) && (oldKeyState.IsKeyUp(Keys.S)))
                 {
                     buttonIndex += 1;
-                    if (buttonIndex > battleButtons.Capacity - 1)
+                    if (buttonIndex > fightButtons.Capacity - 1)
                     {
                         buttonIndex = 0;
                     }
                 }
-                if ((currentKeyState.IsKeyDown(Keys.Z)) || (currentKeyState.IsKeyDown(Keys.Space)))
+                if (((currentKeyState.IsKeyDown(Keys.Z)) && (oldKeyState.IsKeyUp(Keys.Z))) || ((currentKeyState.IsKeyDown(Keys.Space)) && (oldKeyState.IsKeyUp(Keys.Space))))
                 {
-                    if (activeButtons[buttonIndex].action == "FIGHT")
+                    if (fightButtons[buttonIndex].action == "FIGHT")
                     {
-                        priority[turn].attacking = true;
+                        battleButtons = BattleButtons.targetMenu;
+
+                        foreach(Character enemy in enemies)
+                        {
+                            targets.Capacity += 1;
+                            targets.Add(enemy);
+                        }
                     }
-                    if (activeButtons[buttonIndex].action == "QUIT")
+                    if (fightButtons[buttonIndex].action == "QUIT")
                     {
                         Exit();
                     }
                 }
-            }
-            else
-            { 
-                foreach (Button button in battleButtons)
-                {
-                    button.IsAlive = false;
-                }
+
+                pointer.UpperLeft = new Vector2(fightButtons[buttonIndex].UpperLeft.X + 5, fightButtons[buttonIndex].UpperLeft.Y + 5);
+                pointer.IsAlive = true;
             }
 
-            pointer.UpperLeft = new Vector2(battleButtons[buttonIndex].UpperLeft.X + 5, battleButtons[buttonIndex].UpperLeft.Y + 5);
 
             oldKeyState = currentKeyState;
             oldMouseState = currentMouseState;
@@ -364,83 +337,86 @@ namespace RPG_Game
 
             spriteBatch.Begin();
 
-            foreach (Button button in allButtons)
+            if (battleButtons == BattleButtons.battleMenu)
             {
-                button.Draw(spriteBatch);
+                foreach (Button button in allButtons)
+                {
+                    button.Draw(spriteBatch);
 
-                spriteBatch.DrawString(calibri, button.action, new Vector2(button.UpperLeft.X + 70, button.UpperLeft.Y + 8), Color.Black, 0, new Vector2(0,0), 1.5f, SpriteEffects.None, 0);
+                    spriteBatch.DrawString(calibri, button.action, new Vector2(button.UpperLeft.X + 70, button.UpperLeft.Y + 8), Color.Black, 0, new Vector2(0, 0), 1.5f, SpriteEffects.None, 0);
+                }
             }
 
             foreach (Character enemy in enemies)
             {
                 enemy.Draw(spriteBatch);
+                spriteBatch.DrawString(calibri, enemy.health.ToString(), new Vector2(enemy.UpperLeft.X, enemy.UpperLeft.Y + enemy.GetHeight() + 5), Color.Black);
             }
 
-            hero.Draw(spriteBatch);
+            for (int i = 0; i < heroes.Count; i++)
+            {
+                heroes[i].Draw(spriteBatch);
+                spriteBatch.DrawString(calibri, heroes[i].health.ToString(), new Vector2(heroes[i].UpperLeft.X, heroes[i].UpperLeft.Y + heroes[i].GetHeight() + 5), Color.Black);
+            }
 
             pointer.Draw(spriteBatch);
 
-            if(victim.IsAlive)
+            if(damageDealt > 0)
             {
-                spriteBatch.DrawString(calibri, damageDealt.ToString(), new Vector2(victim.UpperLeft.X, victim.UpperLeft.Y - damageLocation), Color.Black);
+                spriteBatch.DrawString(calibri, damageDealt.ToString(), new Vector2(target.UpperLeft.X, target.UpperLeft.Y - damageLocation), Color.Black);
                 damageLocation += damageLocation / 32;
             }
-
-            spriteBatch.DrawString(calibri, enemies.First.Value.health.ToString(), new Vector2(enemies.First.Value.UpperLeft.X, enemies.First.Value.UpperLeft.Y - 100), Color.Black);
-            spriteBatch.DrawString(calibri, hero.health.ToString(), new Vector2(hero.UpperLeft.X, hero.UpperLeft.Y - 100), Color.Black);
 
             spriteBatch.End();
 
             base.Draw(gameTime);
         }
+
         void FightBegin()
         {
 
             LinkedList<Character> temp = new LinkedList<Character>();
-            LinkedListNode<Character> tempNode;
+
+            Character dummy = new Character();
+            dummy.speed = 0;
+            temp.AddLast(dummy);
+
             //Determine turn order and place contents in priority<>
             //Determine hero turn order
             for (int i = 0; i < heroes.Count; i++)
             {
-                if (priority.Count == 0)
+                if (temp.Count == 0)
                 {
                     temp.AddFirst(heroes[i]);
                 }
-                else foreach (Character character in priority)
+                else for (LinkedListNode<Character> tempNode = temp.First; tempNode != null; tempNode = tempNode.Next)
                     {
-                        tempNode = new LinkedListNode<Character>(character);
 
-                        if (heroes[i].speed > character.speed)
+                        if (heroes[i].speed > tempNode.Value.speed)
                         {
                             temp.AddBefore(tempNode, heroes[i]);
-                        }
-                        else if (heroes[i].speed < character.speed)
-                        {
-                            temp.AddAfter(tempNode, heroes[i]);
+                            break;
                         }
                     }
             }
             //Determine enemy turn order
             foreach (Character enemy in enemies)
             {
-                if (priority.Count == 0)
+                if (temp.Count == 0)
                 {
                     temp.AddFirst(enemy);
                 }
-                foreach (Character character in priority)
-                {
-                    tempNode = new LinkedListNode<Character>(character);
-
-                    if (enemy.speed > character.speed)
+                else for (LinkedListNode<Character> tempNode = temp.First; tempNode != null; tempNode = tempNode.Next)
                     {
-                        temp.AddBefore(tempNode, enemy);
+                        if (enemy.speed > tempNode.Value.speed)
+                        {
+                            temp.AddBefore(tempNode, enemy);
+                            break;
+                        }
                     }
-                    else if (enemy.speed < character.speed)
-                    {
-                        temp.AddAfter(tempNode, enemy);
-                    }
-                }
             }
+            temp.RemoveLast();
+
             //Clear and change size of priority to fit actors
             priority.Clear();
             priority.Capacity = (temp.Count);
@@ -452,6 +428,71 @@ namespace RPG_Game
             }
 
             turn = 0;
+        }
+
+        void Attack(GameTime gameTime)
+        {
+            priority[turn].Move();
+
+            Character attacker = priority[turn];
+            int modifier;
+
+            if (priority[turn].friendly)
+            {
+                modifier = 1;
+            }
+            else
+            {
+                modifier = -1;
+            }
+
+            if (gameTime.TotalGameTime.TotalSeconds >= timer + 2.5)
+            {
+                battleButtons = BattleButtons.idle;
+
+                turn++;
+
+                damageDealt = 0;
+                damageLocation = 0;
+                timer = 0;
+
+                if (turn >= 1)
+                {
+                    priority[turn - 1].velocity = new Vector2(0, 0);
+                    priority[turn - 1].UpperLeft = priority[turn - 1].battleOrigin;
+                }
+            }
+            else if (gameTime.TotalGameTime.TotalSeconds >= timer + 1.5)
+            {
+                priority[turn].velocity = new Vector2(-2 * modifier, 0);
+            }
+            else if (gameTime.TotalGameTime.TotalSeconds >= timer + 1)
+            {
+                priority[turn].velocity = new Vector2(0, 0);
+
+                if (damageDealt == 0)
+                {
+                    damageDealt = (priority[turn].PhAtk);
+                    target.health -= damageDealt;
+                    damageLocation = 30;
+
+                    if (target.health <= 0)
+                    {
+                        target.IsAlive = false;
+
+                        priority.Remove(target);
+                        enemies.Remove(target);
+                        heroes.Remove(target);
+
+                        turn = priority.IndexOf(attacker);
+                    }
+                }
+            }
+            else
+            {
+                priority[turn].velocity = new Vector2(2 * modifier, 0);
+            }
+
         }
     }
 }
