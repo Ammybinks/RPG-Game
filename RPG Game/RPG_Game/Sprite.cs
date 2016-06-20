@@ -7,7 +7,7 @@ namespace RPG_Game
     public class Sprite
     {
         // upper-left coordinate of the sprite image on the screen
-        public Vector2 UpperLeft;
+        public Vector2 UpperLeft = new Vector2(0,0);
 
         // X and Y stretching factors to adjust the final sprite dimensions
         public Vector2 Scale = new Vector2(1.0f, 1.0f);
@@ -323,7 +323,7 @@ namespace RPG_Game
     }
     public class Character : Sprite
     {
-        public float health;
+        public int health;
 
         public float PhAtk;
         public float MgAtk;
@@ -336,8 +336,12 @@ namespace RPG_Game
         public float Acc;
         public float Eva;
 
+        public float meter;
+
+        public Sprite meterSprite = new Sprite();
+        public Sprite meterBlot = new Sprite();
+
         public Vector2 battleOrigin;
-        public bool attacking;
         public bool friendly;
     }
     public class Button : Sprite

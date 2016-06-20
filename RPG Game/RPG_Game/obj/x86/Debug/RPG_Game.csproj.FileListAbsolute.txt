@@ -19,3 +19,5 @@ C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\
 C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Textures\Button.xnb
 C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Textures\Pointer.xnb
 C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Textures\Enemy1.xnb
+C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Textures\ActionBar.xnb
+C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Textures\BarBlot.xnb

@@ -46,6 +46,24 @@
       <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Textures\Enemy1.xnb</Output>
       <Time>2016-06-15T16:14:30+01:00</Time>
     </Item>
+    <Item>
+      <Source>Textures\ActionBar.png</Source>
+      <Name>Textures\ActionBar</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Textures\ActionBar.xnb</Output>
+      <Time>2016-06-20T14:36:03.5961269+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Textures\BarBlot.png</Source>
+      <Name>Textures\BarBlot</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Textures\BarBlot.xnb</Output>
+      <Time>2016-06-20T14:36:17.6599824+01:00</Time>
+    </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
       <ContentProjectGUID>{8160ACB6-D5F8-4696-9888-E64EBBFFC516}</ContentProjectGUID>
