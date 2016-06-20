@@ -1,0 +1,5 @@
+Content\Textures\Just a Box.xnb
+Content\Fonts\Calibri.xnb
+Content\Textures\Button.xnb
+Content\Textures\Pointer.xnb
+Content\Textures\Enemy1.xnb
