@@ -1,7 +1,12 @@
-Content\Textures\Just a Box.xnb
 Content\Fonts\Calibri.xnb
-Content\Textures\Button.xnb
-Content\Textures\Pointer.xnb
-Content\Textures\Enemy1.xnb
-Content\Textures\ActionBar.xnb
-Content\Textures\BarBlot.xnb
+Content\Backgrounds\Translucent.xnb
+Content\Misc\Shadow.xnb
+Content\Misc\Button.xnb
+Content\Misc\Pointer.xnb
+Content\Characters\Enemies\Enemy1.xnb
+Content\Misc\ActionBar.xnb
+Content\Characters\Heroes\The Adorable Manchild.xnb
+Content\Characters\Heroes\The Absolutely-Not-Into-It Love Interest.xnb
+Content\Characters\Heroes\The Comic Relief.xnb
+Content\Characters\Heroes\The Endearing Father Figure.xnb
+Content\Characters\Enemies\Werewolf.xnb
