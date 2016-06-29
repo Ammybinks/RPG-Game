@@ -1,7 +1,3 @@
-Content\Fonts\Calibri.xnb
-Content\Backgrounds\Translucent.xnb
-Content\Misc\Shadow.xnb
-Content\Misc\Button.xnb
 Content\Misc\Pointer.xnb
 Content\Characters\Enemies\Enemy1.xnb
 Content\Misc\ActionBar.xnb
@@ -9,4 +5,12 @@ Content\Characters\Heroes\The Adorable Manchild.xnb
 Content\Characters\Heroes\The Absolutely-Not-Into-It Love Interest.xnb
 Content\Characters\Heroes\The Comic Relief.xnb
 Content\Characters\Heroes\The Endearing Father Figure.xnb
+Content\Backgrounds\Translucent.xnb
+Content\Misc\Shadow.xnb
 Content\Characters\Enemies\Werewolf.xnb
+Content\Misc\Interface\Interface Back.xnb
+Content\Misc\Interface\Interface Corner.xnb
+Content\Misc\Interface\Interface Wall Expandable.xnb
+Content\Fonts\Yu Gothic UI Light.xnb
+Content\Fonts\Calibri.xnb
+Content\Misc\IconSet.xnb

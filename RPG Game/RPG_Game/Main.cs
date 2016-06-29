@@ -38,17 +38,36 @@ namespace RPG_Game
         Texture2D hieroTexture;
         Character hiero;
 
-        Texture2D demonTexture;
-        Character demon;
+        List<Character> heroes = new List<Character>(4);
 
         Texture2D werewolfTexture;
         Character werewolf;
 
-        Texture2D buttonTexture;
+        List<Character> enemies = new List<Character>(4);
+
+        List<Character> battlers = new List<Character>();
+
+        Box box;
+
+        List<Box> allBoxes = new List<Box>(1);
+        List<Box> fightBoxes = new List<Box>(1);
+
+        Texture2D iconTexture;
         Button button;
 
+        Ability ability;
+
+        List<Button> allButtons = new List<Button>(2);
+        List<Button> fightButtons = new List<Button>(3);
+
+        Texture2D cornerTexture;
+        Texture2D wallTexture;
+        Texture2D backTexture;
+
         Texture2D meterTexture;
+
         Texture2D shadowTexture;
+        LinkedList<Sprite> shadows = new LinkedList<Sprite>();
 
         Character target = new Character();
         List<Character> targets = new List<Character>(0);
@@ -56,15 +75,6 @@ namespace RPG_Game
         Character actor = new Character();
 
         SpriteFont calibri;
-
-        LinkedList<Sprite> shadows = new LinkedList<Sprite>();
-
-        List<Character> heroes = new List<Character>(4);
-        List<Character> enemies = new List<Character>(4);
-        List<Character> battlers = new List<Character>();
-
-        List<Button> allButtons = new List<Button>(2);
-        List<Button> fightButtons = new List<Button>(2);
 
         int targetIndex = 0;
         int buttonIndex = 0;
@@ -82,8 +92,7 @@ namespace RPG_Game
             animating,
             battleMenu,
             skillsMenu,
-            itemsMenu,
-            steppingBackwards
+            itemsMenu
         }
         BattleButtons battleButtons = BattleButtons.idle;
 
@@ -125,15 +134,18 @@ namespace RPG_Game
 
             pointerTexture = Content.Load<Texture2D>("Misc\\Pointer");
             meterTexture = Content.Load<Texture2D>("Misc\\ActionBar");
-            buttonTexture = Content.Load<Texture2D>("Misc\\Button");
             shadowTexture = Content.Load<Texture2D>("Misc\\Shadow");
+            iconTexture = Content.Load<Texture2D>("Misc\\IconSet");
+
+            cornerTexture = Content.Load<Texture2D>("Misc\\Interface\\Interface Corner");
+            wallTexture = Content.Load<Texture2D>("Misc\\Interface\\Interface Wall Expandable");
+            backTexture = Content.Load<Texture2D>("Misc\\Interface\\Interface Back");
 
             heroTexture = Content.Load<Texture2D>("Characters\\Heroes\\The Adorable Manchild");
             hiroTexture = Content.Load<Texture2D>("Characters\\Heroes\\The Absolutely-Not-Into-It Love Interest");
             hearoTexture = Content.Load<Texture2D>("Characters\\Heroes\\The Endearing Father Figure");
             hieroTexture = Content.Load<Texture2D>("Characters\\Heroes\\The Comic Relief");
-
-            demonTexture = Content.Load<Texture2D>("Characters\\Enemies\\Enemy1");
+            
             werewolfTexture = Content.Load<Texture2D>("Characters\\Enemies\\Werewolf");
 
             //Miscellaneous initialization
@@ -303,17 +315,50 @@ namespace RPG_Game
             enemies.Add(werewolf);
 
             //Button initialization
+            box = new Box();
+            box.frameWidth = 230;
+            box.frameHeight = 400;
+            box.UpperLeft = new Vector2(5, graphics.PreferredBackBufferHeight - box.GetHeight() - 5);
+            box.SetParts(cornerTexture, wallTexture, backTexture);
+            allBoxes.Add(box);
+            fightBoxes.Add(box);
+            
             button = new Button();
-            button.SetTexture(buttonTexture);
-            button.UpperLeft = new Vector2(5, graphics.PreferredBackBufferHeight - button.GetHeight() - 60);
+            button.icon = new Sprite();
+            button.frameHeight = 50;
+            button.frameWidth = 150;
+            button.UpperLeft = new Vector2(75, graphics.PreferredBackBufferHeight - button.GetHeight() - 15 - (60 * ((fightButtons.Capacity - fightButtons.Count) - 1)));
+            button.SetParts(cornerTexture, wallTexture, backTexture);
             button.action = "FIGHT";
+            button.icon.SetTexture(iconTexture, 339, 20);
+            button.icon.setCurrentFrame(12, 4);
+            button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 10, button.UpperLeft.Y + 9);
             allButtons.Add(button);
             fightButtons.Add(button);
 
             button = new Button();
-            button.SetTexture(buttonTexture);
-            button.UpperLeft = new Vector2(5, graphics.PreferredBackBufferHeight - button.GetHeight() - 5);
+            button.icon = new Sprite();
+            button.frameHeight = 50;
+            button.frameWidth = 150;
+            button.UpperLeft = new Vector2(75, graphics.PreferredBackBufferHeight - button.GetHeight() - 15 - (60 * ((fightButtons.Capacity - fightButtons.Count) - 1)));
+            button.SetParts(cornerTexture, wallTexture, backTexture);
+            button.action = "SKILL";
+            button.icon.SetTexture(iconTexture, 339, 20);
+            button.icon.setCurrentFrame(15, 4);
+            button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 10, button.UpperLeft.Y + 9);
+            allButtons.Add(button);
+            fightButtons.Add(button);
+
+            button = new Button();
+            button.icon = new Sprite();
+            button.frameHeight = 50;
+            button.frameWidth = 150;
+            button.UpperLeft = new Vector2(75, graphics.PreferredBackBufferHeight - button.GetHeight() - 15 - (60 * ((fightButtons.Capacity - fightButtons.Count) - 1)));
+            button.SetParts(cornerTexture, wallTexture, backTexture);
             button.action = "QUIT";
+            button.icon.SetTexture(iconTexture, 339, 20);
+            button.icon.setCurrentFrame(2, 5);
+            button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 10, button.UpperLeft.Y + 9);
             allButtons.Add(button);
             fightButtons.Add(button);
 
@@ -509,9 +554,13 @@ namespace RPG_Game
                 }
 
                 pointer.IsAlive = true;
-                pointer.UpperLeft = new Vector2(fightButtons[buttonIndex].UpperLeft.X + 5, fightButtons[buttonIndex].UpperLeft.Y + 5);
+                pointer.UpperLeft = new Vector2(fightButtons[buttonIndex].UpperLeft.X - pointer.GetWidth() - 15, fightButtons[buttonIndex].UpperLeft.Y + 5);
             }
 
+            if(battleButtons == BattleButtons.skillsMenu)
+            {
+
+            }
 
             oldKeyState = currentKeyState;
             oldMouseState = currentMouseState;
@@ -530,14 +579,34 @@ namespace RPG_Game
             spriteBatch.Begin();
 
             backgroundSprite.Draw(spriteBatch);
+            
+            for (int i = 0; i < fightBoxes.Count; i++)
+            {
+                for (int index = 0; index < fightBoxes[i].parts.Count; index++)
+                {
+                    fightBoxes[i].parts[index].Draw(spriteBatch);
+                }
+            }
 
             if (battleButtons == BattleButtons.battleMenu)
             {
                 for (int i = 0; i < fightButtons.Count; i++)
                 {
-                    fightButtons[i].Draw(spriteBatch);
+                    for (int index = 0; index < fightButtons[i].parts.Count; index++)
+                    {
+                        fightButtons[i].parts[index].Draw(spriteBatch);
+                    }
 
-                    spriteBatch.DrawString(calibri, fightButtons[i].action, new Vector2(fightButtons[i].UpperLeft.X + 70, fightButtons[i].UpperLeft.Y + 8), Color.Black, 0, new Vector2(0, 0), 1.5f, SpriteEffects.None, 0);
+                    fightButtons[i].icon.Draw(spriteBatch);
+
+                    spriteBatch.DrawString(calibri,
+                                           fightButtons[i].action,
+                                           new Vector2(fightButtons[i].UpperLeft.X + 70, fightButtons[i].UpperLeft.Y + 8),
+                                           Color.Black,
+                                           0,
+                                           new Vector2(0, 0),
+                                           1f,
+                                           SpriteEffects.None, 0);
                 }
             }
             
@@ -553,7 +622,15 @@ namespace RPG_Game
 
                 if (enemies[i].health > 0)
                 {
-                    spriteBatch.DrawString(calibri, enemies[i].health.ToString(), new Vector2(enemies[i].UpperLeft.X, enemies[i].UpperLeft.Y + enemies[i].GetHeight() + 5), Color.Black);
+                    spriteBatch.DrawString(calibri,
+                                           enemies[i].health.ToString(),
+                                           new Vector2(enemies[i].UpperLeft.X,
+                                           enemies[i].UpperLeft.Y + enemies[i].GetHeight() + 5),
+                                           Color.Black,
+                                           0,
+                                           new Vector2(0, 0),
+                                           0.75f,
+                                           SpriteEffects.None, 0);
                 }
 
                 enemies[i].Move();
@@ -572,7 +649,15 @@ namespace RPG_Game
 
                 if(heroes[i].health > 0)
                 {
-                    spriteBatch.DrawString(calibri, heroes[i].health.ToString(), new Vector2(heroes[i].UpperLeft.X, heroes[i].UpperLeft.Y + heroes[i].GetHeight() + 5), Color.Black);
+                    spriteBatch.DrawString(calibri,
+                                           heroes[i].health.ToString(),
+                                           new Vector2(heroes[i].UpperLeft.X,
+                                           heroes[i].UpperLeft.Y + heroes[i].GetHeight() + 5),
+                                           Color.Black,
+                                           0,
+                                           new Vector2(0, 0),
+                                           0.75f,
+                                           SpriteEffects.None, 0);
                 }
 
                 if (!heroes[i].IsAnimating())
@@ -602,7 +687,16 @@ namespace RPG_Game
 
             if (damageDealt > 0)
             {
-                spriteBatch.DrawString(calibri, damageDealt.ToString(), new Vector2(target.UpperLeft.X, target.UpperLeft.Y - damageLocation), Color.Black);
+                spriteBatch.DrawString(calibri,
+                                       damageDealt.ToString(),
+                                       new Vector2(target.UpperLeft.X,
+                                       target.UpperLeft.Y - damageLocation),
+                                       Color.Black,
+                                       0,
+                                       new Vector2(0, 0),
+                                       1f,
+                                       SpriteEffects.None, 0);
+
                 damageLocation += damageLocation / 32;
             }
 

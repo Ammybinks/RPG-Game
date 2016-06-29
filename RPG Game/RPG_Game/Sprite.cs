@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
 
 namespace RPG_Game
 {
@@ -46,9 +47,12 @@ namespace RPG_Game
         // public flag indicating whether or not animation frames should be continuously looped
         public bool ContinuousAnimation = true;
 
+        // Whether or not the sprite is animating forwards through the spritesheet instead of forwards
+        public bool reverseAnimating;
+
         // if ContinuousAnimation = false, this flag indicates whether or not a 
         // "short" animation sequence is currently active
-        private bool animationShortStarted = false;
+        public bool animationShortStarted = false;
 
         // this variable contains the stop frame for a short animation sequence
         private int animationShortStopFrame = 0;
@@ -57,36 +61,63 @@ namespace RPG_Game
         // the short animation sequence is complete.
         private int animationShortFinalFrame = 0;
 
-        // This internal member tracks the number of frames in the animation strip
+        // This internal member tracks the current frame numerically, regardless of current line
+        private int totalFrame = 0;
+
+        // This internal member tracks the number of frames and lines in the animation strip
         private int numFrames = 1;
+        private int numLines = 1;
+
+        // This internal member tracks the number of frames in any given line
+        private int lineFrames;
 
         // This internal member represents the current source rectangle in the animation strip
         private Rectangle imageRect;
 
-        // This internal member specifies the width of a single frame in the animation strip
-        // (Note:  overall strip width should be an even multiple of this value!)
-        private int frameWidth;
+        // These internal members specify the width and height of a single frame in the animation strip
+        // (Note:  overall strip dimensions should be an even multiple of this value!)
+        public int frameWidth;
+        public int frameHeight;
 
-        // This internal member shows the current animation frame (should be 0 -> numFrames-1)
+        // This internal member shows the current animation frame on the current line (should be 0 -> numFrames-1)
         private int currentFrame = 0;
+
+        // This internal member shows the current animation line
+        private int currentLine = 0;
+
 
         public int getCurrentFrame()
         {
             return currentFrame;
         }
 
-        public void setCurrentFrame(int frame)
+        public int getTotalFrame()
         {
-            if (frame > numFrames - 1)  // safety check!
+            return totalFrame;
+        }
+
+        // Sets the current frame the sprite is displaying
+        // (NOTE: Input is taken in the form of the line, and frame along that line (Upper limit for frame is TotalFrames / TotalLines)
+        public void setCurrentFrame(int frame, int line)
+        {
+            if (frame > lineFrames - 1 || frame < 0)  // safety check!
             {
-                currentFrame = 0;
-                imageRect = new Rectangle(0, 0, frameWidth, spriteTexture.Height);
+                frame = 0;
             }
-            else
+
+            if(line > numLines - 1 || line < 0)
             {
-                currentFrame = frame;
-                imageRect = new Rectangle(frameWidth * frame, 0, frameWidth, spriteTexture.Height);
+                line = 0;
             }
+
+            currentFrame = frame;
+
+            currentLine = line;
+
+            totalFrame = frame + (lineFrames * line);
+
+
+            imageRect = new Rectangle(frameWidth * frame, frameHeight * line, frameWidth, frameHeight);
         }
 
         // This method will load the Texture based on the image name
@@ -95,20 +126,29 @@ namespace RPG_Game
             SetTexture(texture, 1);
         }
 
-
         // This method will load the Texture based on the image name and number of frames
         public void SetTexture(Texture2D texture, int frames)
         {
+            SetTexture(texture, frames, 1);
+        }
+
+        // This method will load the Texture based on the image name and number of frames and lines
+        public void SetTexture(Texture2D texture, int frames, int lines)
+        {
             numFrames = frames;
+            numLines = lines;
+
+            lineFrames = frames / lines;
 
             spriteTexture = texture;
             int width = spriteTexture.Width;
             int height = spriteTexture.Height;
 
-            frameWidth = width / numFrames;   // does not include effects of scaling!
+            frameWidth = width / lineFrames;   // does not include effects of scaling!
+            frameHeight = height / numLines;
 
             // does not include effects of scaling, which may change after SetTexture is finished!
-            imageRect = new Rectangle(0, 0, frameWidth, height);
+            imageRect = new Rectangle(0, 0, frameWidth, frameHeight);
 
             // create a color matrix that we'll use later for collision detection
             // contains colors for the entire image (including any animation strip)
@@ -152,16 +192,17 @@ namespace RPG_Game
                 Matrix.CreateScale(Scale.X, Scale.Y, 1.0f) *
                 Matrix.CreateTranslation(UpperLeft.X + (float)Origin.X, UpperLeft.Y + (float)Origin.Y, 0);
         }
+
         // calculate final sprite width, accounting for scale and assuming zero rotation
         public int GetWidth()
         {
-            return (int)((float)spriteTexture.Width * Scale.X / (float)numFrames);
+            return (int)(frameWidth * Scale.X);
         }
 
         // calculate final sprite height, accounting for scale and assuming zero rotation
         public int GetHeight()
         {
-            return (int)((float)spriteTexture.Height * Scale.Y);
+            return (int)(frameHeight * Scale.Y);
         }
 
         // calculate current center offset from the UpperLeft, accounting for scale and assuming zero rotation
@@ -245,13 +286,57 @@ namespace RPG_Game
         // animation ends the image will revert to the static "final" frame
         public void StartAnimationShort(int startFrame, int stopFrame, int finalFrame)
         {
-            // set starting frame as current frame
-            currentFrame = startFrame;
+            if(!reverseAnimating)  // If animating forwards
+            {
+                // For each line in the spritesheet
+                for (int i = 1; i <= numLines; i++)
+                {
+                    // If current frame is lower than the highest frame on this line
+                    if (startFrame <= lineFrames * i)
+                    {
+                        // Set current line to appropriate line
+                        i--;
 
-            // store other input variables
-            animationShortStopFrame = stopFrame;
+                        currentLine = i;
+                        break;
+                    }
+                }
+                // set starting frame as current frame (inside the bounds of lineFrames)
+                currentFrame = startFrame - (lineFrames * currentLine);
+
+                // set starting frame as total frame
+                totalFrame = startFrame;
+
+
+                // store other input variables
+                animationShortStopFrame = stopFrame;
+            }
+            else
+            {
+                // For each line in the spritesheet
+                for (int i = 1; i <= numLines; i++)
+                {
+                    // If current frame is lower than the highest frame on this line
+                    if (startFrame <= lineFrames * i)
+                    {
+                        // Set current line to appropriate line
+                        i--;
+
+                        currentLine = i;
+                        break;
+                    }
+                }
+                // set starting frame as current frame (inside the bounds of lineFrames)
+                currentFrame = stopFrame - (lineFrames * currentLine);
+
+                // set ending frame as current frame
+                totalFrame = stopFrame;
+
+                // store other input variables
+                animationShortStopFrame = startFrame;
+            }
             animationShortFinalFrame = finalFrame;
-
+            
             // launch the short animation!
             animationShortStarted = true;
         }
@@ -283,8 +368,11 @@ namespace RPG_Game
             // get the current time
             int now = (int)gameTime.TotalGameTime.TotalMilliseconds;
 
-            // if we have not yet reached our next scheduled frame change
-            if (now < (lastAnimationTime + AnimationInterval))
+            // Math modifier for if we're reversing
+            int modifier;
+
+            // if we have not yet reached our next scheduled frame change. Or, if we are not animating at all
+            if ((now < (lastAnimationTime + AnimationInterval)) || !(IsAnimating()))
             {
                 return; // not time to advance frame yet
             }
@@ -294,10 +382,38 @@ namespace RPG_Game
             if (animationShortStarted)
                 endFrame = animationShortStopFrame;
 
-            // if we are not yet done with this sequence
-            if (currentFrame < endFrame)
+            if (reverseAnimating)
             {
-                currentFrame += 1;  // move to the next frame
+                currentFrame--;  // move to the previous frame
+                totalFrame--;
+
+                modifier = -1;
+            }
+            else
+            {
+                currentFrame++;  // move to the next frame
+                totalFrame++;
+
+                modifier = 1;
+            }
+ 
+            // if we are not yet done with this sequence
+            if (totalFrame * modifier < endFrame * modifier)
+            {
+                // For each line in the spritesheet
+                for (int i = 1; i <= numLines; i++)
+                {
+                    // If current frame is lower than the highest frame on this line
+                    if (totalFrame <= lineFrames * i)
+                    {
+                        // Set current line to appropriate line
+                        i--;
+
+                        currentLine = i;
+                        break;
+                    }
+                }
+
             }
             else
             {
@@ -305,16 +421,30 @@ namespace RPG_Game
                 if (ContinuousAnimation)
                 {
                     currentFrame = 0;
+                    totalFrame = 0;
                 }
                 else
                 {
                     // for animation short, set current frame to final frame
-                    currentFrame = animationShortFinalFrame;
+                    currentFrame = animationShortFinalFrame - (lineFrames * currentLine);
+                    totalFrame = animationShortFinalFrame;
                     animationShortStarted = false;  // no longer animating
                 }
             }
-            // adjust imageRec.X to match new current frame
-            imageRect.X = currentFrame * frameWidth;
+
+            if(totalFrame > numFrames - 1 || totalFrame < 0)  // safety check!
+            {
+                totalFrame = 0;
+                currentFrame = 0;
+                currentLine = 0;
+            }
+            if (currentFrame > lineFrames - 1)
+            {
+                currentFrame = 0;
+            }
+
+            // adjust imageRect to match new current frame
+            imageRect = new Rectangle(currentFrame * frameWidth, currentLine * frameHeight, frameWidth, frameHeight);
 
             // update last animation time
             lastAnimationTime = (int)gameTime.TotalGameTime.TotalMilliseconds;
@@ -337,15 +467,97 @@ namespace RPG_Game
         public float Eva;
 
         public float meter;
+        public float pastMeter;
 
         public Sprite meterSprite = new Sprite();
-        public Sprite meterBlot = new Sprite();
 
+        public Sprite shadow = new Sprite();
+
+        public List<Ability> abilities = new List<Ability>();
+        
         public Vector2 battleOrigin;
         public bool friendly;
     }
-    public class Button : Sprite
+
+    public class Box : Sprite
     {
+        public List<Sprite> parts = new List<Sprite>(9);
+
+        public void SetParts(Texture2D cornerTexture, Texture2D wallTexture, Texture2D backTexture)
+        {
+            Sprite corner;
+
+            corner = new Sprite();
+            corner.SetTexture(cornerTexture);
+            corner.UpperLeft = UpperLeft;
+            parts.Add(corner);
+
+            corner = new Sprite();
+            corner.SetTexture(cornerTexture);
+            corner.UpperLeft = new Vector2(UpperLeft.X, UpperLeft.Y + GetHeight());
+            corner.RotationAngle = 90;
+            parts.Add(corner);
+
+            corner = new Sprite();
+            corner.SetTexture(cornerTexture);
+            corner.UpperLeft = new Vector2(UpperLeft.X + GetWidth(), UpperLeft.Y + GetHeight());
+            corner.RotationAngle = 180;
+            parts.Add(corner);
+
+            corner = new Sprite();
+            corner.SetTexture(cornerTexture);
+            corner.UpperLeft = new Vector2(UpperLeft.X + GetWidth(), UpperLeft.Y);
+            corner.RotationAngle = 270;
+            parts.Add(corner);
+
+
+            Sprite wall;
+
+            wall = new Sprite();
+            wall.SetTexture(wallTexture);
+            wall.Scale = new Vector2(1, GetHeight() - corner.GetHeight() * 2);
+            wall.UpperLeft = new Vector2(UpperLeft.X, UpperLeft.Y + corner.GetHeight());
+            parts.Add(wall);
+
+            wall = new Sprite();
+            wall.SetTexture(wallTexture);
+            wall.Scale = new Vector2(1, GetWidth() - corner.GetWidth() * 2);
+            wall.UpperLeft = new Vector2(UpperLeft.X + corner.GetWidth(), UpperLeft.Y + GetHeight());
+            wall.RotationAngle = 90;
+            parts.Add(wall);
+
+            wall = new Sprite();
+            wall.SetTexture(wallTexture);
+            wall.Scale = new Vector2(1, GetHeight() - corner.GetHeight() * 2);
+            wall.UpperLeft = new Vector2(UpperLeft.X + GetWidth(), UpperLeft.Y + corner.GetHeight() + wall.GetHeight());
+            wall.RotationAngle = 180;
+            parts.Add(wall);
+
+            wall = new Sprite();
+            wall.SetTexture(wallTexture);
+            wall.Scale = new Vector2(1, GetWidth() - corner.GetWidth() * 2);
+            wall.UpperLeft = new Vector2(UpperLeft.X + GetWidth() - corner.GetWidth(), UpperLeft.Y);
+            wall.RotationAngle = 270;
+            parts.Add(wall);
+
+            Sprite back;
+
+            back = new Sprite();
+            back.SetTexture(backTexture);
+            back.Scale = new Vector2(GetWidth() - corner.GetWidth() * 2, GetHeight() - corner.GetHeight() * 2);
+            back.UpperLeft = new Vector2(UpperLeft.X + corner.GetWidth(), UpperLeft.Y + corner.GetHeight());
+            parts.Add(back);
+        }
+    }
+    public class Button : Box
+    {
+        public Sprite icon;
+
         public string action;
+    }
+
+    public class Ability : Button
+    {
+        public int cost;
     }
 }

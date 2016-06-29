@@ -2,67 +2,148 @@
 <XnaContent xmlns:Pipeline="Microsoft.Xna.Framework.Content.Pipeline">
   <Asset Type="Pipeline:BuildItemCollection">
     <Item>
-      <Source>Textures\Just a Box.png</Source>
-      <Name>Textures\Just a Box</Name>
+      <Source>Misc\Pointer.png</Source>
+      <Name>Misc\Pointer</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Textures\Just a Box.xnb</Output>
-      <Time>2016-06-14T18:16:16+01:00</Time>
+      <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Misc\Pointer.xnb</Output>
+      <Time>2016-06-24T23:41:24+01:00</Time>
     </Item>
     <Item>
-      <Source>Fonts\Calibri.spritefont</Source>
-      <Name>Fonts\Calibri</Name>
-      <Importer>FontDescriptionImporter</Importer>
-      <Processor>FontDescriptionProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Fonts\Calibri.xnb</Output>
-      <Time>2016-06-14T19:13:04+01:00</Time>
-    </Item>
-    <Item>
-      <Source>Textures\Button.png</Source>
-      <Name>Textures\Button</Name>
+      <Source>Characters\Enemies\Enemy1.png</Source>
+      <Name>Characters\Enemies\Enemy1</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Textures\Button.xnb</Output>
-      <Time>2016-06-15T13:07:26+01:00</Time>
-    </Item>
-    <Item>
-      <Source>Textures\Pointer.png</Source>
-      <Name>Textures\Pointer</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Textures\Pointer.xnb</Output>
-      <Time>2016-06-15T13:29:02+01:00</Time>
-    </Item>
-    <Item>
-      <Source>Textures\Enemy1.png</Source>
-      <Name>Textures\Enemy1</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Textures\Enemy1.xnb</Output>
+      <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Characters\Enemies\Enemy1.xnb</Output>
       <Time>2016-06-15T16:14:30+01:00</Time>
     </Item>
     <Item>
-      <Source>Textures\ActionBar.png</Source>
-      <Name>Textures\ActionBar</Name>
+      <Source>Misc\ActionBar.png</Source>
+      <Name>Misc\ActionBar</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Textures\ActionBar.xnb</Output>
-      <Time>2016-06-20T14:36:03.5961269+01:00</Time>
+      <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Misc\ActionBar.xnb</Output>
+      <Time>2016-06-25T00:37:15+01:00</Time>
     </Item>
     <Item>
-      <Source>Textures\BarBlot.png</Source>
-      <Name>Textures\BarBlot</Name>
+      <Source>Characters\Heroes\The Adorable Manchild.png</Source>
+      <Name>Characters\Heroes\The Adorable Manchild</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Textures\BarBlot.xnb</Output>
-      <Time>2016-06-20T14:36:17.6599824+01:00</Time>
+      <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Characters\Heroes\The Adorable Manchild.xnb</Output>
+      <Time>2016-06-21T00:50:02+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Characters\Heroes\The Absolutely-Not-Into-It Love Interest.png</Source>
+      <Name>Characters\Heroes\The Absolutely-Not-Into-It Love Interest</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Characters\Heroes\The Absolutely-Not-Into-It Love Interest.xnb</Output>
+      <Time>2016-06-21T19:09:12+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Characters\Heroes\The Comic Relief.png</Source>
+      <Name>Characters\Heroes\The Comic Relief</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Characters\Heroes\The Comic Relief.xnb</Output>
+      <Time>2016-06-21T19:09:12+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Characters\Heroes\The Endearing Father Figure.png</Source>
+      <Name>Characters\Heroes\The Endearing Father Figure</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Characters\Heroes\The Endearing Father Figure.xnb</Output>
+      <Time>2016-06-24T18:21:00+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Backgrounds\Translucent.png</Source>
+      <Name>Backgrounds\Translucent</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Backgrounds\Translucent.xnb</Output>
+      <Time>2016-06-24T23:13:38+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Misc\Shadow.png</Source>
+      <Name>Misc\Shadow</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Misc\Shadow.xnb</Output>
+      <Time>2016-06-25T00:22:58+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Characters\Enemies\Werewolf.png</Source>
+      <Name>Characters\Enemies\Werewolf</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Characters\Enemies\Werewolf.xnb</Output>
+      <Time>2016-06-25T00:34:05+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Misc\Interface\Interface Back.png</Source>
+      <Name>Misc\Interface\Interface Back</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Misc\Interface\Interface Back.xnb</Output>
+      <Time>2016-06-29T02:07:43+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Misc\Interface\Interface Corner.png</Source>
+      <Name>Misc\Interface\Interface Corner</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Misc\Interface\Interface Corner.xnb</Output>
+      <Time>2016-06-29T02:07:43+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Misc\Interface\Interface Wall Expandable.png</Source>
+      <Name>Misc\Interface\Interface Wall Expandable</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Misc\Interface\Interface Wall Expandable.xnb</Output>
+      <Time>2016-06-29T02:07:43+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Fonts\Yu Gothic UI Light.bmp</Source>
+      <Name>Fonts\Yu Gothic UI Light</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>FontTextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Fonts\Yu Gothic UI Light.xnb</Output>
+      <Time>2016-06-29T03:14:15+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Fonts\Calibri.bmp</Source>
+      <Name>Fonts\Calibri</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>FontTextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Fonts\Calibri.xnb</Output>
+      <Time>2016-06-29T03:21:13+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Misc\IconSet.png</Source>
+      <Name>Misc\IconSet</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Misc\IconSet.xnb</Output>
+      <Time>2016-06-29T03:49:14+01:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
