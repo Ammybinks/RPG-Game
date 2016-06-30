@@ -158,7 +158,7 @@ namespace RPG_Game
 
             //Hero initialization
             hero = new Character();
-            hero.SetTexture(heroTexture, 54, 6);
+            hero.SetTexture(heroTexture, 9, 6);
             hero.AnimationInterval = 250;
             hero.reverseAnimating = true;
             hero.ContinuousAnimation = false;
@@ -178,7 +178,7 @@ namespace RPG_Game
             heroes.Add(hero);
 
             hiro = new Character();
-            hiro.SetTexture(hiroTexture, 54, 6);
+            hiro.SetTexture(hiroTexture, 9, 6);
             hiro.AnimationInterval = 250;
             hiro.reverseAnimating = true;
             hiro.ContinuousAnimation = false;
@@ -198,7 +198,7 @@ namespace RPG_Game
             heroes.Add(hiro);
 
             hearo = new Character();
-            hearo.SetTexture(hearoTexture, 54, 6);
+            hearo.SetTexture(hearoTexture, 9, 6);
             hearo.AnimationInterval = 250;
             hearo.reverseAnimating = true;
             hearo.ContinuousAnimation = false;
@@ -218,7 +218,7 @@ namespace RPG_Game
             heroes.Add(hearo);
 
             hiero = new Character();
-            hiero.SetTexture(hieroTexture, 54, 6);
+            hiero.SetTexture(hieroTexture, 9, 6);
             hiero.AnimationInterval = 250;
             hiero.reverseAnimating = true;
             hiero.ContinuousAnimation = false;
@@ -317,7 +317,7 @@ namespace RPG_Game
             //Button initialization
             box = new Box();
             box.frameWidth = 230;
-            box.frameHeight = 400;
+            box.frameHeight = 190;
             box.UpperLeft = new Vector2(5, graphics.PreferredBackBufferHeight - box.GetHeight() - 5);
             box.SetParts(cornerTexture, wallTexture, backTexture);
             allBoxes.Add(box);
@@ -330,7 +330,7 @@ namespace RPG_Game
             button.UpperLeft = new Vector2(75, graphics.PreferredBackBufferHeight - button.GetHeight() - 15 - (60 * ((fightButtons.Capacity - fightButtons.Count) - 1)));
             button.SetParts(cornerTexture, wallTexture, backTexture);
             button.action = "FIGHT";
-            button.icon.SetTexture(iconTexture, 339, 20);
+            button.icon.SetTexture(iconTexture, 16, 20);
             button.icon.setCurrentFrame(12, 4);
             button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 10, button.UpperLeft.Y + 9);
             allButtons.Add(button);
@@ -343,7 +343,7 @@ namespace RPG_Game
             button.UpperLeft = new Vector2(75, graphics.PreferredBackBufferHeight - button.GetHeight() - 15 - (60 * ((fightButtons.Capacity - fightButtons.Count) - 1)));
             button.SetParts(cornerTexture, wallTexture, backTexture);
             button.action = "SKILL";
-            button.icon.SetTexture(iconTexture, 339, 20);
+            button.icon.SetTexture(iconTexture, 16, 20);
             button.icon.setCurrentFrame(15, 4);
             button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 10, button.UpperLeft.Y + 9);
             allButtons.Add(button);
@@ -356,7 +356,7 @@ namespace RPG_Game
             button.UpperLeft = new Vector2(75, graphics.PreferredBackBufferHeight - button.GetHeight() - 15 - (60 * ((fightButtons.Capacity - fightButtons.Count) - 1)));
             button.SetParts(cornerTexture, wallTexture, backTexture);
             button.action = "QUIT";
-            button.icon.SetTexture(iconTexture, 339, 20);
+            button.icon.SetTexture(iconTexture, 16, 20);
             button.icon.setCurrentFrame(2, 5);
             button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 10, button.UpperLeft.Y + 9);
             allButtons.Add(button);

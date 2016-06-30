@@ -132,13 +132,13 @@ namespace RPG_Game
             SetTexture(texture, frames, 1);
         }
 
-        // This method will load the Texture based on the image name and number of frames and lines
+        // This method will load the Texture based on the image name and number of frames on each line and lines total
         public void SetTexture(Texture2D texture, int frames, int lines)
         {
-            numFrames = frames;
+            lineFrames = frames;
             numLines = lines;
 
-            lineFrames = frames / lines;
+            numFrames = frames * lines;
 
             spriteTexture = texture;
             int width = spriteTexture.Width;
