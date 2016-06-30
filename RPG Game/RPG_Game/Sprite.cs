@@ -479,12 +479,14 @@ namespace RPG_Game
         public bool friendly;
     }
 
-    public class Box : Sprite
+    public class Parts : Sprite
     {
         public List<Sprite> parts = new List<Sprite>(9);
 
         public void SetParts(Texture2D cornerTexture, Texture2D wallTexture, Texture2D backTexture)
         {
+            parts.Clear();
+
             Sprite corner;
 
             corner = new Sprite();
@@ -549,15 +551,25 @@ namespace RPG_Game
             parts.Add(back);
         }
     }
-    public class Button : Box
-    {
-        public Sprite icon;
 
-        public string action;
+    public class Box : Parts
+    {
+        public int activatorState;
+
+        public List<Button> buttons;
+    }
+
+    public class Button : Parts
+    {
+        public Sprite icon = new Sprite();
+
+        public string display;
     }
 
     public class Ability : Button
     {
         public int cost;
+
+        public Action<GameTime> action;
     }
 }
