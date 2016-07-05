@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 namespace RPG_Game
 {
+    [Serializable]
     public class Sprite
     {
         // upper-left coordinate of the sprite image on the screen
@@ -451,6 +452,19 @@ namespace RPG_Game
         }
 
     }
+
+    [Serializable]
+    public class Tile : Sprite
+    {
+        public bool interactable;
+        public bool walkable;
+    }
+
+    public class Mover : Sprite
+    {
+        public Vector2 gridPosition;
+    }
+
     public class Character : Sprite
     {
         public int health;

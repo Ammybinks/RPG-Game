@@ -4,7 +4,6 @@ Content\Characters\Heroes\Battle\The Adorable Manchild.xnb
 Content\Characters\Heroes\Battle\The Absolutely-Not-Into-It Love Interest.xnb
 Content\Characters\Heroes\Battle\The Comic Relief.xnb
 Content\Characters\Heroes\Battle\The Endearing Father Figure.xnb
-Content\Backgrounds\Translucent.xnb
 Content\Misc\Shadow.xnb
 Content\Characters\Enemies\Werewolf.xnb
 Content\Misc\Interface\Interface Back.xnb
@@ -17,3 +16,5 @@ Content\Characters\Heroes\Navigation\The Adorable Manchild.xnb
 Content\Characters\Heroes\Navigation\The Comic Relief.xnb
 Content\Characters\Heroes\Navigation\The Endearing Father Figure.xnb
 Content\Characters\Heroes\Navigation\The Absolutely-Not-Into-It Love Interest.xnb
+Content\World\Battle Backs\Translucent.xnb
+Content\World\Tile Sets\Outside.xnb

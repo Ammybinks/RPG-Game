@@ -72,7 +72,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Backgrounds\Translucent.png">
+    <Compile Include="World\Battle Backs\Translucent.png">
       <Name>Translucent</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
@@ -148,6 +148,13 @@
     </Compile>
     <Compile Include="Characters\Heroes\Navigation\The Absolutely-Not-Into-It Love Interest.png">
       <Name>The Absolutely-Not-Into-It Love Interest</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="World\Tile Sets\Outside.png">
+      <Name>Outside</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

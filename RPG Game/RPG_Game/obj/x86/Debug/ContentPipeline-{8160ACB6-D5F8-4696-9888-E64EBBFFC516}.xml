@@ -56,15 +56,6 @@
       <Time>2016-06-24T18:21:00+01:00</Time>
     </Item>
     <Item>
-      <Source>Backgrounds\Translucent.png</Source>
-      <Name>Backgrounds\Translucent</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Backgrounds\Translucent.xnb</Output>
-      <Time>2016-06-24T23:13:38+01:00</Time>
-    </Item>
-    <Item>
       <Source>Misc\Shadow.png</Source>
       <Name>Misc\Shadow</Name>
       <Importer>TextureImporter</Importer>
@@ -171,6 +162,24 @@
       <Options>None</Options>
       <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Characters\Heroes\Navigation\The Absolutely-Not-Into-It Love Interest.xnb</Output>
       <Time>2016-07-03T20:58:21.9816395+01:00</Time>
+    </Item>
+    <Item>
+      <Source>World\Battle Backs\Translucent.png</Source>
+      <Name>World\Battle Backs\Translucent</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\World\Battle Backs\Translucent.xnb</Output>
+      <Time>2016-06-24T23:13:38+01:00</Time>
+    </Item>
+    <Item>
+      <Source>World\Tile Sets\Outside.png</Source>
+      <Name>World\Tile Sets\Outside</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\World\Tile Sets\Outside.xnb</Output>
+      <Time>2016-07-05T11:18:09.0593434+01:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>

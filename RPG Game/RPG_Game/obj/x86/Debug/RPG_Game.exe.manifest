@@ -103,26 +103,17 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="RPG_Game.exe" size="36272">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="RPG_Game.exe" size="40880">
       <assemblyIdentity name="RPG_Game" version="1.0.0.0" language="neutral" processorArchitecture="x86" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>2RwIomZzgWl3mOh+kpoX+iB47Lk=</dsig:DigestValue>
+        <dsig:DigestValue>lrMZgMQw3SwOrG2l8lRpS0PX9qY=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
-  <file name="Content\Backgrounds\Translucent.xnb" size="2960187">
-    <hash>
-      <dsig:Transforms>
-        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
-      </dsig:Transforms>
-      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-      <dsig:DigestValue>B1e1kHrrwtSoVjQmXk0Xjo0A94o=</dsig:DigestValue>
-    </hash>
-  </file>
   <file name="Content\Characters\Enemies\Werewolf.xnb" size="158575">
     <hash>
       <dsig:Transforms>
@@ -283,6 +274,24 @@
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
       <dsig:DigestValue>oX79y2JZqjH7erBswLacsKKsi0o=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Content\World\Battle Backs\Translucent.xnb" size="2960187">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>B1e1kHrrwtSoVjQmXk0Xjo0A94o=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Content\World\Tile Sets\Outside.xnb" size="249019">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>5yipgPQEU4AOVJLT1Szux79N1xU=</dsig:DigestValue>
     </hash>
   </file>
   <file name="Game.ico" size="4286">

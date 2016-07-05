@@ -1,8 +1,28 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Xml.Serialization;
+using System.IO;
 using System.Collections.Generic;
 using System;
+
+//Saving/Loading code TODO
+
+    //Load
+//string file = "filepath";
+//List<A> listofa = new List<A>();
+//XmlSerializer formatter = new XmlSerializer(A.GetType());
+//FileStream aFile = new FileStream(file, FileMode.Open);
+//byte[] buffer = new byte[aFile.Length];
+//aFile.Read(buffer, 0, (int)aFile.Length);
+//MemoryStream stream = new MemoryStream(buffer);
+//return (List<A>)formatter.Deserialize(stream);
+
+    //Save
+//MemoryStream memoryStream = new MemoryStream();
+//string path = "C:\\Users\\Nye\\Dropbox\\Programming\\C#\\Programs\\RPG-Game\\Saves\\TestMap.txt";
+//FileStream outFile = File.Create(path);
+//XmlSerializer formatter = new XmlSerializer(tile.GetType());
 
 namespace RPG_Game
 {
@@ -26,21 +46,25 @@ namespace RPG_Game
         Texture2D pointerTexture;
         Sprite pointer = new Sprite();
 
-        Texture2D heroNavigationTexture;
         Texture2D heroBattleTexture;
         Character hero;
-
-        Texture2D hiroNavigationTexture;
+        Texture2D heroMoverTexture;
+        Mover heroMover;
+        
         Texture2D hiroBattleTexture;
         Character hiro;
-
-        Texture2D hearoNavigationTexture;
+        Texture2D hiroMoverTexture;
+        Mover hiroMover;
+        
         Texture2D hearoBattleTexture;
         Character hearo;
-
-        Texture2D hieroNavigationTexture;
+        Texture2D hearoMoverTexture;
+        Mover hearoMover;
+        
         Texture2D hieroBattleTexture;
         Character hiero;
+        Texture2D hieroMoverTexture;
+        Mover hieroMover;
 
         List<Character> heroes = new List<Character>(4);
 
@@ -50,6 +74,7 @@ namespace RPG_Game
         List<Character> enemies = new List<Character>(4);
 
         List<Character> battlers = new List<Character>();
+        LinkedList<Mover> movers = new LinkedList<Mover>();
 
         Box box;
 
@@ -60,9 +85,8 @@ namespace RPG_Game
         Texture2D iconTexture;
         Button button;
 
-        Ability ability;
-        Action<GameTime> currentAction;
-        
+        Texture2D outside;
+
         Texture2D cornerTexture;
         Texture2D wallTexture;
         Texture2D backTexture;
@@ -83,7 +107,13 @@ namespace RPG_Game
 
         Random rand = new Random();
 
+        Ability ability;
+        Action<GameTime> currentAction;
+
         Vector2 screenSize;
+
+        Tile[,] map = new Tile[3, 6];
+        Tile tile;
 
         bool[] state = new bool[8];
         int currentState;
@@ -95,6 +125,7 @@ namespace RPG_Game
         float damageLocation;
         bool actionComplete;
         double timer;
+        Vector2 playerMovement;
 
         public Main()
         {
@@ -130,29 +161,31 @@ namespace RPG_Game
             //graphics.IsFullScreen = true;
             graphics.ApplyChanges();
 
-            calibri = Content.Load<SpriteFont>("Fonts\\Calibri");
+            calibri = Content.Load<SpriteFont>("Fonts\\\\Calibri");
 
-            background = Content.Load<Texture2D>("Backgrounds\\Translucent");
+            background = Content.Load<Texture2D>("World\\\\Battle Backs\\\\Translucent");
 
-            pointerTexture = Content.Load<Texture2D>("Misc\\Pointer");
-            meterTexture = Content.Load<Texture2D>("Misc\\ActionBar");
-            shadowTexture = Content.Load<Texture2D>("Misc\\Shadow");
-            iconTexture = Content.Load<Texture2D>("Misc\\IconSet");
+            outside = Content.Load<Texture2D>("World\\\\Tile Sets\\\\Outside");
 
-            cornerTexture = Content.Load<Texture2D>("Misc\\Interface\\Interface Corner");
-            wallTexture = Content.Load<Texture2D>("Misc\\Interface\\Interface Wall Expandable");
-            backTexture = Content.Load<Texture2D>("Misc\\Interface\\Interface Back");
+            pointerTexture = Content.Load<Texture2D>("Misc\\\\Pointer");
+            meterTexture = Content.Load<Texture2D>("Misc\\\\ActionBar");
+            shadowTexture = Content.Load<Texture2D>("Misc\\\\Shadow");
+            iconTexture = Content.Load<Texture2D>("Misc\\\\IconSet");
 
-            heroNavigationTexture = Content.Load<Texture2D>("Characters\\Heroes\\Navigation\\The Adorable Manchild");
-            hiroNavigationTexture = Content.Load<Texture2D>("Characters\\Heroes\\Navigation\\The Absolutely-Not-Into-It Love Interest");
-            hearoNavigationTexture = Content.Load<Texture2D>("Characters\\Heroes\\Navigation\\The Endearing Father Figure");
-            hieroNavigationTexture = Content.Load<Texture2D>("Characters\\Heroes\\Navigation\\The Comic Relief");
-            heroBattleTexture = Content.Load<Texture2D>("Characters\\Heroes\\Battle\\The Adorable Manchild");
-            hiroBattleTexture = Content.Load<Texture2D>("Characters\\Heroes\\Battle\\The Absolutely-Not-Into-It Love Interest");
-            hearoBattleTexture = Content.Load<Texture2D>("Characters\\Heroes\\Battle\\The Endearing Father Figure");
-            hieroBattleTexture = Content.Load<Texture2D>("Characters\\Heroes\\Battle\\The Comic Relief");
-            
-            werewolfTexture = Content.Load<Texture2D>("Characters\\Enemies\\Werewolf");
+            cornerTexture = Content.Load<Texture2D>("Misc\\\\Interface\\\\Interface Corner");
+            wallTexture = Content.Load<Texture2D>("Misc\\\\Interface\\\\Interface Wall Expandable");
+            backTexture = Content.Load<Texture2D>("Misc\\\\Interface\\\\Interface Back");
+
+            heroMoverTexture = Content.Load<Texture2D>("Characters\\\\Heroes\\\\Navigation\\\\The Adorable Manchild");
+            hiroMoverTexture = Content.Load<Texture2D>("Characters\\\\Heroes\\\\Navigation\\\\The Absolutely-Not-Into-It Love Interest");
+            hearoMoverTexture = Content.Load<Texture2D>("Characters\\\\Heroes\\\\Navigation\\\\The Endearing Father Figure");
+            hieroMoverTexture = Content.Load<Texture2D>("Characters\\\\Heroes\\\\Navigation\\\\The Comic Relief");
+            heroBattleTexture = Content.Load<Texture2D>("Characters\\\\Heroes\\\\Battle\\\\The Adorable Manchild");
+            hiroBattleTexture = Content.Load<Texture2D>("Characters\\\\Heroes\\\\Battle\\\\The Absolutely-Not-Into-It Love Interest");
+            hearoBattleTexture = Content.Load<Texture2D>("Characters\\\\Heroes\\\\Battle\\\\The Endearing Father Figure");
+            hieroBattleTexture = Content.Load<Texture2D>("Characters\\\\Heroes\\\\Battle\\\\The Comic Relief");
+
+            werewolfTexture = Content.Load<Texture2D>("Characters\\\\Enemies\\\\Werewolf");
 
             //Miscellaneous Initialization Begins//
             backgroundSprite.SetTexture(background);
@@ -161,7 +194,7 @@ namespace RPG_Game
 
             pointer.SetTexture(pointerTexture);
             pointer.Scale = new Vector2(0.8f, 0.8f);
-            
+
             target.IsAlive = false;
 
             camera = new Camera();
@@ -194,6 +227,11 @@ namespace RPG_Game
             hero.shadow.SetTexture(shadowTexture);
             heroes.Add(hero);
 
+            heroMover = new Mover();
+            heroMover.SetTexture(heroMoverTexture, 3, 4);
+            heroMover.gridPosition = new Vector2(1, 5);
+            movers.AddFirst(heroMover);
+
             //Hiro Initialization
             hiro = new Character();
             hiro.SetTexture(hiroBattleTexture, 9, 6);
@@ -215,6 +253,11 @@ namespace RPG_Game
             hiro.shadow.SetTexture(shadowTexture);
             heroes.Add(hiro);
 
+            hiroMover = new Mover();
+            hiroMover.SetTexture(heroMoverTexture, 3, 4);
+            hiroMover.UpperLeft = new Vector2(hiroMover.GetWidth(), hiroMover.GetHeight());
+            movers.AddFirst(hiroMover);
+
             //Hearo Initialization
             hearo = new Character();
             hearo.SetTexture(hearoBattleTexture, 9, 6);
@@ -235,6 +278,11 @@ namespace RPG_Game
                                                       hearo.UpperLeft.Y + hearo.meterSprite.GetHeight() + (hearo.GetHeight()) + 20);
             hearo.shadow.SetTexture(shadowTexture);
 
+            hearoMover = new Mover();
+            hearoMover.SetTexture(heroMoverTexture, 3, 4);
+            hearoMover.UpperLeft = new Vector2(hearoMover.GetWidth(), hearoMover.GetHeight());
+            movers.AddFirst(hearoMover);
+
             ////Hearo Ability Initialization
             //Attack Ability
             ability = new Ability();
@@ -253,7 +301,7 @@ namespace RPG_Game
             ability = new Ability();
             ability.action = Murder;
             ability.display = "KILL THEM - Like, seriously. Kill them already";
-            
+
             ability.frameHeight = 50;
             ability.UpperLeft = new Vector2(10, 10);
             ability.SetParts(cornerTexture, wallTexture, backTexture);
@@ -280,10 +328,16 @@ namespace RPG_Game
             hiero.Eva = 0;
             hiero.friendly = true;
             hiero.meterSprite.SetTexture(meterTexture);
-            hiero.meterSprite.UpperLeft = new Vector2(hiero.UpperLeft.X, 
+            hiero.meterSprite.UpperLeft = new Vector2(hiero.UpperLeft.X,
                                                       hiero.UpperLeft.Y + hiero.meterSprite.GetHeight() + (hiero.GetHeight()) + 20);
             hiero.shadow.SetTexture(shadowTexture);
             heroes.Add(hiero);
+
+            hieroMover = new Mover();
+            hieroMover.SetTexture(heroMoverTexture, 3, 4);
+            hieroMover.UpperLeft = new Vector2(hieroMover.GetWidth(), hieroMover.GetHeight());
+            movers.AddFirst(hieroMover);
+
             //Heroes Initialization Ends//
 
             //Enemies Initialization Begins//
@@ -364,6 +418,152 @@ namespace RPG_Game
             ////enemies.Add(werewolf);
             //Enemies Initialization Ends//
 
+            //World Map Initialization Begins//
+            tile = new Tile();
+            tile.SetTexture(outside, 3, 9);
+            tile.setCurrentFrame(0, 5);
+            tile.UpperLeft = new Vector2(0, 0);
+            tile.walkable = true;
+            tile.interactable = false;
+            map[0, 0] = tile;
+
+            tile = new Tile();
+            tile.SetTexture(outside, 3, 9);
+            tile.setCurrentFrame(1, 5);
+            tile.UpperLeft = new Vector2(48, 0);
+            tile.walkable = true;
+            tile.interactable = false;
+            map[1, 0] = tile;
+
+            tile = new Tile();
+            tile.SetTexture(outside, 3, 9);
+            tile.setCurrentFrame(2, 5);
+            tile.UpperLeft = new Vector2(96, 0);
+            tile.walkable = true;
+            tile.interactable = false;
+            map[2, 0] = tile;
+
+            tile = new Tile();
+            tile.SetTexture(outside, 3, 9);
+            tile.setCurrentFrame(0, 6);
+            tile.UpperLeft = new Vector2(0, 48);
+            tile.walkable = true;
+            tile.interactable = false;
+            map[0, 1] = tile;
+
+            tile = new Tile();
+            tile.SetTexture(outside, 3, 9);
+            tile.setCurrentFrame(1, 6);
+            tile.UpperLeft = new Vector2(48, 48);
+            tile.walkable = false;
+            tile.interactable = false;
+            map[1, 1] = tile;
+
+            tile = new Tile();
+            tile.SetTexture(outside, 3, 9);
+            tile.setCurrentFrame(2, 6);
+            tile.UpperLeft = new Vector2(96, 48);
+            tile.walkable = false;
+            tile.interactable = false;
+            map[2, 1] = tile;
+
+            tile = new Tile();
+            tile.SetTexture(outside, 3, 9);
+            tile.setCurrentFrame(0, 7);
+            tile.UpperLeft = new Vector2(0, 96);
+            tile.walkable = false;
+            tile.interactable = false;
+            map[0, 2] = tile;
+
+            tile = new Tile();
+            tile.SetTexture(outside, 3, 9);
+            tile.setCurrentFrame(1, 7);
+            tile.UpperLeft = new Vector2(48, 96);
+            tile.walkable = false;
+            tile.interactable = false;
+            map[1, 2] = tile;
+
+            tile = new Tile();
+            tile.SetTexture(outside, 3, 9);
+            tile.setCurrentFrame(2, 7);
+            tile.UpperLeft = new Vector2(96, 96);
+            tile.walkable = false;
+            tile.interactable = false;
+            map[2, 2] = tile;
+
+            tile = new Tile();
+            tile.SetTexture(outside, 3, 9);
+            tile.setCurrentFrame(0, 8);
+            tile.UpperLeft = new Vector2(0, 144);
+            tile.walkable = false;
+            tile.interactable = false;
+            map[0, 3] = tile;
+
+            tile = new Tile();
+            tile.SetTexture(outside, 3, 9);
+            tile.setCurrentFrame(1, 8);
+            tile.UpperLeft = new Vector2(48, 144);
+            tile.walkable = false;
+            tile.interactable = false;
+            map[1, 3] = tile;
+
+            tile = new Tile();
+            tile.SetTexture(outside, 3, 9);
+            tile.setCurrentFrame(2, 8);
+            tile.UpperLeft = new Vector2(96, 144);
+            tile.walkable = false;
+            tile.interactable = false;
+            map[2, 3] = tile;
+
+            tile = new Tile();
+            tile.SetTexture(outside, 3, 9);
+            tile.setCurrentFrame(0, 0);
+            tile.UpperLeft = new Vector2(0, 192);
+            tile.walkable = true;
+            tile.interactable = false;
+            map[0, 4] = tile;
+
+            tile = new Tile();
+            tile.SetTexture(outside, 3, 9);
+            tile.setCurrentFrame(1, 0);
+            tile.UpperLeft = new Vector2(48, 192);
+            tile.walkable = true;
+            tile.interactable = false;
+            map[1, 4] = tile;
+
+            tile = new Tile();
+            tile.SetTexture(outside, 3, 9);
+            tile.setCurrentFrame(2, 0);
+            tile.UpperLeft = new Vector2(96, 192);
+            tile.walkable = true;
+            tile.interactable = false;
+            map[2, 4] = tile;
+
+            tile = new Tile();
+            tile.SetTexture(outside, 3, 9);
+            tile.setCurrentFrame(0, 2);
+            tile.UpperLeft = new Vector2(0, 240);
+            tile.walkable = true;
+            tile.interactable = false;
+            map[0, 5] = tile;
+
+            tile = new Tile();
+            tile.SetTexture(outside, 3, 9);
+            tile.setCurrentFrame(1, 2);
+            tile.UpperLeft = new Vector2(48, 240);
+            tile.walkable = true;
+            tile.interactable = false;
+            map[1, 5] = tile;
+
+            tile = new Tile();
+            tile.SetTexture(outside, 3, 9);
+            tile.setCurrentFrame(2, 2);
+            tile.UpperLeft = new Vector2(96, 240);
+            tile.walkable = true;
+            tile.interactable = false;
+            map[2, 5] = tile;
+            //World Map Initialization Ends//
+
             //Boxes Initialization Begins//
             //Battle Menu Box
             box = new Box();
@@ -374,7 +574,7 @@ namespace RPG_Game
             box.activatorState = 3;
             box.buttons = new List<Button>(3);
             allBoxes.Add(box);
-            
+
             //Button that advances into targeting state
             button = new Button();
             button.frameHeight = 50;
@@ -410,7 +610,7 @@ namespace RPG_Game
             button.icon.setCurrentFrame(2, 5);
             button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 10, button.UpperLeft.Y + 9);
             box.buttons.Add(button);
-            
+
             //skillsMenu Box
             box = new Box();
             box.frameWidth = 800;
@@ -474,27 +674,119 @@ namespace RPG_Game
             {
                 currentTrack = 0;
 
-                if(currentState == 0)
+                if (playerMovement != null)
+                {
+                    if(gameTime.TotalGameTime.TotalSeconds <= timer + 0.2)
+                    {
+                        heroMover.UpperLeft += playerMovement;
+                    }
+                    else
+                    {
+                        playerMovement = new Vector2(0, 0);
+                    }
+                }
+
+                if (currentState == 0)
                 {
                     if (currentKeyState.IsKeyDown(Keys.W))
                     {
-                        hero.UpperLeft.Y -= 5;
+                        if (heroMover.gridPosition.Y != 0)
+                        {
+                            if (playerMovement == new Vector2(0, 0) && map[(int)heroMover.gridPosition.X, (int)heroMover.gridPosition.Y - 1].walkable)
+                            {
+                                playerMovement = new Vector2(0, -4);
+
+                                heroMover.UpperLeft += playerMovement;
+
+                                heroMover.gridPosition += new Vector2(0, -1);
+                                if (heroMover.gridPosition.Y < 0)
+                                {
+                                    heroMover.gridPosition.Y = 0;
+
+                                    heroMover.UpperLeft -= playerMovement;
+
+                                    playerMovement = new Vector2(0, 0);
+                                }
+
+                                timer = gameTime.TotalGameTime.TotalSeconds;
+                            }
+                        }
                     }
                     if (currentKeyState.IsKeyDown(Keys.S))
                     {
-                        hero.UpperLeft.Y += 5;
+                        if (heroMover.gridPosition.Y != map.GetLength(1) - 1)
+                        {
+                            if (playerMovement == new Vector2(0, 0) && map[(int)heroMover.gridPosition.X, (int)heroMover.gridPosition.Y + 1].walkable)
+                            {
+                                playerMovement = new Vector2(0, 4);
+
+                                heroMover.UpperLeft += playerMovement;
+
+                                heroMover.gridPosition += new Vector2(0, 1);
+                                //if (heroMover.gridPosition.Y > map.GetLength(1))
+                                //{
+                                //    heroMover.gridPosition.Y = 0;
+
+                                //    heroMover.UpperLeft += playerMovement;
+
+                                //    playerMovement = new Vector2(0, 0);
+                                //}
+
+                                timer = gameTime.TotalGameTime.TotalSeconds;
+                            }
+                        }
                     }
                     if (currentKeyState.IsKeyDown(Keys.A))
                     {
-                        hero.UpperLeft.X -= 5;
+                        if (heroMover.gridPosition.X != 0)
+                        {
+                            if (playerMovement == new Vector2(0, 0) && map[(int)heroMover.gridPosition.X - 1, (int)heroMover.gridPosition.Y].walkable)
+                            {
+                                playerMovement = new Vector2(-4, 0);
+
+                                heroMover.UpperLeft += playerMovement;
+
+                                heroMover.gridPosition += new Vector2(-1, 0);
+                                if (heroMover.gridPosition.X < 0)
+                                {
+                                    heroMover.gridPosition.X = 0;
+
+                                    heroMover.UpperLeft -= playerMovement;
+
+                                    playerMovement = new Vector2(0, 0);
+                                }
+
+                                timer = gameTime.TotalGameTime.TotalSeconds;
+                            }
+                        }
                     }
                     if (currentKeyState.IsKeyDown(Keys.D))
                     {
-                        hero.UpperLeft.X += 5;
+                        if (heroMover.gridPosition.X != map.GetLength(0) - 1)
+                        {
+                            if (playerMovement == new Vector2(0, 0) && map[(int)heroMover.gridPosition.X + 1, (int)heroMover.gridPosition.Y].walkable)
+                            {
+                                playerMovement = new Vector2(4, 0);
+
+                                heroMover.UpperLeft += playerMovement;
+
+                                heroMover.gridPosition += new Vector2(1, 0);
+                                //if (heroMover.gridPosition.Y > map.GetLength(0))
+                                //{
+                                //    heroMover.gridPosition.X = 0;
+
+                                //    heroMover.UpperLeft += playerMovement;
+
+                                //    playerMovement = new Vector2(0, 0);
+                                //}
+
+                                timer = gameTime.TotalGameTime.TotalSeconds;
+                            }
+                        }
                     }
 
-                    camera.UpperLeft = new Vector2((hero.UpperLeft.X + hero.GetWidth()) - (camera.ViewWidth / 2),
-                                                   (hero.UpperLeft.Y + hero.GetHeight()) - (camera.ViewHeight / 2));
+                    camera.UpperLeft = new Vector2((heroMover.UpperLeft.X + heroMover.GetWidth()) - (camera.ViewWidth / 2),
+                                                   (heroMover.UpperLeft.Y + heroMover.GetHeight()) - (camera.ViewHeight / 2));
                 }
             }
             //Battle Track//
@@ -762,20 +1054,7 @@ namespace RPG_Game
                 }
                 else if(currentState == 7)
                 {
-                    hero.SetTexture(heroNavigationTexture, 3, 4);
-                    hiro.SetTexture(hiroNavigationTexture, 3, 4);
-                    hearo.SetTexture(hearoNavigationTexture, 3, 4);
-                    hiero.SetTexture(hieroNavigationTexture, 3, 4);
-
-                    hero.UpperLeft = new Vector2(hero.GetWidth(), hero.GetHeight());
-
-                    for(int i = 0; i < heroes.Count; i++)
-                    {
-                        heroes[i].setCurrentFrame(0, 0);
-
-                        heroes[i].animationShortStarted = false;
-                        heroes[i].ContinuousAnimation = false;
-                    }
+                    heroMover.UpperLeft = map[(int)heroMover.gridPosition.X, (int)heroMover.gridPosition.Y].UpperLeft;
 
                     currentTrack = 0;
 
@@ -806,10 +1085,17 @@ namespace RPG_Game
             {
                 backgroundSprite.Draw(spriteBatch, camera.UpperLeft);
 
-                hero.Draw(spriteBatch, camera.UpperLeft);
+                for (int i = 0; i < map.GetLength(0); i++)
+                {
+                    for(int q = 0; q < map.GetLength(1); q++)
+                    {
+                        map[i, q].Draw(spriteBatch, camera.UpperLeft);
+                    }
+                }
 
-                hero.Move();
-                hero.Animate(gameTime);
+                heroMover.Draw(spriteBatch, camera.UpperLeft);
+
+                heroMover.Move();
             }
             if (currentTrack == 1)
             {
@@ -914,7 +1200,7 @@ namespace RPG_Game
                     damageLocation += damageLocation / 32;
                 }
 
-                //Boxes \ Buttons Draw Cycle
+                //Boxes \\ Buttons Draw Cycle
                 for (int i = 0; i < allBoxes.Count; i++)
                 {
                     if (state[allBoxes[i].activatorState])
