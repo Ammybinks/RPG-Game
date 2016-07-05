@@ -103,14 +103,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="RPG_Game.exe" size="33712">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="RPG_Game.exe" size="36272">
       <assemblyIdentity name="RPG_Game" version="1.0.0.0" language="neutral" processorArchitecture="x86" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>dOV4/kyZI0Kv8U7P7wu6M/xScKg=</dsig:DigestValue>
+        <dsig:DigestValue>2RwIomZzgWl3mOh+kpoX+iB47Lk=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -123,15 +123,6 @@
       <dsig:DigestValue>B1e1kHrrwtSoVjQmXk0Xjo0A94o=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="Content\Characters\Enemies\Enemy1.xnb" size="20187">
-    <hash>
-      <dsig:Transforms>
-        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
-      </dsig:Transforms>
-      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-      <dsig:DigestValue>POpz4JYUBgM7AtkCiQv/738/oNE=</dsig:DigestValue>
-    </hash>
-  </file>
   <file name="Content\Characters\Enemies\Werewolf.xnb" size="158575">
     <hash>
       <dsig:Transforms>
@@ -141,7 +132,7 @@
       <dsig:DigestValue>iTKb09lKQwtxT2ZLEXi/RxUEeoo=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="Content\Characters\Heroes\The Absolutely-Not-Into-It Love Interest.xnb" size="884923">
+  <file name="Content\Characters\Heroes\Battle\The Absolutely-Not-Into-It Love Interest.xnb" size="884923">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
@@ -150,7 +141,7 @@
       <dsig:DigestValue>mIW1591USZi25sBY65tvL5eB9ms=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="Content\Characters\Heroes\The Adorable Manchild.xnb" size="884923">
+  <file name="Content\Characters\Heroes\Battle\The Adorable Manchild.xnb" size="884923">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
@@ -159,7 +150,7 @@
       <dsig:DigestValue>Rv6oacdLitUOW/hGw8XLZQne9t8=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="Content\Characters\Heroes\The Comic Relief.xnb" size="884923">
+  <file name="Content\Characters\Heroes\Battle\The Comic Relief.xnb" size="884923">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
@@ -168,13 +159,49 @@
       <dsig:DigestValue>cIcFqcP4S+JCmHzlde6NL7QGN8Q=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="Content\Characters\Heroes\The Endearing Father Figure.xnb" size="884923">
+  <file name="Content\Characters\Heroes\Battle\The Endearing Father Figure.xnb" size="884923">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
       <dsig:DigestValue>34XGp3u272grdIeQAV+gXtjr/3I=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Content\Characters\Heroes\Navigation\The Absolutely-Not-Into-It Love Interest.xnb" size="108475">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>EFYNbKGV9f/aMICsUoz5jsr0TaA=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Content\Characters\Heroes\Navigation\The Adorable Manchild.xnb" size="110779">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>DDM1hbOdb1fECK1pyw7d+UUy0sY=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Content\Characters\Heroes\Navigation\The Comic Relief.xnb" size="109243">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>1rSr1fIThiCiRDPvkCK0PhWw9jw=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Content\Characters\Heroes\Navigation\The Endearing Father Figure.xnb" size="108475">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>BYokiTBTjzkZsex8TVPHd7kTnko=</dsig:DigestValue>
     </hash>
   </file>
   <file name="Content\Fonts\Calibri.xnb" size="136366">

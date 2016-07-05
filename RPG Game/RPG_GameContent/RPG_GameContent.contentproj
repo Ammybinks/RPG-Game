@@ -37,13 +37,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Characters\Enemies\Enemy1.png">
-      <Name>Enemy1</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Misc\ActionBar.png">
       <Name>ActionBar</Name>
       <Importer>TextureImporter</Importer>
@@ -51,28 +44,28 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Characters\Heroes\The Adorable Manchild.png">
+    <Compile Include="Characters\Heroes\Battle\The Adorable Manchild.png">
       <Name>The Adorable Manchild</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Characters\Heroes\The Absolutely-Not-Into-It Love Interest.png">
+    <Compile Include="Characters\Heroes\Battle\The Absolutely-Not-Into-It Love Interest.png">
       <Name>The Absolutely-Not-Into-It Love Interest</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Characters\Heroes\The Comic Relief.png">
+    <Compile Include="Characters\Heroes\Battle\The Comic Relief.png">
       <Name>The Comic Relief</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Characters\Heroes\The Endearing Father Figure.png">
+    <Compile Include="Characters\Heroes\Battle\The Endearing Father Figure.png">
       <Name>The Endearing Father Figure</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
@@ -133,6 +126,28 @@
   <ItemGroup>
     <Compile Include="Misc\IconSet.png">
       <Name>IconSet</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Characters\Heroes\Navigation\The Adorable Manchild.png">
+      <Name>The Adorable Manchild</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Characters\Heroes\Navigation\The Comic Relief.png">
+      <Name>The Comic Relief</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Characters\Heroes\Navigation\The Endearing Father Figure.png">
+      <Name>The Endearing Father Figure</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Characters\Heroes\Navigation\The Absolutely-Not-Into-It Love Interest.png">
+      <Name>The Absolutely-Not-Into-It Love Interest</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

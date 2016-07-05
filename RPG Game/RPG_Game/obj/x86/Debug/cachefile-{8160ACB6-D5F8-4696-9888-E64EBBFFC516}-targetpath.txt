@@ -1,10 +1,9 @@
 Content\Misc\Pointer.xnb
-Content\Characters\Enemies\Enemy1.xnb
 Content\Misc\ActionBar.xnb
-Content\Characters\Heroes\The Adorable Manchild.xnb
-Content\Characters\Heroes\The Absolutely-Not-Into-It Love Interest.xnb
-Content\Characters\Heroes\The Comic Relief.xnb
-Content\Characters\Heroes\The Endearing Father Figure.xnb
+Content\Characters\Heroes\Battle\The Adorable Manchild.xnb
+Content\Characters\Heroes\Battle\The Absolutely-Not-Into-It Love Interest.xnb
+Content\Characters\Heroes\Battle\The Comic Relief.xnb
+Content\Characters\Heroes\Battle\The Endearing Father Figure.xnb
 Content\Backgrounds\Translucent.xnb
 Content\Misc\Shadow.xnb
 Content\Characters\Enemies\Werewolf.xnb
@@ -14,3 +13,7 @@ Content\Misc\Interface\Interface Wall Expandable.xnb
 Content\Fonts\Yu Gothic UI Light.xnb
 Content\Fonts\Calibri.xnb
 Content\Misc\IconSet.xnb
+Content\Characters\Heroes\Navigation\The Adorable Manchild.xnb
+Content\Characters\Heroes\Navigation\The Comic Relief.xnb
+Content\Characters\Heroes\Navigation\The Endearing Father Figure.xnb
+Content\Characters\Heroes\Navigation\The Absolutely-Not-Into-It Love Interest.xnb

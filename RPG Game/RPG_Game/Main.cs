@@ -9,7 +9,7 @@ namespace RPG_Game
     /// <summary>
     /// This is the main type for your game
     /// </summary>
-    public class Main : Microsoft.Xna.Framework.Game
+    public class Main : Game
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
@@ -25,17 +25,21 @@ namespace RPG_Game
 
         Texture2D pointerTexture;
         Sprite pointer = new Sprite();
-        
-        Texture2D heroTexture;
+
+        Texture2D heroNavigationTexture;
+        Texture2D heroBattleTexture;
         Character hero;
 
-        Texture2D hiroTexture;
+        Texture2D hiroNavigationTexture;
+        Texture2D hiroBattleTexture;
         Character hiro;
 
-        Texture2D hearoTexture;
+        Texture2D hearoNavigationTexture;
+        Texture2D hearoBattleTexture;
         Character hearo;
 
-        Texture2D hieroTexture;
+        Texture2D hieroNavigationTexture;
+        Texture2D hieroBattleTexture;
         Character hiero;
 
         List<Character> heroes = new List<Character>(4);
@@ -75,16 +79,22 @@ namespace RPG_Game
 
         SpriteFont calibri;
 
+        Camera camera;
+
+        Random rand = new Random();
+
+        Vector2 screenSize;
+
+        bool[] state = new bool[8];
+        int currentState;
+        int currentTrack;
+
         int targetIndex = 0;
         int buttonIndex = 0;
         float damageDealt;
         float damageLocation;
+        bool actionComplete;
         double timer;
-
-        Random rand = new Random();
-
-        bool[] state = new bool[7];
-        int currentState;
 
         public Main()
         {
@@ -113,8 +123,10 @@ namespace RPG_Game
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            graphics.PreferredBackBufferHeight = 1080;
-            graphics.PreferredBackBufferWidth = 1920;
+
+            screenSize = new Vector2(1920, 1080);
+            graphics.PreferredBackBufferWidth = (int)screenSize.X;
+            graphics.PreferredBackBufferHeight = (int)screenSize.Y;
             //graphics.IsFullScreen = true;
             graphics.ApplyChanges();
 
@@ -131,10 +143,14 @@ namespace RPG_Game
             wallTexture = Content.Load<Texture2D>("Misc\\Interface\\Interface Wall Expandable");
             backTexture = Content.Load<Texture2D>("Misc\\Interface\\Interface Back");
 
-            heroTexture = Content.Load<Texture2D>("Characters\\Heroes\\The Adorable Manchild");
-            hiroTexture = Content.Load<Texture2D>("Characters\\Heroes\\The Absolutely-Not-Into-It Love Interest");
-            hearoTexture = Content.Load<Texture2D>("Characters\\Heroes\\The Endearing Father Figure");
-            hieroTexture = Content.Load<Texture2D>("Characters\\Heroes\\The Comic Relief");
+            heroNavigationTexture = Content.Load<Texture2D>("Characters\\Heroes\\Navigation\\The Adorable Manchild");
+            hiroNavigationTexture = Content.Load<Texture2D>("Characters\\Heroes\\Navigation\\The Absolutely-Not-Into-It Love Interest");
+            hearoNavigationTexture = Content.Load<Texture2D>("Characters\\Heroes\\Navigation\\The Endearing Father Figure");
+            hieroNavigationTexture = Content.Load<Texture2D>("Characters\\Heroes\\Navigation\\The Comic Relief");
+            heroBattleTexture = Content.Load<Texture2D>("Characters\\Heroes\\Battle\\The Adorable Manchild");
+            hiroBattleTexture = Content.Load<Texture2D>("Characters\\Heroes\\Battle\\The Absolutely-Not-Into-It Love Interest");
+            hearoBattleTexture = Content.Load<Texture2D>("Characters\\Heroes\\Battle\\The Endearing Father Figure");
+            hieroBattleTexture = Content.Load<Texture2D>("Characters\\Heroes\\Battle\\The Comic Relief");
             
             werewolfTexture = Content.Load<Texture2D>("Characters\\Enemies\\Werewolf");
 
@@ -147,12 +163,19 @@ namespace RPG_Game
             pointer.Scale = new Vector2(0.8f, 0.8f);
             
             target.IsAlive = false;
+
+            camera = new Camera();
+            camera.WorldWidth = 3840;
+            camera.WorldHeight = 2160;
+            camera.ViewWidth = (int)screenSize.X;
+            camera.ViewHeight = (int)screenSize.Y;
+            camera.UpperLeft = new Vector2(0, 0);
             //Miscellaneous Initialization Ends//
 
             //Heroes Initialization Begins//
             //Hero Initialization
             hero = new Character();
-            hero.SetTexture(heroTexture, 9, 6);
+            hero.SetTexture(heroBattleTexture, 9, 6);
             hero.AnimationInterval = 250;
             hero.reverseAnimating = true;
             hero.ContinuousAnimation = false;
@@ -173,7 +196,7 @@ namespace RPG_Game
 
             //Hiro Initialization
             hiro = new Character();
-            hiro.SetTexture(hiroTexture, 9, 6);
+            hiro.SetTexture(hiroBattleTexture, 9, 6);
             hiro.AnimationInterval = 250;
             hiro.reverseAnimating = true;
             hiro.ContinuousAnimation = false;
@@ -194,7 +217,7 @@ namespace RPG_Game
 
             //Hearo Initialization
             hearo = new Character();
-            hearo.SetTexture(hearoTexture, 9, 6);
+            hearo.SetTexture(hearoBattleTexture, 9, 6);
             hearo.AnimationInterval = 250;
             hearo.reverseAnimating = true;
             hearo.ContinuousAnimation = false;
@@ -243,7 +266,7 @@ namespace RPG_Game
 
             //Hiero Initialization
             hiero = new Character();
-            hiero.SetTexture(hieroTexture, 9, 6);
+            hiero.SetTexture(hieroBattleTexture, 9, 6);
             hiero.AnimationInterval = 250;
             hiero.reverseAnimating = true;
             hiero.ContinuousAnimation = false;
@@ -281,7 +304,7 @@ namespace RPG_Game
                                                       werewolf.UpperLeft.Y + werewolf.meterSprite.GetHeight() + (werewolf.GetHeight()) + 20);
             werewolf.shadow.SetTexture(shadowTexture);
             werewolf.shadow.IsAlive = false;
-            enemies.Add(werewolf);
+            ////enemies.Add(werewolf);
 
             werewolf = new Character();
             werewolf.SetTexture(werewolfTexture);
@@ -319,7 +342,7 @@ namespace RPG_Game
                                                       werewolf.UpperLeft.Y + werewolf.meterSprite.GetHeight() + (werewolf.GetHeight()) + 20);
             werewolf.shadow.SetTexture(shadowTexture);
             werewolf.shadow.IsAlive = false;
-            enemies.Add(werewolf);
+            ////enemies.Add(werewolf);
 
             werewolf = new Character();
             werewolf.SetTexture(werewolfTexture);
@@ -338,7 +361,7 @@ namespace RPG_Game
                                                       werewolf.UpperLeft.Y + werewolf.meterSprite.GetHeight() + (werewolf.GetHeight()) + 20);
             werewolf.shadow.SetTexture(shadowTexture);
             werewolf.shadow.IsAlive = false;
-            enemies.Add(werewolf);
+            ////enemies.Add(werewolf);
             //Enemies Initialization Ends//
 
             //Boxes Initialization Begins//
@@ -407,8 +430,10 @@ namespace RPG_Game
             state[4] = false; //Skills Menu State
             state[5] = false; //Items Menu State
             state[6] = false; //Targeting Menu State
+            state[7] = false; //Track Switch State
             //State Initialization Ends//
 
+            currentTrack = 1;
             currentState = 0;
 
             FightBegin();
@@ -444,247 +469,317 @@ namespace RPG_Game
 
             pointer.IsAlive = false;
 
-            //Idle State//
-            //Ticks up all the battler's meters based on their speed values, and allows them to act if theirs is full
-            //If two or more characters are able to act in the same tick, randomly choose between them
-            if (currentState == 0)
+            //World Map Track//
+            if(currentTrack == 0)
             {
-                List<Character> potentialActions = new List<Character>();
+                currentTrack = 0;
 
-                for (int i = 0; i < battlers.Count; i++)
+                if(currentState == 0)
                 {
-                    battlers[i].meter += battlers[i].speed / 100;
-
-                    //If the meter is full for this character
-                    if (battlers[i].meter >= 100)
+                    if (currentKeyState.IsKeyDown(Keys.W))
                     {
-                        //Add it to the list of potential actors this turn
-                        potentialActions.Capacity++;
-                        potentialActions.Add(battlers[i]);
+                        hero.UpperLeft.Y -= 5;
+                    }
+                    if (currentKeyState.IsKeyDown(Keys.S))
+                    {
+                        hero.UpperLeft.Y += 5;
+                    }
+                    if (currentKeyState.IsKeyDown(Keys.A))
+                    {
+                        hero.UpperLeft.X -= 5;
+                    }
+                    if (currentKeyState.IsKeyDown(Keys.D))
+                    {
+                        hero.UpperLeft.X += 5;
                     }
 
-                    //Scale the display bar in accordance with the actor's current meter
-                    battlers[i].meterSprite.Scale = new Vector2(battlers[i].meter / 100, 1);
-                }
-
-                //If we have at least one character acting this turn
-                if (potentialActions.Count != 0)
-                {
-                    //Create an index that randomly chooses between all of them
-                    //(Will always return 0 if there's only one actor in the list)
-                    int index = rand.Next(0, potentialActions.Count);
-
-                    //Reset the acting character's meter and bar
-                    potentialActions[index].meter = 0;
-                    potentialActions[index].meterSprite.Scale = new Vector2(potentialActions[index].meter / 100, 1);
-
-                    //Set actor to the acting character
-                    actor = potentialActions[index];
-
-                    //Switch to Step Forwards State
-                    ActivateState(1);
-
-                    timer = gameTime.TotalGameTime.TotalSeconds;
-
+                    camera.UpperLeft = new Vector2((hero.UpperLeft.X + hero.GetWidth()) - (camera.ViewWidth / 2),
+                                                   (hero.UpperLeft.Y + hero.GetHeight()) - (camera.ViewHeight / 2));
                 }
             }
-            else if (currentState == 1) //Step Forwards State//
+            //Battle Track//
+            else if (currentTrack == 1)
             {
-                if (Step(gameTime, timer, new Vector2(2, 0), 0.25, actor))
+                //Idle State//
+                //Ticks up all the battler's meters based on their speed values, and allows them to act if theirs is full
+                //If two or more characters are able to act in the same tick, randomly choose between them
+                if (currentState == 0)
                 {
-                    //If the actor is playable
-                    if (actor.friendly)
+                    List<Character> potentialActions = new List<Character>();
+
+                    for (int i = 0; i < battlers.Count; i++)
                     {
-                        actor.setCurrentFrame(0, 1);
-                        actor.animationShortStarted = false;
+                        battlers[i].meter += battlers[i].speed / 100;
 
-                        //Switch to Battle Menu State
-                        ActivateState(3);
-
-                        for (int i = 0; i < allBoxes.Count; i++)
+                        //If the meter is full for this character
+                        if (battlers[i].meter >= 100)
                         {
-                            if (allBoxes[i].activatorState == currentState)
-                            {
-                                activeButtons = allBoxes[i].buttons;
-                            }
+                            //Add it to the list of potential actors this turn
+                            potentialActions.Capacity++;
+                            potentialActions.Add(battlers[i]);
                         }
-                    }
-                    else
-                    {
-                        //Select the target randomly from all heroes
-                        target = heroes[rand.Next(0, 3)];
 
-                        //Switch to Animating State
-                        ActivateState(2);
+                        //Scale the display bar in accordance with the actor's current meter
+                        battlers[i].meterSprite.Scale = new Vector2(battlers[i].meter / 100, 1);
+                    }
+
+                    //If we have at least one character acting this turn
+                    if (potentialActions.Count != 0)
+                    {
+                        //Create an index that randomly chooses between all of them
+                        //(Will always return 0 if there's only one actor in the list)
+                        int index = rand.Next(0, potentialActions.Count);
+
+                        //Reset the acting character's meter and bar
+                        potentialActions[index].meter = 0;
+                        potentialActions[index].meterSprite.Scale = new Vector2(potentialActions[index].meter / 100, 1);
+
+                        //Set actor to the acting character
+                        actor = potentialActions[index];
+
+                        //Switch to Step Forwards State
+                        ActivateState(1);
 
                         timer = gameTime.TotalGameTime.TotalSeconds;
-                    }
-                    timer = gameTime.TotalGameTime.TotalSeconds;
-                }
-            }
-            else if (currentState == 2) //Animating State//
-            {
-                currentAction(gameTime);
-            }
-            else if (currentState == 3) //Battle Menu State//
-            {
-                pointer.IsAlive = true;
-                pointer.UpperLeft = new Vector2(activeButtons[buttonIndex].UpperLeft.X - pointer.GetWidth() - 15, activeButtons[buttonIndex].UpperLeft.Y + 5);
 
-                if (actor.getTotalFrame() != 0 && actor.getTotalFrame() != 2 && !actor.IsAnimating())
-                {
-                    actor.setCurrentFrame(0, 0);
+                    }
                 }
+                else if (currentState == 1) //Step Forwards State//
+                {
+                    if (Step(gameTime, timer, new Vector2(2, 0), 0.25, actor))
+                    {
+                        //If the actor is playable
+                        if (actor.friendly)
+                        {
+                            actor.setCurrentFrame(0, 1);
+                            actor.animationShortStarted = false;
 
-                if ((currentKeyState.IsKeyDown(Keys.W)) && (oldKeyState.IsKeyUp(Keys.W)))
-                {
-                    buttonIndex -= 1;
-                    if (buttonIndex < 0)
-                    {
-                        buttonIndex = activeButtons.Count - 1;
+                            //Switch to Battle Menu State
+                            ActivateState(3);
+
+                            for (int i = 0; i < allBoxes.Count; i++)
+                            {
+                                if (allBoxes[i].activatorState == currentState)
+                                {
+                                    activeButtons = allBoxes[i].buttons;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            //Select the target randomly from all heroes
+                            target = heroes[rand.Next(0, 3)];
+
+                            //Switch to Animating State
+                            ActivateState(2);
+
+                            timer = gameTime.TotalGameTime.TotalSeconds;
+                        }
+                        timer = gameTime.TotalGameTime.TotalSeconds;
                     }
                 }
-                if ((currentKeyState.IsKeyDown(Keys.S)) && (oldKeyState.IsKeyUp(Keys.S)))
+                else if (currentState == 2) //Animating State//
                 {
-                    buttonIndex += 1;
-                    if (buttonIndex > activeButtons.Count - 1)
+                    currentAction(gameTime);
+
+                    if(actionComplete)
                     {
-                        buttonIndex = 0;
+                        if (enemies.Count == 0)
+                        {
+                            //Switch to Track Switch State
+                            ActivateState(7);
+                        }
+                        else
+                        {
+                            //Switch to Idle State
+                            ActivateState(0);
+                        }
                     }
                 }
-                if (((currentKeyState.IsKeyDown(Keys.Z)) && (oldKeyState.IsKeyUp(Keys.Z))) || ((currentKeyState.IsKeyDown(Keys.Space)) && (oldKeyState.IsKeyUp(Keys.Space))))
+                else if (currentState == 3) //Battle Menu State//
                 {
-                    if (activeButtons[buttonIndex].display == "FIGHT")
+                    pointer.IsAlive = true;
+                    pointer.UpperLeft = new Vector2(activeButtons[buttonIndex].UpperLeft.X - pointer.GetWidth() - 15, activeButtons[buttonIndex].UpperLeft.Y + 5);
+
+                    if (actor.getTotalFrame() != 0 && actor.getTotalFrame() != 2 && !actor.IsAnimating())
                     {
-                        //Switch to Target Menu State
+                        actor.setCurrentFrame(0, 0);
+                    }
+
+                    if ((currentKeyState.IsKeyDown(Keys.W)) && (oldKeyState.IsKeyUp(Keys.W)))
+                    {
+                        buttonIndex -= 1;
+                        if (buttonIndex < 0)
+                        {
+                            buttonIndex = activeButtons.Count - 1;
+                        }
+                    }
+                    if ((currentKeyState.IsKeyDown(Keys.S)) && (oldKeyState.IsKeyUp(Keys.S)))
+                    {
+                        buttonIndex += 1;
+                        if (buttonIndex > activeButtons.Count - 1)
+                        {
+                            buttonIndex = 0;
+                        }
+                    }
+                    if (((currentKeyState.IsKeyDown(Keys.Z)) && (oldKeyState.IsKeyUp(Keys.Z))) || ((currentKeyState.IsKeyDown(Keys.Space)) && (oldKeyState.IsKeyUp(Keys.Space))))
+                    {
+                        if (activeButtons[buttonIndex].display == "FIGHT")
+                        {
+                            //Switch to Target Menu State
+                            ActivateState(6);
+
+                            currentAction = Attack;
+
+                            for (int i = 0; i < enemies.Count; i++)
+                            {
+                                targets.Capacity += 1;
+                                targets.Add(enemies[i]);
+                            }
+                        }
+                        else if (activeButtons[buttonIndex].display == "SKILL")
+                        {
+                            //Switch to Skill Menu State
+                            ActivateState(4);
+
+                            for (int i = 0; i < allBoxes.Count; i++)
+                            {
+                                if (allBoxes[i].activatorState == currentState)
+                                {
+                                    allBoxes[i].buttons.Clear();
+                                    allBoxes[i].buttons.Capacity = 0;
+
+                                    for (int o = 0; o < actor.abilities.Count; o++)
+                                    {
+                                        actor.abilities[o].UpperLeft = new Vector2(allBoxes[i].UpperLeft.X + 80, allBoxes[i].UpperLeft.Y + 10 + (60 * o));
+                                        actor.abilities[o].frameWidth = allBoxes[i].frameWidth - 90;
+                                        actor.abilities[o].SetParts(cornerTexture, wallTexture, backTexture);
+                                        actor.abilities[o].icon.UpperLeft = new Vector2(actor.abilities[o].UpperLeft.X + 10, actor.abilities[o].UpperLeft.Y + 9);
+
+                                        allBoxes[i].buttons.Add(actor.abilities[o]);
+                                    }
+
+                                    allBoxes[i].frameHeight = (int)allBoxes[i].buttons[allBoxes[i].buttons.Count - 1].UpperLeft.Y + 60;
+                                    allBoxes[i].SetParts(cornerTexture, wallTexture, backTexture);
+
+                                    activeButtons = allBoxes[i].buttons;
+
+                                    buttonIndex = 0;
+                                }
+                            }
+                        }
+                        else if (activeButtons[buttonIndex].display == "QUIT")
+                        {
+                            Exit();
+                        }
+                    }
+                }
+                else if (currentState == 4) //Skills Menu State//
+                {
+                    pointer.IsAlive = true;
+                    pointer.UpperLeft = new Vector2(activeButtons[buttonIndex].UpperLeft.X - pointer.GetWidth() - 15, activeButtons[buttonIndex].UpperLeft.Y + 5);
+
+                    if ((currentKeyState.IsKeyDown(Keys.W)) && (oldKeyState.IsKeyUp(Keys.W)))
+                    {
+                        buttonIndex -= 1;
+                        if (buttonIndex < 0)
+                        {
+                            buttonIndex = activeButtons.Count - 1;
+                        }
+                    }
+                    if ((currentKeyState.IsKeyDown(Keys.S)) && (oldKeyState.IsKeyUp(Keys.S)))
+                    {
+                        buttonIndex += 1;
+                        if (buttonIndex > activeButtons.Count - 1)
+                        {
+                            buttonIndex = 0;
+                        }
+                    }
+                    if (((currentKeyState.IsKeyDown(Keys.Z)) && (oldKeyState.IsKeyUp(Keys.Z))) || ((currentKeyState.IsKeyDown(Keys.Space)) && (oldKeyState.IsKeyUp(Keys.Space))))
+                    {
                         ActivateState(6);
-
-                        currentAction = Attack;
 
                         for (int i = 0; i < enemies.Count; i++)
                         {
                             targets.Capacity += 1;
                             targets.Add(enemies[i]);
                         }
-                    }
-                    else if (activeButtons[buttonIndex].display == "SKILL")
-                    {
-                        //Switch to Skill Menu State
-                        ActivateState(4);
 
-                        for (int i = 0; i < allBoxes.Count; i++)
-                        {
-                            if (allBoxes[i].activatorState == currentState)
-                            {
-                                allBoxes[i].buttons.Clear();
-                                allBoxes[i].buttons.Capacity = 0;
+                        currentAction = actor.abilities[buttonIndex].action;
 
-                                for (int o = 0; o < actor.abilities.Count; o++)
-                                {
-                                    actor.abilities[o].UpperLeft = new Vector2(allBoxes[i].UpperLeft.X + 80, allBoxes[i].UpperLeft.Y + 10 + (60 * o));
-                                    actor.abilities[o].frameWidth = allBoxes[i].frameWidth - 90;
-                                    actor.abilities[o].SetParts(cornerTexture, wallTexture, backTexture);
-                                    actor.abilities[o].icon.UpperLeft = new Vector2(actor.abilities[o].UpperLeft.X + 10, actor.abilities[o].UpperLeft.Y + 9);
-
-                                    allBoxes[i].buttons.Add(actor.abilities[o]);
-                                }
-
-                                allBoxes[i].frameHeight = (int)allBoxes[i].buttons[allBoxes[i].buttons.Count - 1].UpperLeft.Y + 60;
-                                allBoxes[i].SetParts(cornerTexture, wallTexture, backTexture);
-
-                                activeButtons = allBoxes[i].buttons;
-
-                                buttonIndex = 0;
-                            }
-                        }
-                    }
-                    else if (activeButtons[buttonIndex].display == "QUIT")
-                    {
-                        Exit();
+                        timer = gameTime.TotalGameTime.TotalSeconds + 1;
                     }
                 }
-            }
-            else if (currentState == 4) //Skills Menu State//
-            {
-                pointer.IsAlive = true;
-                pointer.UpperLeft = new Vector2(activeButtons[buttonIndex].UpperLeft.X - pointer.GetWidth() - 15, activeButtons[buttonIndex].UpperLeft.Y + 5);
-
-                if ((currentKeyState.IsKeyDown(Keys.W)) && (oldKeyState.IsKeyUp(Keys.W)))
+                else if (currentState == 6) //Targeting State//
                 {
-                    buttonIndex -= 1;
-                    if (buttonIndex < 0)
+                    if (targetIndex >= targets.Count)
                     {
-                        buttonIndex = activeButtons.Count - 1;
+                        targetIndex = 0;
                     }
-                }
-                if ((currentKeyState.IsKeyDown(Keys.S)) && (oldKeyState.IsKeyUp(Keys.S)))
-                {
-                    buttonIndex += 1;
-                    if (buttonIndex > activeButtons.Count - 1)
-                    {
-                        buttonIndex = 0;
-                    }
-                }
-                if (((currentKeyState.IsKeyDown(Keys.Z)) && (oldKeyState.IsKeyUp(Keys.Z))) || ((currentKeyState.IsKeyDown(Keys.Space)) && (oldKeyState.IsKeyUp(Keys.Space))))
-                {
-                    ActivateState(6);
 
-                    for (int i = 0; i < enemies.Count; i++)
-                    {
-                        targets.Capacity += 1;
-                        targets.Add(enemies[i]);
-                    }
-                    currentAction = actor.abilities[buttonIndex].action;
-                }
-            }
-            else if (currentState == 6) //Targeting State//
-            {
-                if (targetIndex >= targets.Count)
-                {
-                    targetIndex = 0;
-                }
-
-                if (targets.Count <= 1)
-                {
-                    //Switch to Animating State
-                    ActivateState(2);
-
-                    target = targets[targetIndex];
-                    targets.Clear();
-                    targets.Capacity = 0;
-                    timer = gameTime.TotalGameTime.TotalSeconds;
-                }
-                else
-                {
-                    pointer.UpperLeft = new Vector2(targets[targetIndex].UpperLeft.X - pointer.GetWidth() - 5, targets[targetIndex].UpperLeft.Y + targets[targetIndex].GetHeight() - 5);
-                    pointer.IsAlive = true;
-
-                    if ((currentKeyState.IsKeyDown(Keys.W)) && (oldKeyState.IsKeyUp(Keys.W)))
-                    {
-                        targetIndex -= 1;
-                        if (targetIndex < 0)
-                        {
-                            targetIndex = targets.Count - 1;
-                        }
-                    }
-                    if ((currentKeyState.IsKeyDown(Keys.S)) && (oldKeyState.IsKeyUp(Keys.S)))
-                    {
-                        targetIndex += 1;
-                        if (targetIndex > targets.Count - 1)
-                        {
-                            targetIndex = 0;
-                        }
-                    }
-                    if (((currentKeyState.IsKeyDown(Keys.Z)) && (oldKeyState.IsKeyUp(Keys.Z))) || ((currentKeyState.IsKeyDown(Keys.Space)) && (oldKeyState.IsKeyUp(Keys.Space))))
+                    if (targets.Count <= 1)
                     {
                         //Switch to Animating State
                         ActivateState(2);
-                        
+
                         target = targets[targetIndex];
                         targets.Clear();
                         targets.Capacity = 0;
                         timer = gameTime.TotalGameTime.TotalSeconds + 1;
                     }
+                    else
+                    {
+                        pointer.UpperLeft = new Vector2(targets[targetIndex].UpperLeft.X - pointer.GetWidth() - 5, targets[targetIndex].UpperLeft.Y + targets[targetIndex].GetHeight() - 5);
+                        pointer.IsAlive = true;
+
+                        if ((currentKeyState.IsKeyDown(Keys.W)) && (oldKeyState.IsKeyUp(Keys.W)))
+                        {
+                            targetIndex -= 1;
+                            if (targetIndex < 0)
+                            {
+                                targetIndex = targets.Count - 1;
+                            }
+                        }
+                        if ((currentKeyState.IsKeyDown(Keys.S)) && (oldKeyState.IsKeyUp(Keys.S)))
+                        {
+                            targetIndex += 1;
+                            if (targetIndex > targets.Count - 1)
+                            {
+                                targetIndex = 0;
+                            }
+                        }
+                        if (((currentKeyState.IsKeyDown(Keys.Z)) && (oldKeyState.IsKeyUp(Keys.Z))) || ((currentKeyState.IsKeyDown(Keys.Space)) && (oldKeyState.IsKeyUp(Keys.Space))))
+                        {
+                            //Switch to Animating State
+                            ActivateState(2);
+
+                            target = targets[targetIndex];
+                            targets.Clear();
+                            targets.Capacity = 0;
+                            timer = gameTime.TotalGameTime.TotalSeconds + 1;
+                        }
+                    }
+                }
+                else if(currentState == 7)
+                {
+                    hero.SetTexture(heroNavigationTexture, 3, 4);
+                    hiro.SetTexture(hiroNavigationTexture, 3, 4);
+                    hearo.SetTexture(hearoNavigationTexture, 3, 4);
+                    hiero.SetTexture(hieroNavigationTexture, 3, 4);
+
+                    hero.UpperLeft = new Vector2(hero.GetWidth(), hero.GetHeight());
+
+                    for(int i = 0; i < heroes.Count; i++)
+                    {
+                        heroes[i].setCurrentFrame(0, 0);
+
+                        heroes[i].animationShortStarted = false;
+                        heroes[i].ContinuousAnimation = false;
+                    }
+
+                    currentTrack = 0;
+
+                    ActivateState(0);
                 }
             }
 
@@ -701,134 +796,160 @@ namespace RPG_Game
         /// <param display="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.White);
+            GraphicsDevice.Clear(Color.Black);
+
+
 
             spriteBatch.Begin();
 
-            backgroundSprite.Draw(spriteBatch);
-            
-            for (int i = 0; i < enemies.Count; i++)
+            if (currentTrack == 0)
             {
-                enemies[i].shadow.UpperLeft = new Vector2(enemies[i].UpperLeft.X - (enemies[i].shadow.GetWidth() / 2 - enemies[i].GetWidth() / 2),
-                                                          enemies[i].UpperLeft.Y + (enemies[i].GetHeight() - (enemies[i].shadow.GetHeight() / 2)));
-                enemies[i].shadow.Draw(spriteBatch);
+                backgroundSprite.Draw(spriteBatch, camera.UpperLeft);
 
-                enemies[i].Draw(spriteBatch);
+                hero.Draw(spriteBatch, camera.UpperLeft);
 
-                enemies[i].meterSprite.Draw(spriteBatch);
-
-                if (enemies[i].health > 0)
-                {
-                    spriteBatch.DrawString(calibri,
-                                           enemies[i].health.ToString(),
-                                           new Vector2(enemies[i].UpperLeft.X,
-                                           enemies[i].UpperLeft.Y + enemies[i].GetHeight() + 5),
-                                           Color.Black,
-                                           0,
-                                           new Vector2(0, 0),
-                                           0.75f,
-                                           SpriteEffects.None, 0);
-                }
-
-                enemies[i].Move();
-                enemies[i].Animate(gameTime);
+                hero.Move();
+                hero.Animate(gameTime);
             }
-
-            for (int i = 0; i < heroes.Count; i++)
+            if (currentTrack == 1)
             {
-                heroes[i].shadow.UpperLeft = new Vector2(heroes[i].UpperLeft.X - (heroes[i].shadow.GetWidth() / 2 - heroes[i].GetWidth() / 2),
-                                                         heroes[i].UpperLeft.Y + (heroes[i].GetHeight() - (heroes[i].shadow.GetHeight() / 2)));
-                heroes[i].shadow.Draw(spriteBatch);
+                camera.UpperLeft = new Vector2(0, 0);
 
-                heroes[i].Draw(spriteBatch);
+                backgroundSprite.Draw(spriteBatch, camera.UpperLeft);
 
-                heroes[i].meterSprite.Draw(spriteBatch);
-
-                if(heroes[i].health > 0)
+                //Enemy Draw Cycle
+                for (int i = 0; i < enemies.Count; i++)
                 {
-                    spriteBatch.DrawString(calibri,
-                                           heroes[i].health.ToString(),
-                                           new Vector2(heroes[i].UpperLeft.X,
-                                           heroes[i].UpperLeft.Y + heroes[i].GetHeight() + 5),
-                                           Color.Black,
-                                           0,
-                                           new Vector2(0, 0),
-                                           0.75f,
-                                           SpriteEffects.None, 0);
-                }
+                    enemies[i].shadow.UpperLeft = new Vector2(enemies[i].UpperLeft.X - (enemies[i].shadow.GetWidth() / 2 - enemies[i].GetWidth() / 2),
+                                                              enemies[i].UpperLeft.Y + (enemies[i].GetHeight() - (enemies[i].shadow.GetHeight() / 2)));
+                    enemies[i].shadow.Draw(spriteBatch, camera.UpperLeft);
 
-                if (!heroes[i].IsAnimating())
-                {
-                    if (heroes[i].getTotalFrame() == 0 || heroes[i].getTotalFrame() == 2)
+                    enemies[i].Draw(spriteBatch, camera.UpperLeft);
+
+                    enemies[i].meterSprite.Draw(spriteBatch, camera.UpperLeft);
+
+                    if (enemies[i].health > 0)
                     {
-                        heroes[i].AnimationInterval = rand.Next(100, 500);
-
-                        if (!heroes[i].reverseAnimating)
-                        {
-                            heroes[i].reverseAnimating = true;
-                            heroes[i].StartAnimationShort(0, 2, 2);
-                        }
-                        else
-                        {
-                            heroes[i].reverseAnimating = false;
-                            heroes[i].StartAnimationShort(0, 2, 0);
-                        }
-                    }
-                }
-
-                heroes[i].Move();
-                heroes[i].Animate(gameTime);
-            }
-
-            if (damageDealt > 0)
-            {
-                spriteBatch.DrawString(calibri,
-                                       damageDealt.ToString(),
-                                       new Vector2(target.UpperLeft.X,
-                                       target.UpperLeft.Y - damageLocation),
-                                       Color.Black,
-                                       0,
-                                       new Vector2(0, 0),
-                                       1f,
-                                       SpriteEffects.None, 0);
-
-                damageLocation += damageLocation / 32;
-            }
-
-            for (int i = 0; i < allBoxes.Count; i++)
-            {
-                if (state[allBoxes[i].activatorState])
-                {
-                    for (int o = 0; o < allBoxes[i].parts.Count; o++)
-                    {
-                        allBoxes[i].parts[o].Draw(spriteBatch);
-                    }
-
-                    for (int o = 0; o < allBoxes[i].buttons.Count; o++)
-                    {
-                        for (int p = 0; p < allBoxes[i].buttons[o].parts.Count; p++)
-                        {
-                            allBoxes[i].buttons[o].parts[p].Draw(spriteBatch);
-                        }
-
-                        if (allBoxes[i].buttons[o].icon != null)
-                        {
-                            allBoxes[i].buttons[o].icon.Draw(spriteBatch);
-                        }
-
+                        enemies[i].UpperLeft -= camera.UpperLeft;
                         spriteBatch.DrawString(calibri,
-                                               allBoxes[i].buttons[o].display,
-                                               new Vector2(allBoxes[i].buttons[o].UpperLeft.X + 70, allBoxes[i].buttons[o].UpperLeft.Y + 8),
+                                               enemies[i].health.ToString(),
+                                               new Vector2(enemies[i].UpperLeft.X,
+                                               enemies[i].UpperLeft.Y + enemies[i].GetHeight() + 5),
                                                Color.Black,
                                                0,
                                                new Vector2(0, 0),
-                                               1f,
+                                               0.75f,
                                                SpriteEffects.None, 0);
+                        enemies[i].UpperLeft += camera.UpperLeft;
+                    }
+
+                    enemies[i].Move();
+                    enemies[i].Animate(gameTime);
+                }
+
+                //Hero Draw Cycle
+                for (int i = 0; i < heroes.Count; i++)
+                {
+                    heroes[i].shadow.UpperLeft = new Vector2(heroes[i].UpperLeft.X - (heroes[i].shadow.GetWidth() / 2 - heroes[i].GetWidth() / 2),
+                                                             heroes[i].UpperLeft.Y + (heroes[i].GetHeight() - (heroes[i].shadow.GetHeight() / 2)));
+                    heroes[i].shadow.Draw(spriteBatch, camera.UpperLeft);
+
+                    heroes[i].Draw(spriteBatch, camera.UpperLeft);
+
+                    heroes[i].meterSprite.Draw(spriteBatch, camera.UpperLeft);
+
+                    if (heroes[i].health > 0)
+                    {
+                        heroes[i].UpperLeft -= camera.UpperLeft;
+                        spriteBatch.DrawString(calibri,
+                                               heroes[i].health.ToString(),
+                                               new Vector2(heroes[i].UpperLeft.X,
+                                               heroes[i].UpperLeft.Y + heroes[i].GetHeight() + 5),
+                                               Color.Black,
+                                               0,
+                                               new Vector2(0, 0),
+                                               0.75f,
+                                               SpriteEffects.None, 0);
+                        heroes[i].UpperLeft += camera.UpperLeft;
+                    }
+
+                    if (!heroes[i].IsAnimating())
+                    {
+                        if (heroes[i].getTotalFrame() == 0 || heroes[i].getTotalFrame() == 2)
+                        {
+                            heroes[i].AnimationInterval = rand.Next(100, 500);
+
+                            if (!heroes[i].reverseAnimating)
+                            {
+                                heroes[i].reverseAnimating = true;
+                                heroes[i].StartAnimationShort(0, 2, 2);
+                            }
+                            else
+                            {
+                                heroes[i].reverseAnimating = false;
+                                heroes[i].StartAnimationShort(0, 2, 0);
+                            }
+                        }
+                    }
+
+                    heroes[i].Move();
+                    heroes[i].Animate(gameTime);
+                }
+
+                //Damage Balloon Draw
+                if (damageDealt > 0)
+                {
+                    target.UpperLeft -= camera.UpperLeft;
+                    spriteBatch.DrawString(calibri,
+                                           damageDealt.ToString(),
+                                           new Vector2(target.UpperLeft.X,
+                                           target.UpperLeft.Y - damageLocation),
+                                           Color.Black,
+                                           0,
+                                           new Vector2(0, 0),
+                                           1f,
+                                           SpriteEffects.None, 0);
+                    target.UpperLeft -= camera.UpperLeft;
+
+                    damageLocation += damageLocation / 32;
+                }
+
+                //Boxes \ Buttons Draw Cycle
+                for (int i = 0; i < allBoxes.Count; i++)
+                {
+                    if (state[allBoxes[i].activatorState])
+                    {
+                        for (int o = 0; o < allBoxes[i].parts.Count; o++)
+                        {
+                            allBoxes[i].parts[o].Draw(spriteBatch);
+                        }
+
+                        for (int o = 0; o < allBoxes[i].buttons.Count; o++)
+                        {
+                            for (int p = 0; p < allBoxes[i].buttons[o].parts.Count; p++)
+                            {
+                                allBoxes[i].buttons[o].parts[p].Draw(spriteBatch);
+                            }
+
+                            if (allBoxes[i].buttons[o].icon != null)
+                            {
+                                allBoxes[i].buttons[o].icon.Draw(spriteBatch);
+                            }
+
+                            spriteBatch.DrawString(calibri,
+                                                   allBoxes[i].buttons[o].display,
+                                                   new Vector2(allBoxes[i].buttons[o].UpperLeft.X + 70, allBoxes[i].buttons[o].UpperLeft.Y + 8),
+                                                   Color.Black,
+                                                   0,
+                                                   new Vector2(0, 0),
+                                                   1f,
+                                                   SpriteEffects.None, 0);
+                        }
                     }
                 }
-            }
 
-            pointer.Draw(spriteBatch);
+                pointer.Draw(spriteBatch);
+            }
 
             spriteBatch.End();
 
@@ -874,6 +995,21 @@ namespace RPG_Game
             }
         }
 
+        //Fades the screen to black, allowing the program to set up the next scene // TODO
+        void FadeTransition(GameTime gameTime, float fadeTime)
+        {
+            if (gameTime.TotalGameTime.TotalSeconds >= timer + fadeTime)
+            {
+
+            }
+            else if (gameTime.TotalGameTime.TotalSeconds <= timer)
+            {
+                //Reset the timer (Should only run once)
+                timer = gameTime.TotalGameTime.TotalSeconds;
+            }
+
+        }
+
         //Initialises the beginning of a fight, including generating enemies and adding all fighters to the battlers<> list for processing
         void FightBegin()
         {
@@ -901,14 +1037,13 @@ namespace RPG_Game
 
         //Animates a basic attack, animating both the actor and target, and removing health from the target.
         //Keep in mind that the actor has already been moved forwards by the time this is called, 
-        //and that it is this function's job to return all it's actors to their original positions
+        //and that it is this function's job to return all its actors to their original positions
         void Attack(GameTime gameTime)
         {
-            if (gameTime.TotalGameTime.TotalSeconds >= timer + 1.6)
-            {
-                //Switch to Idle State
-                ActivateState(0);
+            actionComplete = false;
 
+            if (gameTime.TotalGameTime.TotalSeconds >= timer + 1.5)
+            {
                 //Reset all values ready for continuing the fight
                 damageDealt = 0;
                 damageLocation = 0;
@@ -924,6 +1059,8 @@ namespace RPG_Game
                 target.UpperLeft = target.battleOrigin;
                 target.setCurrentFrame(0, 0);
                 target.animationShortStarted = false;
+
+                actionComplete = true;
             }
             else if (gameTime.TotalGameTime.TotalSeconds >= timer + 1.25)
             {
@@ -984,7 +1121,9 @@ namespace RPG_Game
         //Jokey test copy of Attack(), deals 1000x the damage Attack() does, to be removed later on.
         void Murder(GameTime gameTime)
         {
-            if (gameTime.TotalGameTime.TotalSeconds >= timer + 1.6)
+            actionComplete = false;
+
+            if (gameTime.TotalGameTime.TotalSeconds >= timer + 1.5)
             {
                 //Switch to Idle State
                 ActivateState(0);
@@ -1004,6 +1143,8 @@ namespace RPG_Game
                 target.UpperLeft = target.battleOrigin;
                 target.setCurrentFrame(0, 0);
                 target.animationShortStarted = false;
+
+                actionComplete = true;
             }
             else if (gameTime.TotalGameTime.TotalSeconds >= timer + 1.25)
             {
@@ -1088,11 +1229,6 @@ namespace RPG_Game
 
                 return false;
             }
-        }
-        
-        void test()
-        {
-
         }
     }
 }
