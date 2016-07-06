@@ -173,13 +173,13 @@
       <Time>2016-06-24T23:13:38+01:00</Time>
     </Item>
     <Item>
-      <Source>World\Tile Sets\Outside.png</Source>
-      <Name>World\Tile Sets\Outside</Name>
+      <Source>World\Tilesets\Outside.png</Source>
+      <Name>World\Tilesets\Outside</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\World\Tile Sets\Outside.xnb</Output>
-      <Time>2016-07-05T11:18:09.0593434+01:00</Time>
+      <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\World\Tilesets\Outside.xnb</Output>
+      <Time>2016-07-06T11:43:30.644601+01:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>

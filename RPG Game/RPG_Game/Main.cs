@@ -8,21 +8,10 @@ using System;
 
 //Saving/Loading code TODO
 
-    //Load
-//string file = "filepath";
-//List<A> listofa = new List<A>();
-//XmlSerializer formatter = new XmlSerializer(A.GetType());
-//FileStream aFile = new FileStream(file, FileMode.Open);
-//byte[] buffer = new byte[aFile.Length];
-//aFile.Read(buffer, 0, (int)aFile.Length);
-//MemoryStream stream = new MemoryStream(buffer);
-//return (List<A>)formatter.Deserialize(stream);
+//Load
 
-    //Save
-//MemoryStream memoryStream = new MemoryStream();
-//string path = "C:\\Users\\Nye\\Dropbox\\Programming\\C#\\Programs\\RPG-Game\\Saves\\TestMap.txt";
-//FileStream outFile = File.Create(path);
-//XmlSerializer formatter = new XmlSerializer(tile.GetType());
+////Save
+
 
 namespace RPG_Game
 {
@@ -112,7 +101,7 @@ namespace RPG_Game
 
         Vector2 screenSize;
 
-        Tile[,] map = new Tile[3, 6];
+        Tile[,] map = new Tile[100, 50];
         Tile tile;
 
         bool[] state = new bool[8];
@@ -125,7 +114,9 @@ namespace RPG_Game
         float damageLocation;
         bool actionComplete;
         double timer;
+
         Vector2 playerMovement;
+        Vector2 playerView = new Vector2(20, 11);
 
         public Main()
         {
@@ -165,7 +156,7 @@ namespace RPG_Game
 
             background = Content.Load<Texture2D>("World\\\\Battle Backs\\\\Translucent");
 
-            outside = Content.Load<Texture2D>("World\\\\Tile Sets\\\\Outside");
+            outside = Content.Load<Texture2D>("World\\\\Tilesets\\\\Outside");
 
             pointerTexture = Content.Load<Texture2D>("Misc\\\\Pointer");
             meterTexture = Content.Load<Texture2D>("Misc\\\\ActionBar");
@@ -229,7 +220,8 @@ namespace RPG_Game
 
             heroMover = new Mover();
             heroMover.SetTexture(heroMoverTexture, 3, 4);
-            heroMover.gridPosition = new Vector2(1, 5);
+            heroMover.Scale = new Vector2(1, 1);
+            heroMover.gridPosition = new Vector2(20, 11);
             movers.AddFirst(heroMover);
 
             //Hiro Initialization
@@ -419,149 +411,97 @@ namespace RPG_Game
             //Enemies Initialization Ends//
 
             //World Map Initialization Begins//
-            tile = new Tile();
-            tile.SetTexture(outside, 3, 9);
-            tile.setCurrentFrame(0, 5);
-            tile.UpperLeft = new Vector2(0, 0);
-            tile.walkable = true;
-            tile.interactable = false;
-            map[0, 0] = tile;
+            //Grass Base
+            for (int i = 0; i < map.GetLength(0); i++)
+            {
+                for (int o = 0; o < map.GetLength(1); o++)
+                {
+                    tile = new Tile();
 
-            tile = new Tile();
-            tile.SetTexture(outside, 3, 9);
-            tile.setCurrentFrame(1, 5);
-            tile.UpperLeft = new Vector2(48, 0);
-            tile.walkable = true;
-            tile.interactable = false;
-            map[1, 0] = tile;
+                    tile.SetTexture(outside, 3, 9);
+                    tile.setCurrentFrame(1, 1);
+                    tile.walkable = true;
+                    tile.interactable = false;
+                    tile.UpperLeft = new Vector2(tile.GetWidth() * i, tile.GetHeight() * o);
 
-            tile = new Tile();
-            tile.SetTexture(outside, 3, 9);
-            tile.setCurrentFrame(2, 5);
-            tile.UpperLeft = new Vector2(96, 0);
-            tile.walkable = true;
-            tile.interactable = false;
-            map[2, 0] = tile;
+                    map[i, o] = tile;
+                }
+            }
 
-            tile = new Tile();
-            tile.SetTexture(outside, 3, 9);
-            tile.setCurrentFrame(0, 6);
-            tile.UpperLeft = new Vector2(0, 48);
-            tile.walkable = true;
-            tile.interactable = false;
-            map[0, 1] = tile;
+            //Stone Edges
+            for (int i = 0; i < playerView.X; i++)
+            {
+                for (int o = 0; o < map.GetLength(1); o++)
+                {
+                    map[i, o].walkable = false;
+                    map[i, o].setCurrentFrame(1, 4);
+                }
+            }
 
-            tile = new Tile();
-            tile.SetTexture(outside, 3, 9);
-            tile.setCurrentFrame(1, 6);
-            tile.UpperLeft = new Vector2(48, 48);
-            tile.walkable = false;
-            tile.interactable = false;
-            map[1, 1] = tile;
+            for(int i = map.GetLength(0) - (int)playerView.X; i < map.GetLength(0); i++)
+            {
+                for(int o = 0; o < map.GetLength(1); o++)
+                {
+                    map[i, o].walkable = false;
+                    map[i, o].setCurrentFrame(1, 4);
+                }
+            }
 
-            tile = new Tile();
-            tile.SetTexture(outside, 3, 9);
-            tile.setCurrentFrame(2, 6);
-            tile.UpperLeft = new Vector2(96, 48);
-            tile.walkable = false;
-            tile.interactable = false;
-            map[2, 1] = tile;
+            for(int i = (int)playerView.X; i < map.GetLength(0) - playerView.X; i++)
+            {
+                for(int o = 0; o < playerView.Y; o++)
+                {
+                    map[i, o].walkable = false;
+                    map[i, o].setCurrentFrame(1, 4);
+                }
+            }
+            
+            for (int i = (int)playerView.X; i < map.GetLength(0) - playerView.X; i++)
+            {
+                for (int o = map.GetLength(1) - (int)playerView.Y; o < map.GetLength(1); o++)
+                {
+                    map[i, o].walkable = false;
+                    map[i, o].setCurrentFrame(1, 4);
+                }
+            }
 
-            tile = new Tile();
-            tile.SetTexture(outside, 3, 9);
-            tile.setCurrentFrame(0, 7);
-            tile.UpperLeft = new Vector2(0, 96);
-            tile.walkable = false;
-            tile.interactable = false;
-            map[0, 2] = tile;
+            //Stone Edge Edges
+            for (int o = (int)playerView.Y; o < map.GetLength(1) - playerView.Y; o++)
+            {
+                map[(int)playerView.X - 1, o].setCurrentFrame(2, 4);
+            }
 
-            tile = new Tile();
-            tile.SetTexture(outside, 3, 9);
-            tile.setCurrentFrame(1, 7);
-            tile.UpperLeft = new Vector2(48, 96);
-            tile.walkable = false;
-            tile.interactable = false;
-            map[1, 2] = tile;
+            for (int i = (int)playerView.X; i < map.GetLength(0) - playerView.X; i++)
+            {
+                map[i, (int)playerView.Y - 3].setCurrentFrame(1, 5);
+            }
 
-            tile = new Tile();
-            tile.SetTexture(outside, 3, 9);
-            tile.setCurrentFrame(2, 7);
-            tile.UpperLeft = new Vector2(96, 96);
-            tile.walkable = false;
-            tile.interactable = false;
-            map[2, 2] = tile;
+            for (int i = (int)playerView.X; i < map.GetLength(0) - (int)playerView.X; i++)
+            {
+                map[i, map.GetLength(1) - (int)playerView.Y].setCurrentFrame(1, 3);
+            }
 
-            tile = new Tile();
-            tile.SetTexture(outside, 3, 9);
-            tile.setCurrentFrame(0, 8);
-            tile.UpperLeft = new Vector2(0, 144);
-            tile.walkable = false;
-            tile.interactable = false;
-            map[0, 3] = tile;
+            for (int o = (int)playerView.Y; o < map.GetLength(1) - playerView.Y; o++)
+            {
+                map[map.GetLength(0) - (int)playerView.X, o].setCurrentFrame(0, 4);
+            }
 
-            tile = new Tile();
-            tile.SetTexture(outside, 3, 9);
-            tile.setCurrentFrame(1, 8);
-            tile.UpperLeft = new Vector2(48, 144);
-            tile.walkable = false;
-            tile.interactable = false;
-            map[1, 3] = tile;
+            //Stone Walls
+            for(int i = (int)playerView.X + 1; i < map.GetLength(0) - playerView.X - 1; i++)
+            {
+                map[i, (int)playerView.Y - 2].setCurrentFrame(1, 6);
+            }
 
-            tile = new Tile();
-            tile.SetTexture(outside, 3, 9);
-            tile.setCurrentFrame(2, 8);
-            tile.UpperLeft = new Vector2(96, 144);
-            tile.walkable = false;
-            tile.interactable = false;
-            map[2, 3] = tile;
+            for (int i = (int)playerView.X + 1; i < map.GetLength(0) - playerView.X - 1; i++)
+            {
+                map[i, (int)playerView.Y - 1].setCurrentFrame(1, 8);
+            }
 
-            tile = new Tile();
-            tile.SetTexture(outside, 3, 9);
-            tile.setCurrentFrame(0, 0);
-            tile.UpperLeft = new Vector2(0, 192);
-            tile.walkable = true;
-            tile.interactable = false;
-            map[0, 4] = tile;
+            map[(int)playerView.X, (int)playerView.Y - 2].setCurrentFrame(0, 6);
+            map[(int)playerView.X, (int)playerView.Y - 1].setCurrentFrame(0, 8);
 
-            tile = new Tile();
-            tile.SetTexture(outside, 3, 9);
-            tile.setCurrentFrame(1, 0);
-            tile.UpperLeft = new Vector2(48, 192);
-            tile.walkable = true;
-            tile.interactable = false;
-            map[1, 4] = tile;
-
-            tile = new Tile();
-            tile.SetTexture(outside, 3, 9);
-            tile.setCurrentFrame(2, 0);
-            tile.UpperLeft = new Vector2(96, 192);
-            tile.walkable = true;
-            tile.interactable = false;
-            map[2, 4] = tile;
-
-            tile = new Tile();
-            tile.SetTexture(outside, 3, 9);
-            tile.setCurrentFrame(0, 2);
-            tile.UpperLeft = new Vector2(0, 240);
-            tile.walkable = true;
-            tile.interactable = false;
-            map[0, 5] = tile;
-
-            tile = new Tile();
-            tile.SetTexture(outside, 3, 9);
-            tile.setCurrentFrame(1, 2);
-            tile.UpperLeft = new Vector2(48, 240);
-            tile.walkable = true;
-            tile.interactable = false;
-            map[1, 5] = tile;
-
-            tile = new Tile();
-            tile.SetTexture(outside, 3, 9);
-            tile.setCurrentFrame(2, 2);
-            tile.UpperLeft = new Vector2(96, 240);
-            tile.walkable = true;
-            tile.interactable = false;
-            map[2, 5] = tile;
+            map[map.GetLength(0) - (int)playerView.X - 1, (int)playerView.Y - 2].setCurrentFrame(2, 6);
+            map[map.GetLength(0) - (int)playerView.X - 1, (int)playerView.Y - 1].setCurrentFrame(2, 8);
             //World Map Initialization Ends//
 
             //Boxes Initialization Begins//
@@ -785,8 +725,8 @@ namespace RPG_Game
                         }
                     }
 
-                    camera.UpperLeft = new Vector2((heroMover.UpperLeft.X + heroMover.GetWidth()) - (camera.ViewWidth / 2),
-                                                   (heroMover.UpperLeft.Y + heroMover.GetHeight()) - (camera.ViewHeight / 2));
+                    camera.UpperLeft = new Vector2((heroMover.UpperLeft.X + heroMover.GetWidth() / 2) - (camera.ViewWidth / 2),
+                                                   (heroMover.UpperLeft.Y + heroMover.GetHeight() / 2) - (camera.ViewHeight / 2));
                 }
             }
             //Battle Track//
@@ -1087,9 +1027,9 @@ namespace RPG_Game
 
                 for (int i = 0; i < map.GetLength(0); i++)
                 {
-                    for(int q = 0; q < map.GetLength(1); q++)
+                    for(int o = 0; o < map.GetLength(1); o++)
                     {
-                        map[i, q].Draw(spriteBatch, camera.UpperLeft);
+                        map[i, o].Draw(spriteBatch, camera.UpperLeft);
                     }
                 }
 

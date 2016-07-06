@@ -1,30 +1,28 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Xml.Serialization;
+using System.IO;
 using System.Collections.Generic;
 
 namespace RPG_Game
 {
-    [Serializable]
-    public class Sprite
+    public class SpriteBase
     {
         // upper-left coordinate of the sprite image on the screen
-        public Vector2 UpperLeft = new Vector2(0,0);
+        public Vector2 UpperLeft = new Vector2(0, 0);
 
         // X and Y stretching factors to adjust the final sprite dimensions
         public Vector2 Scale = new Vector2(1.0f, 1.0f);
 
         // this member holds the current Texture for the sprite
-        private Texture2D spriteTexture;
+        protected Texture2D spriteTexture;
 
-        // if true, then sprite is visible and can move and interact (collide) with others
-        public bool IsAlive = true;
+        // color array used internally for collision detection
+        protected Color[,] textureColors;
 
-        // fastest absolute speed the sprite will move
-        public double MaxSpeed = 10;
-
-        // current sprite velocity (X and Y speed components)
-        public Vector2 velocity;
+        // This internal member represents the current source rectangle in the animation strip
+        protected Rectangle imageRect;
 
         // current value, in degrees, of the rotation of the sprite
         public double RotationAngle = 0;
@@ -35,45 +33,15 @@ namespace RPG_Game
         // indication of which depth to use when drawing sprite (for layering purposes)
         public float LayerDepth = 0;
 
-        // color array used internally for collision detection
-        private Color[,] textureColors;
-
-        // the desired number of milliseconds between animation frame changes
-        // if zero (default), animation will advae onnc each call to animate().
-        public int AnimationInterval = 0;
-
-        // the time in milliseconds when the last animation frame was changed
-        private int lastAnimationTime = 0;
-
-        // public flag indicating whether or not animation frames should be continuously looped
-        public bool ContinuousAnimation = true;
-
-        // Whether or not the sprite is animating forwards through the spritesheet instead of forwards
-        public bool reverseAnimating;
-
-        // if ContinuousAnimation = false, this flag indicates whether or not a 
-        // "short" animation sequence is currently active
-        public bool animationShortStarted = false;
-
-        // this variable contains the stop frame for a short animation sequence
-        private int animationShortStopFrame = 0;
-
-        // this variable contains a single frame that will be displayed after
-        // the short animation sequence is complete.
-        private int animationShortFinalFrame = 0;
-
         // This internal member tracks the current frame numerically, regardless of current line
-        private int totalFrame = 0;
+        protected int totalFrame = 0;
 
         // This internal member tracks the number of frames and lines in the animation strip
-        private int numFrames = 1;
-        private int numLines = 1;
+        protected int numFrames = 1;
+        protected int numLines = 1;
 
         // This internal member tracks the number of frames in any given line
-        private int lineFrames;
-
-        // This internal member represents the current source rectangle in the animation strip
-        private Rectangle imageRect;
+        protected int lineFrames;
 
         // These internal members specify the width and height of a single frame in the animation strip
         // (Note:  overall strip dimensions should be an even multiple of this value!)
@@ -81,11 +49,10 @@ namespace RPG_Game
         public int frameHeight;
 
         // This internal member shows the current animation frame on the current line (should be 0 -> numFrames-1)
-        private int currentFrame = 0;
+        protected int currentFrame = 0;
 
         // This internal member shows the current animation line
-        private int currentLine = 0;
-
+        protected int currentLine = 0;
 
         public int getCurrentFrame()
         {
@@ -106,7 +73,7 @@ namespace RPG_Game
                 frame = 0;
             }
 
-            if(line > numLines - 1 || line < 0)
+            if (line > numLines - 1 || line < 0)
             {
                 line = 0;
             }
@@ -142,37 +109,22 @@ namespace RPG_Game
             numFrames = frames * lines;
 
             spriteTexture = texture;
-            int width = spriteTexture.Width;
-            int height = spriteTexture.Height;
 
-            frameWidth = width / lineFrames;   // does not include effects of scaling!
-            frameHeight = height / numLines;
+            frameWidth = spriteTexture.Width / lineFrames;   // does not include effects of scaling!
+            frameHeight = spriteTexture.Height / numLines;
 
             // does not include effects of scaling, which may change after SetTexture is finished!
             imageRect = new Rectangle(0, 0, frameWidth, frameHeight);
 
-            // create a color matrix that we'll use later for collision detection
-            // contains colors for the entire image (including any animation strip)
-            Color[] colorData = new Color[width * height];
-            spriteTexture.GetData(colorData);
-
-            textureColors = new Color[width, height];
-            for (int x = 0; x < width; x++)
-            {
-                for (int y = 0; y < height; y++)
-                {
-                    textureColors[x, y] = colorData[x + y * width];
-                }
-            }
         }
 
         // This method will draw the sprite using the current position, rotation, scale, and layer depth
         public virtual void Draw(SpriteBatch theSpriteBatch)
         {
             float radians = MathHelper.ToRadians((float)RotationAngle);
-            if (IsAlive)
-                theSpriteBatch.Draw(spriteTexture, UpperLeft + Origin, imageRect, Color.White,
-                                    -radians, Origin / Scale, Scale, SpriteEffects.None, LayerDepth);
+
+            theSpriteBatch.Draw(spriteTexture, UpperLeft + Origin, imageRect, Color.White,
+                                -radians, Origin / Scale, Scale, SpriteEffects.None, LayerDepth);
         }
 
         // This method will draw the sprite using the current position, rotation, scale, and layer depth
@@ -181,17 +133,6 @@ namespace RPG_Game
             UpperLeft -= cameraUpperLeft;
             Draw(theSpriteBatch);
             UpperLeft += cameraUpperLeft;
-        }
-
-        private Matrix getTransformMatrix()
-        {
-            // see this link for a great description of transformation matrix creation:
-            // http://www.riemers.net/eng/Tutorials/XNA/Csharp/Series2D/Coll_Detection_Matrices.php
-            return
-                Matrix.CreateTranslation(-Origin.X / Scale.X, -Origin.Y / Scale.Y, 0) *
-                Matrix.CreateRotationZ(-MathHelper.ToRadians((float)this.RotationAngle)) *
-                Matrix.CreateScale(Scale.X, Scale.Y, 1.0f) *
-                Matrix.CreateTranslation(UpperLeft.X + (float)Origin.X, UpperLeft.Y + (float)Origin.Y, 0);
         }
 
         // calculate final sprite width, accounting for scale and assuming zero rotation
@@ -210,6 +151,84 @@ namespace RPG_Game
         public Vector2 GetCenter()
         {
             return new Vector2(GetWidth() / 2, GetHeight() / 2);
+        }
+
+    }
+
+    public class Tile : SpriteBase
+    {
+        public bool interactable;
+        public bool walkable;
+    }
+
+    public class Sprite : SpriteBase
+    {
+        // if true, then sprite is visible and can move and interact (collide) with others
+        public bool IsAlive = true;
+
+        // fastest absolute speed the sprite will move
+        public double MaxSpeed = 10;
+
+        // current sprite velocity (X and Y speed components)
+        public Vector2 velocity;
+        
+        // the desired number of milliseconds between animation frame changes
+        // if zero (default), animation will advae onnc each call to animate().
+        public int AnimationInterval = 0;
+
+        // the time in milliseconds when the last animation frame was changed
+        private int lastAnimationTime = 0;
+
+        // public flag indicating whether or not animation frames should be continuously looped
+        public bool ContinuousAnimation = true;
+
+        // Whether or not the sprite is animating forwards through the spritesheet instead of forwards
+        public bool reverseAnimating;
+
+        // if ContinuousAnimation = false, this flag indicates whether or not a 
+        // "short" animation sequence is currently active
+        public bool animationShortStarted = false;
+
+        // this variable contains the stop frame for a short animation sequence
+        private int animationShortStopFrame = 0;
+
+        // this variable contains a single frame that will be displayed after
+        // the short animation sequence is complete.
+        private int animationShortFinalFrame = 0;
+        
+        //Creates a colour matrix to be used for collision detection
+        public void SetCollisions()
+        {
+            SetCollisions(spriteTexture);
+        }
+
+        //Creates a colour matrix to be used for collision detection
+        public void SetCollisions(Texture2D texture)
+        {
+            // create a color matrix that we'll use later for collision detection
+            // contains colors for the entire image (including any animation strip)
+            Color[] colorData = new Color[texture.Width * texture.Height];
+            texture.GetData(colorData);
+
+            textureColors = new Color[texture.Width, texture.Height];
+            for (int x = 0; x < texture.Width; x++)
+            {
+                for (int y = 0; y < texture.Height; y++)
+                {
+                    textureColors[x, y] = colorData[x + y * texture.Width];
+                }
+            }
+        }
+
+        private Matrix getTransformMatrix()
+        {
+            // see this link for a great description of transformation matrix creation:
+            // http://www.riemers.net/eng/Tutorials/XNA/Csharp/Series2D/Coll_Detection_Matrices.php
+            return
+                Matrix.CreateTranslation(-Origin.X / Scale.X, -Origin.Y / Scale.Y, 0) *
+                Matrix.CreateRotationZ(-MathHelper.ToRadians((float)this.RotationAngle)) *
+                Matrix.CreateScale(Scale.X, Scale.Y, 1.0f) *
+                Matrix.CreateTranslation(UpperLeft.X + (float)Origin.X, UpperLeft.Y + (float)Origin.Y, 0);
         }
 
         // this function will move the sprite according to it's current Velocity
@@ -452,14 +471,7 @@ namespace RPG_Game
         }
 
     }
-
-    [Serializable]
-    public class Tile : Sprite
-    {
-        public bool interactable;
-        public bool walkable;
-    }
-
+    
     public class Mover : Sprite
     {
         public Vector2 gridPosition;
@@ -493,7 +505,7 @@ namespace RPG_Game
         public bool friendly;
     }
 
-    public class Parts : Sprite
+    public class Parts : SpriteBase
     {
         public List<Sprite> parts = new List<Sprite>(9);
 
