@@ -56,6 +56,15 @@
       <Time>2016-06-24T18:21:00+01:00</Time>
     </Item>
     <Item>
+      <Source>World\Battle Backs\Translucent.png</Source>
+      <Name>World\Battle Backs\Translucent</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\World\Battle Backs\Translucent.xnb</Output>
+      <Time>2016-06-24T23:13:38+01:00</Time>
+    </Item>
+    <Item>
       <Source>Misc\Shadow.png</Source>
       <Name>Misc\Shadow</Name>
       <Importer>TextureImporter</Importer>
@@ -164,22 +173,13 @@
       <Time>2016-07-03T20:58:21.9816395+01:00</Time>
     </Item>
     <Item>
-      <Source>World\Battle Backs\Translucent.png</Source>
-      <Name>World\Battle Backs\Translucent</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\World\Battle Backs\Translucent.xnb</Output>
-      <Time>2016-06-24T23:13:38+01:00</Time>
-    </Item>
-    <Item>
       <Source>World\Tilesets\Outside.png</Source>
       <Name>World\Tilesets\Outside</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\World\Tilesets\Outside.xnb</Output>
-      <Time>2016-07-06T11:43:30.644601+01:00</Time>
+      <Time>2016-07-07T10:49:31.8733692+01:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>

@@ -103,14 +103,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="RPG_Game.exe" size="40368">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="RPG_Game.exe" size="46512">
       <assemblyIdentity name="RPG_Game" version="1.0.0.0" language="neutral" processorArchitecture="x86" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>8CYOfzEH9WTdTWDH1dwTNCVKQr8=</dsig:DigestValue>
+        <dsig:DigestValue>jLqQceyMKDTAkNybJlUtpB3QL4c=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -285,13 +285,13 @@
       <dsig:DigestValue>B1e1kHrrwtSoVjQmXk0Xjo0A94o=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="Content\World\Tilesets\Outside.xnb" size="249019">
+  <file name="Content\World\Tilesets\Outside.xnb" size="719035">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-      <dsig:DigestValue>tVDTQ8rHBE1OesrYHfbXzNt8UUQ=</dsig:DigestValue>
+      <dsig:DigestValue>03cGF9JBD/NcR9vUWYaFW8QfEIs=</dsig:DigestValue>
     </hash>
   </file>
   <file name="Game.ico" size="4286">
