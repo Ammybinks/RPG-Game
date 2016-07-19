@@ -152,20 +152,7 @@ namespace RPG_Game
         }
 
     }
-
-    public class Tile : SpriteBase
-    {
-        public bool interactable = false;
-        public bool walkable = false;
-        public bool above = false;
-
-        public List<Tile> tiles;
-
-        public List<string> lines;
-        public string eventLine;
-        public Box eventBox;
-    }
-
+    
     public class Parts : SpriteBase
     {
         public List<Sprite> parts = new List<Sprite>(9);
@@ -238,7 +225,7 @@ namespace RPG_Game
             parts.Add(back);
         }
     }
-
+    
     public class Box : Parts
     {
         public int activatorState;
@@ -553,7 +540,7 @@ namespace RPG_Game
         public Vector2 battleOrigin;
         public bool friendly;
     }
-
+    
     public class Button : Parts
     {
         public Sprite icon = new Sprite();

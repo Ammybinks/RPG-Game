@@ -408,7 +408,7 @@ namespace RPG_Game
             }
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw(SpriteBatch spriteBatch, Main main)
         {
             backgroundSprite.Draw(spriteBatch);
 

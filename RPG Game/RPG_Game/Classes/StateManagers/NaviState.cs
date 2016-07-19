@@ -1,7 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+using System.IO;
 using System.Collections.Generic;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace RPG_Game
 {
@@ -38,9 +39,7 @@ namespace RPG_Game
         public override void LoadContent(Main main)
         {
             calibri = main.Content.Load<SpriteFont>("Fonts\\Calibri");
-
-            outside = main.Content.Load<Texture2D>("World\\Tilesets\\Outside");
-
+            
             pointerTexture = main.Content.Load<Texture2D>("Misc\\Pointer");
             iconTexture = main.Content.Load<Texture2D>("Misc\\IconSet");
 
@@ -94,13 +93,10 @@ namespace RPG_Game
             {
                 for (int o = 0; o < map.GetLength(1); o++)
                 {
-                    tile = new Tile();
+                    tile = new Tile("World\\Tilesets\\Outside", new Vector2(1, 1), new Vector2(6, 13));
 
-                    tile.SetTexture(outside, 6, 13);
-                    tile.setCurrentFrame(1, 1);
                     tile.walkable = true;
                     tile.interactable = false;
-                    tile.UpperLeft = new Vector2(tile.GetWidth() * i, tile.GetHeight() * o);
 
                     map[i, o] = tile;
                 }
@@ -112,7 +108,7 @@ namespace RPG_Game
                 for (int o = 0; o < map.GetLength(1); o++)
                 {
                     map[i, o].walkable = false;
-                    map[i, o].setCurrentFrame(1, 4);
+                    map[i, o].currentFrame = new Vector2(1, 4);
                 }
             }
 
@@ -121,7 +117,7 @@ namespace RPG_Game
                 for (int o = 0; o < map.GetLength(1); o++)
                 {
                     map[i, o].walkable = false;
-                    map[i, o].setCurrentFrame(1, 4);
+                    map[i, o].currentFrame = new Vector2(1, 4);
                 }
             }
 
@@ -130,7 +126,7 @@ namespace RPG_Game
                 for (int o = 0; o < playerView.Y; o++)
                 {
                     map[i, o].walkable = false;
-                    map[i, o].setCurrentFrame(1, 4);
+                    map[i, o].currentFrame = new Vector2(1, 4);
                 }
             }
 
@@ -139,73 +135,72 @@ namespace RPG_Game
                 for (int o = map.GetLength(1) - (int)playerView.Y; o < map.GetLength(1); o++)
                 {
                     map[i, o].walkable = false;
-                    map[i, o].setCurrentFrame(1, 4);
+                    map[i, o].currentFrame = new Vector2(1, 4);
                 }
             }
 
             //Stone Edge Edges
             for (int o = (int)playerView.Y; o < map.GetLength(1) - playerView.Y; o++)
             {
-                map[(int)playerView.X - 1, o].setCurrentFrame(2, 4);
+                map[(int)playerView.X - 1, o].currentFrame = new Vector2(2, 4);
             }
 
             for (int i = (int)playerView.X; i < map.GetLength(0) - playerView.X; i++)
             {
-                map[i, (int)playerView.Y - 3].setCurrentFrame(1, 5);
+                map[i, (int)playerView.Y - 3].currentFrame = new Vector2(1, 5);
             }
 
             for (int i = (int)playerView.X; i < map.GetLength(0) - (int)playerView.X; i++)
             {
-                map[i, map.GetLength(1) - (int)playerView.Y].setCurrentFrame(1, 3);
+                map[i, map.GetLength(1) - (int)playerView.Y].currentFrame = new Vector2(1, 3);
             }
 
             for (int o = (int)playerView.Y; o < map.GetLength(1) - playerView.Y; o++)
             {
-                map[map.GetLength(0) - (int)playerView.X, o].setCurrentFrame(0, 4);
+                map[map.GetLength(0) - (int)playerView.X, o].currentFrame = new Vector2(0, 4);
             }
 
             //Stone Walls
             for (int i = (int)playerView.X + 1; i < map.GetLength(0) - playerView.X - 1; i++)
             {
-                map[i, (int)playerView.Y - 2].setCurrentFrame(1, 6);
+                map[i, (int)playerView.Y - 2].currentFrame = new Vector2(1, 6);
             }
 
             for (int i = (int)playerView.X + 1; i < map.GetLength(0) - playerView.X - 1; i++)
             {
-                map[i, (int)playerView.Y - 1].setCurrentFrame(1, 8);
+                map[i, (int)playerView.Y - 1].currentFrame = new Vector2(1, 8);
             }
 
-            map[(int)playerView.X, (int)playerView.Y - 2].setCurrentFrame(0, 6);
-            map[(int)playerView.X, (int)playerView.Y - 1].setCurrentFrame(0, 8);
+            map[(int)playerView.X, (int)playerView.Y - 2].currentFrame = new Vector2(0, 6);
+            map[(int)playerView.X, (int)playerView.Y - 1].currentFrame = new Vector2(0, 8);
 
-            map[map.GetLength(0) - (int)playerView.X - 1, (int)playerView.Y - 2].setCurrentFrame(2, 6);
-            map[map.GetLength(0) - (int)playerView.X - 1, (int)playerView.Y - 1].setCurrentFrame(2, 8);
+            map[map.GetLength(0) - (int)playerView.X - 1, (int)playerView.Y - 2].currentFrame = new Vector2(2, 6);
+            map[map.GetLength(0) - (int)playerView.X - 1, (int)playerView.Y - 1].currentFrame = new Vector2(2, 8);
 
-            map[49, 30].tiles = new List<Tile>();
-            map[49, 30].tiles.Add(new Tile());
-            map[49, 30].tiles[0].UpperLeft = map[49, 30].UpperLeft;
-            map[49, 30].tiles[0].SetTexture(outside, 6, 13);
-            map[49, 30].tiles[0].setCurrentFrame(1, 1);
-            map[49, 30].tiles.Add(new Tile());
-            map[49, 30].tiles[1].UpperLeft = map[49, 30].UpperLeft;
-            map[49, 30].tiles[1].SetTexture(outside, 6, 13);
-            map[49, 30].tiles[1].setCurrentFrame(2, 11);
+            map[49, 30].tiles = new List<TileParts>();
+            map[49, 30].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(1, 1), new Vector2(6, 13)));
+            map[49, 30].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(2, 11), new Vector2(6, 13)));
             map[49, 30].tiles[1].above = true;
 
-            map[49, 31].lines = new List<string>(1);
             map[49, 31].lines.Add("This is, well. I don't know what it is quite");
             map[49, 31].walkable = false;
             map[49, 31].interactable = true;
-            map[49, 31].tiles = new List<Tile>();
-            map[49, 31].tiles.Add(new Tile());
-            map[49, 31].tiles[0].UpperLeft = map[49, 31].UpperLeft;
-            map[49, 31].tiles[0].SetTexture(outside, 6, 13);
-            map[49, 31].tiles[0].setCurrentFrame(1, 1);
-            map[49, 31].tiles.Add(new Tile());
-            map[49, 31].tiles[1].UpperLeft = map[49, 31].UpperLeft;
-            map[49, 31].tiles[1].SetTexture(outside, 6, 13);
-            map[49, 31].tiles[1].setCurrentFrame(2, 12);
+            map[49, 31].tiles = new List<TileParts>();
+            map[49, 31].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(1, 1), new Vector2(6, 13)));
+            map[49, 31].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(2, 12), new Vector2(6, 13)));
             //World Map Initialization Ends//
+
+            using (FileStream stream = File.Open("C:\\Users\\Nye\\Dropbox\\Programming\\C#\\Programs\\RPG-Game\\Saves\\TestMap.bin", FileMode.Create))
+            {
+                BinaryFormatter formatter = new BinaryFormatter();
+                formatter.Serialize(stream, map);
+            }
+
+            using (FileStream stream = File.Open("C:\\Users\\Nye\\Dropbox\\Programming\\C#\\Programs\\RPG-Game\\Saves\\TestMap.bin", FileMode.Open))
+            {
+                BinaryFormatter formatter = new BinaryFormatter();
+                map = (Tile[,])formatter.Deserialize(stream);
+            }
 
             targetState = 0;
         }
@@ -220,13 +215,13 @@ namespace RPG_Game
             }
             else if (currentState == 1)
             {
-                NaviEvent(gameTime);
+                //NaviEvent(gameTime);
             }
 
             heroMover.Animate(gameTime);
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw(SpriteBatch spriteBatch, Main main)
         {
             List<Vector3> drawAbove = new List<Vector3>();
 
@@ -234,13 +229,13 @@ namespace RPG_Game
             {
                 for (int o = 0; o < map.GetLength(1); o++)
                 {
-                    if (map[i, o].tiles != null)
+                    if (map[i, o].tiles.Count != 0)
                     {
                         for (int p = 0; p < map[i, o].tiles.Count; p++)
                         {
                             if (!map[i, o].tiles[p].above)
                             {
-                                map[i, o].tiles[p].Draw(spriteBatch, camera.UpperLeft);
+                                tileDraw(map[i, o].tiles[p], new Vector2(i, o), spriteBatch, main);
                             }
                             else
                             {
@@ -250,7 +245,7 @@ namespace RPG_Game
                     }
                     else
                     {
-                        map[i, o].Draw(spriteBatch, camera.UpperLeft);
+                        tileDraw(map[i, o], new Vector2(i, o), spriteBatch, main);
                     }
                 }
             }
@@ -259,17 +254,17 @@ namespace RPG_Game
 
             for (int i = 0; i < drawAbove.Count; i++)
             {
-                map[(int)drawAbove[i].X, (int)drawAbove[i].Y].tiles[(int)drawAbove[i].Z].Draw(spriteBatch, camera.UpperLeft);
+                tileDraw(map[(int)drawAbove[i].X, (int)drawAbove[i].Y].tiles[(int)drawAbove[i].Z], new Vector2((int)drawAbove[i].X, (int)drawAbove[i].Y), spriteBatch, main);
             }
 
             if (currentState == 1)
             {
                 if (eventTile.eventLine != null)
                 {
-                    for (int i = 0; i < eventTile.eventBox.parts.Count; i++)
-                    {
-                        eventTile.eventBox.parts[i].Draw(spriteBatch);
-                    }
+                    //for (int i = 0; i < eventTile.eventBox.parts.Count; i++)
+                    //{
+                    //    eventTile.eventBox.parts[i].Draw(spriteBatch);
+                    //}
 
                     if (eventTile.eventLine.Equals(eventTile.lines[0]))
                     {
@@ -440,79 +435,79 @@ namespace RPG_Game
                                            (heroMover.UpperLeft.Y + heroMover.GetHeight() / 2) - (camera.ViewHeight / 2));
         }
 
-        private void NaviEvent(GameTime gameTime)
-        {
-            if (eventTile.eventLine == null)
-            {
-                box = new Box();
+        //private void NaviEvent(GameTime gameTime)
+        //{
+        //    if (eventTile.eventLine == null)
+        //    {
+        //        box = new Box();
 
-                box.frameWidth = 800;
-                box.frameHeight = 200;
+        //        box.frameWidth = 800;
+        //        box.frameHeight = 200;
 
-                box.SetParts(cornerTexture, wallTexture, backTexture);
+        //        box.SetParts(cornerTexture, wallTexture, backTexture);
 
-                pointer.Scale = new Vector2(0.4f, 0.4f);
-                pointer.UpperLeft = new Vector2(800 - pointer.GetWidth() - 20, 200 - pointer.GetHeight() - 20);
+        //        pointer.Scale = new Vector2(0.4f, 0.4f);
+        //        pointer.UpperLeft = new Vector2(800 - pointer.GetWidth() - 20, 200 - pointer.GetHeight() - 20);
 
-                eventTile.eventLine = "";
+        //        eventTile.eventLine = "";
 
-                eventTile.eventBox = box;
-            }
+        //        eventTile.eventBox = box;
+        //    }
 
-            if (eventTile.eventLine.Equals(eventTile.lines[0]))
-            {
-                timer = gameTime.TotalGameTime.TotalSeconds;
+        //    if (eventTile.eventLine.Equals(eventTile.lines[0]))
+        //    {
+        //        timer = gameTime.TotalGameTime.TotalSeconds;
 
-                if (activateInput.inputState == Input.inputStates.pressed)
-                {
-                    eventTile.lines.RemoveAt(0);
+        //        if (activateInput.inputState == Input.inputStates.pressed)
+        //        {
+        //            eventTile.lines.RemoveAt(0);
 
-                    if (eventTile.lines.Count == 0)
-                    {
-                        pointer.Scale = new Vector2(0.8f, 0.8f);
+        //            if (eventTile.lines.Count == 0)
+        //            {
+        //                pointer.Scale = new Vector2(0.8f, 0.8f);
 
-                        eventTile.lines = null;
-                        eventTile.eventBox = null;
-                        eventTile.eventLine = null;
+        //                eventTile.lines = null;
+        //                eventTile.eventBox = null;
+        //                eventTile.eventLine = null;
 
-                        ActivateState(0);
-                    }
-                }
-            }
+        //                ActivateState(0);
+        //            }
+        //        }
+        //    }
 
-            if (gameTime.TotalGameTime.TotalSeconds < timer + 0.5)
-            {
-                return;
-            }
+        //    if (gameTime.TotalGameTime.TotalSeconds < timer + 0.5)
+        //    {
+        //        return;
+        //    }
 
-            if (eventTile.eventLine.Length + 1 < eventTile.lines[0].Length)
-            {
-                string i = eventTile.lines[0].Substring(eventTile.eventLine.Length);
-                if (i.StartsWith(" "))
-                {
-                    int o = 0;
+        //    if (eventTile.eventLine.Length + 1 < eventTile.lines[0].Length)
+        //    {
+        //        string i = eventTile.lines[0].Substring(eventTile.eventLine.Length);
+        //        if (i.StartsWith(" "))
+        //        {
+        //            int o = 0;
 
-                    while (i.StartsWith(" "))
-                    {
-                        i = eventTile.lines[0].Substring(eventTile.eventLine.Length + o);
+        //            while (i.StartsWith(" "))
+        //            {
+        //                i = eventTile.lines[0].Substring(eventTile.eventLine.Length + o);
 
-                        o++;
-                    }
+        //                o++;
+        //            }
 
-                    eventTile.eventLine = eventTile.lines[0].Remove(eventTile.eventLine.Length + o);
-                }
-                else
-                {
-                    eventTile.eventLine = eventTile.lines[0].Remove(eventTile.eventLine.Length + 1);
-                }
-            }
-            else
-            {
-                eventTile.eventLine = eventTile.lines[0];
-            }
+        //            eventTile.eventLine = eventTile.lines[0].Remove(eventTile.eventLine.Length + o);
+        //        }
+        //        else
+        //        {
+        //            eventTile.eventLine = eventTile.lines[0].Remove(eventTile.eventLine.Length + 1);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        eventTile.eventLine = eventTile.lines[0];
+        //    }
 
-            timer = gameTime.TotalGameTime.TotalSeconds;
-        }
+        //    timer = gameTime.TotalGameTime.TotalSeconds;
+        //}
 
 
         //Activates the target state, setting all states to false, while keeping the target state true
@@ -554,5 +549,16 @@ namespace RPG_Game
             }
         }
 
+        private void tileDraw(Tile tile, Vector2 gridPosition, SpriteBatch spriteBatch, Main main)
+        {
+            Sprite drawSprite = new Sprite();
+
+            Texture2D texture = main.Content.Load<Texture2D>(tile.texture);
+
+            drawSprite.SetTexture(texture, (int)tile.textureDimensions.X, (int)tile.textureDimensions.Y);
+            drawSprite.setCurrentFrame((int)tile.currentFrame.X, (int)tile.currentFrame.Y);
+            drawSprite.UpperLeft = new Vector2(gridPosition.X * drawSprite.frameWidth, gridPosition.Y * drawSprite.frameHeight);
+            drawSprite.Draw(spriteBatch, camera.UpperLeft);
+        }
     }
 }

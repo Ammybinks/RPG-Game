@@ -20,7 +20,7 @@ namespace RPG_Game
         
         Vector2 screenSize;
 
-        int currentState = 1;
+        int currentState = 0;
         List<StateManager> states = new List<StateManager>();
 
         NaviState naviState = new NaviState();
@@ -113,7 +113,7 @@ namespace RPG_Game
             {
                 if (states[i].targetState == currentState)
                 {
-                    states[i].Draw(spriteBatch);
+                    states[i].Draw(spriteBatch, this);
                 }
             }
 

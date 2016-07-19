@@ -186,7 +186,7 @@ namespace RPG_Game
 
         }
 
-        public virtual void Draw(SpriteBatch spriteBatch)
+        public virtual void Draw(SpriteBatch spriteBatch, Main main)
         {
 
         }
