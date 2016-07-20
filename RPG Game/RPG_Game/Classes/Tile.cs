@@ -13,7 +13,7 @@ namespace RPG_Game
         public string texture;
         public Vector2 textureDimensions;
 
-        public Action testAction;
+        public Action<NaviState, GameTime> eventAction;
 
         public Vector2 currentFrame;
 
@@ -21,10 +21,7 @@ namespace RPG_Game
         public bool walkable;
 
         public List<TileParts> tiles;
-
-        public List<string> lines;
-        public string eventLine;
-
+        
         public Tile()
         {
             interactable = false;
@@ -35,8 +32,6 @@ namespace RPG_Game
             interactable = false;
             walkable = false;
             tiles = new List<TileParts>();
-            lines = new List<string>();
-            eventLine = "";
 
             texture = tileTexture;
             currentFrame = tileFrame;
@@ -59,8 +54,6 @@ namespace RPG_Game
             interactable = false;
             walkable = false;
             tiles = new List<TileParts>();
-            lines = new List<string>();
-            eventLine = "";
 
             texture = tileTexture;
             currentFrame = tileFrame;

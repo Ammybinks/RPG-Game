@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace RPG_Game
 {
-    class StateManager
+    public class StateManager
     {
         public int targetState;
 

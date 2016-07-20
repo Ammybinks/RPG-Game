@@ -6,35 +6,36 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace RPG_Game
 {
-    class NaviState : StateManager
+    public class NaviState : StateManager
     {
-        Texture2D heroMoverTexture;
-        Mover heroMover;
+        public Texture2D heroMoverTexture;
+        public Mover heroMover;
 
-        Texture2D hiroMoverTexture;
-        Mover hiroMover;
+        public Texture2D hiroMoverTexture;
+        public Mover hiroMover;
 
-        Texture2D hearoMoverTexture;
-        Mover hearoMover;
+        public Texture2D hearoMoverTexture;
+        public Mover hearoMover;
 
-        Texture2D hieroMoverTexture;
-        Mover hieroMover;
+        public Texture2D hieroMoverTexture;
+        public Mover hieroMover;
 
-        LinkedList<Mover> movers = new LinkedList<Mover>();
+        public LinkedList<Mover> movers = new LinkedList<Mover>();
 
-        Texture2D outside;
+        public Camera camera;
 
-        Camera camera;
+        public Tile[,] map = new Tile[100, 50];
+        public Tile tile;
+        public Tile eventTile;
 
-        Tile[,] map = new Tile[100, 50];
-        Tile tile;
-        Tile eventTile;
+        public bool[] state = new bool[2];
+        public int currentState;
 
-        bool[] state = new bool[2];
-        int currentState;
+        public Vector2 playerMovement;
+        public Vector2 playerView = new Vector2(20, 11);
 
-        Vector2 playerMovement;
-        Vector2 playerView = new Vector2(20, 11);
+        public Event currentEvent;
+        Area01 area01 = new Area01();
 
         public override void LoadContent(Main main)
         {
@@ -182,7 +183,7 @@ namespace RPG_Game
             map[49, 30].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(2, 11), new Vector2(6, 13)));
             map[49, 30].tiles[1].above = true;
 
-            map[49, 31].lines.Add("This is, well. I don't know what it is quite");
+            map[49, 31].eventAction = area01.Statue;
             map[49, 31].walkable = false;
             map[49, 31].interactable = true;
             map[49, 31].tiles = new List<TileParts>();
@@ -196,11 +197,11 @@ namespace RPG_Game
                 formatter.Serialize(stream, map);
             }
 
-            using (FileStream stream = File.Open("C:\\Users\\Nye\\Dropbox\\Programming\\C#\\Programs\\RPG-Game\\Saves\\TestMap.bin", FileMode.Open))
-            {
-                BinaryFormatter formatter = new BinaryFormatter();
-                map = (Tile[,])formatter.Deserialize(stream);
-            }
+            //using (FileStream stream = File.Open("C:\\Users\\Nye\\Dropbox\\Programming\\C#\\Programs\\RPG-Game\\Saves\\TestMap.bin", FileMode.Open))
+            //{
+            //    BinaryFormatter formatter = new BinaryFormatter();
+            //    map = (Tile[,])formatter.Deserialize(stream);
+            //}
 
             targetState = 0;
         }
@@ -215,7 +216,7 @@ namespace RPG_Game
             }
             else if (currentState == 1)
             {
-                //NaviEvent(gameTime);
+                NaviEvent(gameTime);
             }
 
             heroMover.Animate(gameTime);
@@ -259,19 +260,22 @@ namespace RPG_Game
 
             if (currentState == 1)
             {
-                if (eventTile.eventLine != null)
+                if (currentEvent != null)
                 {
-                    //for (int i = 0; i < eventTile.eventBox.parts.Count; i++)
-                    //{
-                    //    eventTile.eventBox.parts[i].Draw(spriteBatch);
-                    //}
-
-                    if (eventTile.eventLine.Equals(eventTile.lines[0]))
+                    if (currentEvent.line != null)
                     {
-                        pointer.Draw(spriteBatch);
-                    }
+                        for (int i = 0; i < currentEvent.eventBox.parts.Count; i++)
+                        {
+                            currentEvent.eventBox.parts[i].Draw(spriteBatch);
+                        }
 
-                    spriteBatch.DrawString(calibri, eventTile.eventLine, new Vector2(10, 10), Color.White);
+                        if (currentEvent.line.Equals(currentEvent.lines[0]))
+                        {
+                            pointer.Draw(spriteBatch);
+                        }
+
+                        spriteBatch.DrawString(calibri, currentEvent.line, new Vector2(10, 10), Color.White);
+                    }
                 }
             }
         }
@@ -435,79 +439,17 @@ namespace RPG_Game
                                            (heroMover.UpperLeft.Y + heroMover.GetHeight() / 2) - (camera.ViewHeight / 2));
         }
 
-        //private void NaviEvent(GameTime gameTime)
-        //{
-        //    if (eventTile.eventLine == null)
-        //    {
-        //        box = new Box();
+        private void NaviEvent(GameTime gameTime)
+        {
+            eventTile.eventAction.Invoke(this, gameTime);
 
-        //        box.frameWidth = 800;
-        //        box.frameHeight = 200;
+            if(currentEvent.complete)
+            {
+                ActivateState(0);
 
-        //        box.SetParts(cornerTexture, wallTexture, backTexture);
-
-        //        pointer.Scale = new Vector2(0.4f, 0.4f);
-        //        pointer.UpperLeft = new Vector2(800 - pointer.GetWidth() - 20, 200 - pointer.GetHeight() - 20);
-
-        //        eventTile.eventLine = "";
-
-        //        eventTile.eventBox = box;
-        //    }
-
-        //    if (eventTile.eventLine.Equals(eventTile.lines[0]))
-        //    {
-        //        timer = gameTime.TotalGameTime.TotalSeconds;
-
-        //        if (activateInput.inputState == Input.inputStates.pressed)
-        //        {
-        //            eventTile.lines.RemoveAt(0);
-
-        //            if (eventTile.lines.Count == 0)
-        //            {
-        //                pointer.Scale = new Vector2(0.8f, 0.8f);
-
-        //                eventTile.lines = null;
-        //                eventTile.eventBox = null;
-        //                eventTile.eventLine = null;
-
-        //                ActivateState(0);
-        //            }
-        //        }
-        //    }
-
-        //    if (gameTime.TotalGameTime.TotalSeconds < timer + 0.5)
-        //    {
-        //        return;
-        //    }
-
-        //    if (eventTile.eventLine.Length + 1 < eventTile.lines[0].Length)
-        //    {
-        //        string i = eventTile.lines[0].Substring(eventTile.eventLine.Length);
-        //        if (i.StartsWith(" "))
-        //        {
-        //            int o = 0;
-
-        //            while (i.StartsWith(" "))
-        //            {
-        //                i = eventTile.lines[0].Substring(eventTile.eventLine.Length + o);
-
-        //                o++;
-        //            }
-
-        //            eventTile.eventLine = eventTile.lines[0].Remove(eventTile.eventLine.Length + o);
-        //        }
-        //        else
-        //        {
-        //            eventTile.eventLine = eventTile.lines[0].Remove(eventTile.eventLine.Length + 1);
-        //        }
-        //    }
-        //    else
-        //    {
-        //        eventTile.eventLine = eventTile.lines[0];
-        //    }
-
-        //    timer = gameTime.TotalGameTime.TotalSeconds;
-        //}
+                currentEvent.complete = false;
+            }
+        }
 
 
         //Activates the target state, setting all states to false, while keeping the target state true

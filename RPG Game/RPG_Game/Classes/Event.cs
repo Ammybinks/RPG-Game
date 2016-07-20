@@ -5,11 +5,21 @@ using System.Text;
 
 namespace RPG_Game
 {
-    class Event
+    [Serializable()]
+    public class Event
     {
-        public virtual bool Call(Character[] characters)
+        public bool complete;
+
+        public string line;
+        public string previousLines;
+
+        [NonSerialized()]public Box eventBox;
+
+        internal List<string> lines;
+
+        internal void Initialize(NaviState naviState)
         {
-            return false;
+            naviState.currentEvent = this;
         }
     }
 }

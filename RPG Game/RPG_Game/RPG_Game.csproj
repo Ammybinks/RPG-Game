@@ -86,6 +86,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\Event.cs" />
+    <Compile Include="Classes\Events\Area01.cs" />
     <Compile Include="Classes\StateManagers\BattleState.cs" />
     <Compile Include="Classes\Camera.cs" />
     <Compile Include="Classes\Input.cs" />
@@ -129,9 +130,7 @@
   <ItemGroup>
     <None Include="RPG_Game_TemporaryKey.pfx" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Classes\Events\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" />
   <!--

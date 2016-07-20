@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace RPG_Game
 {
-    class BattleState : StateManager
+    public class BattleState : StateManager
     {
         Texture2D background;
         Sprite backgroundSprite = new Sprite();

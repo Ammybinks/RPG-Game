@@ -2,7 +2,7 @@
 
 namespace RPG_Game
 {
-    class Camera
+    public class Camera
     {
         public Vector2 UpperLeft = new Vector2();
 

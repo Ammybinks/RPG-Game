@@ -1,6 +1,6 @@
 ﻿namespace RPG_Game
 {
-    class Input
+    public class Input
     {
         public enum inputStates
         {
