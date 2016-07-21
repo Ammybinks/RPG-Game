@@ -1,37 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Microsoft.Xna.Framework;
 
 namespace RPG_Game
 {
     [Serializable()]
-    public class Area01 : Event
+    public class Event
     {
-        public void Statue(NaviState naviState, GameTime gameTime)
+        public bool complete;
+
+        public string line;
+        public string previousLines;
+
+        public Vector2 lineUpperLeft;
+
+        [NonSerialized()]public Box eventBox;
+
+        internal List<string> lines;
+        
+        internal void Type(NaviState naviState, GameTime gameTime)
         {
-            if (line == null)
-            {
-                Initialize(naviState);
-
-                eventBox = new Box();
-
-                eventBox.frameWidth = 800;
-                eventBox.frameHeight = 200;
-
-                eventBox.SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
-
-                naviState.pointer.Scale = new Vector2(0.4f, 0.4f);
-                naviState.pointer.UpperLeft = new Vector2(800 - naviState.pointer.GetWidth() - 20, 200 - naviState.pointer.GetHeight() - 20);
-
-                lines = new List<string>();
-                lines.Add("This is, well. I'm not sure what it is, quite.\n");
-                lines.Add("Maybe some sort of altar? I've seen stranger.");
-                line = "";
-                previousLines = "";
-            }
-
+            Type(naviState, gameTime, 0.05);
+        }
+        internal void Type(NaviState naviState, GameTime gameTime, double typeSpeed)
+        {
             if (line.Length >= previousLines.Length)
             {
                 line = line.Substring(previousLines.Length);
@@ -40,6 +32,8 @@ namespace RPG_Game
             if (line.Equals(lines[0]))
             {
                 naviState.timer = gameTime.TotalGameTime.TotalSeconds;
+
+                naviState.pointer.isAlive = true;
 
                 if (naviState.activateInput.inputState == Input.inputStates.pressed)
                 {
@@ -68,8 +62,12 @@ namespace RPG_Game
                     }
                 }
             }
+            else
+            {
+                naviState.pointer.isAlive = false;
+            }
 
-            if (gameTime.TotalGameTime.TotalSeconds < naviState.timer + 0.1)
+            if (gameTime.TotalGameTime.TotalSeconds < naviState.timer + typeSpeed)
             {
                 line = previousLines + line;
 
@@ -105,6 +103,13 @@ namespace RPG_Game
             line = previousLines + line;
 
             naviState.timer = gameTime.TotalGameTime.TotalSeconds;
+        }
+
+        internal void Initialize(NaviState naviState)
+        {
+            naviState.currentEvent = this;
+
+            lineUpperLeft = new Vector2(20, 20);
         }
     }
 }

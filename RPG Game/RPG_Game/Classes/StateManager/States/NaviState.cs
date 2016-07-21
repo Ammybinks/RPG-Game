@@ -31,7 +31,7 @@ namespace RPG_Game
         public bool[] state = new bool[2];
         public int currentState;
 
-        public Vector2 playerMovement;
+        public Vector2 movementModifier;
         public Vector2 playerView = new Vector2(20, 11);
 
         public Event currentEvent;
@@ -88,120 +88,120 @@ namespace RPG_Game
             hieroMover.UpperLeft = new Vector2(hieroMover.GetWidth(), hieroMover.GetHeight());
             movers.AddFirst(hieroMover);
 
-            //World Map Initialization Begins//
-            //Grass Base
-            for (int i = 0; i < map.GetLength(0); i++)
-            {
-                for (int o = 0; o < map.GetLength(1); o++)
-                {
-                    tile = new Tile("World\\Tilesets\\Outside", new Vector2(1, 1), new Vector2(6, 13));
+            ////World Map Initialization Begins//
+            ////Grass Base
+            //for (int i = 0; i < map.GetLength(0); i++)
+            //{
+            //    for (int o = 0; o < map.GetLength(1); o++)
+            //    {
+            //        tile = new Tile("World\\Tilesets\\Outside", new Vector2(1, 1), new Vector2(6, 13));
 
-                    tile.walkable = true;
-                    tile.interactable = false;
+            //        tile.walkable = true;
+            //        tile.interactable = false;
 
-                    map[i, o] = tile;
-                }
-            }
+            //        map[i, o] = tile;
+            //    }
+            //}
 
-            //Stone Edges
-            for (int i = 0; i < playerView.X; i++)
-            {
-                for (int o = 0; o < map.GetLength(1); o++)
-                {
-                    map[i, o].walkable = false;
-                    map[i, o].currentFrame = new Vector2(1, 4);
-                }
-            }
+            ////Stone Edges
+            //for (int i = 0; i < playerView.X; i++)
+            //{
+            //    for (int o = 0; o < map.GetLength(1); o++)
+            //    {
+            //        map[i, o].walkable = false;
+            //        map[i, o].currentFrame = new Vector2(1, 4);
+            //    }
+            //}
 
-            for (int i = map.GetLength(0) - (int)playerView.X; i < map.GetLength(0); i++)
-            {
-                for (int o = 0; o < map.GetLength(1); o++)
-                {
-                    map[i, o].walkable = false;
-                    map[i, o].currentFrame = new Vector2(1, 4);
-                }
-            }
+            //for (int i = map.GetLength(0) - (int)playerView.X; i < map.GetLength(0); i++)
+            //{
+            //    for (int o = 0; o < map.GetLength(1); o++)
+            //    {
+            //        map[i, o].walkable = false;
+            //        map[i, o].currentFrame = new Vector2(1, 4);
+            //    }
+            //}
 
-            for (int i = (int)playerView.X; i < map.GetLength(0) - playerView.X; i++)
-            {
-                for (int o = 0; o < playerView.Y; o++)
-                {
-                    map[i, o].walkable = false;
-                    map[i, o].currentFrame = new Vector2(1, 4);
-                }
-            }
+            //for (int i = (int)playerView.X; i < map.GetLength(0) - playerView.X; i++)
+            //{
+            //    for (int o = 0; o < playerView.Y; o++)
+            //    {
+            //        map[i, o].walkable = false;
+            //        map[i, o].currentFrame = new Vector2(1, 4);
+            //    }
+            //}
 
-            for (int i = (int)playerView.X; i < map.GetLength(0) - playerView.X; i++)
-            {
-                for (int o = map.GetLength(1) - (int)playerView.Y; o < map.GetLength(1); o++)
-                {
-                    map[i, o].walkable = false;
-                    map[i, o].currentFrame = new Vector2(1, 4);
-                }
-            }
+            //for (int i = (int)playerView.X; i < map.GetLength(0) - playerView.X; i++)
+            //{
+            //    for (int o = map.GetLength(1) - (int)playerView.Y; o < map.GetLength(1); o++)
+            //    {
+            //        map[i, o].walkable = false;
+            //        map[i, o].currentFrame = new Vector2(1, 4);
+            //    }
+            //}
 
-            //Stone Edge Edges
-            for (int o = (int)playerView.Y; o < map.GetLength(1) - playerView.Y; o++)
-            {
-                map[(int)playerView.X - 1, o].currentFrame = new Vector2(2, 4);
-            }
+            ////Stone Edge Edges
+            //for (int o = (int)playerView.Y; o < map.GetLength(1) - playerView.Y; o++)
+            //{
+            //    map[(int)playerView.X - 1, o].currentFrame = new Vector2(2, 4);
+            //}
 
-            for (int i = (int)playerView.X; i < map.GetLength(0) - playerView.X; i++)
-            {
-                map[i, (int)playerView.Y - 3].currentFrame = new Vector2(1, 5);
-            }
+            //for (int i = (int)playerView.X; i < map.GetLength(0) - playerView.X; i++)
+            //{
+            //    map[i, (int)playerView.Y - 3].currentFrame = new Vector2(1, 5);
+            //}
 
-            for (int i = (int)playerView.X; i < map.GetLength(0) - (int)playerView.X; i++)
-            {
-                map[i, map.GetLength(1) - (int)playerView.Y].currentFrame = new Vector2(1, 3);
-            }
+            //for (int i = (int)playerView.X; i < map.GetLength(0) - (int)playerView.X; i++)
+            //{
+            //    map[i, map.GetLength(1) - (int)playerView.Y].currentFrame = new Vector2(1, 3);
+            //}
 
-            for (int o = (int)playerView.Y; o < map.GetLength(1) - playerView.Y; o++)
-            {
-                map[map.GetLength(0) - (int)playerView.X, o].currentFrame = new Vector2(0, 4);
-            }
+            //for (int o = (int)playerView.Y; o < map.GetLength(1) - playerView.Y; o++)
+            //{
+            //    map[map.GetLength(0) - (int)playerView.X, o].currentFrame = new Vector2(0, 4);
+            //}
 
-            //Stone Walls
-            for (int i = (int)playerView.X + 1; i < map.GetLength(0) - playerView.X - 1; i++)
-            {
-                map[i, (int)playerView.Y - 2].currentFrame = new Vector2(1, 6);
-            }
+            ////Stone Walls
+            //for (int i = (int)playerView.X + 1; i < map.GetLength(0) - playerView.X - 1; i++)
+            //{
+            //    map[i, (int)playerView.Y - 2].currentFrame = new Vector2(1, 6);
+            //}
 
-            for (int i = (int)playerView.X + 1; i < map.GetLength(0) - playerView.X - 1; i++)
-            {
-                map[i, (int)playerView.Y - 1].currentFrame = new Vector2(1, 8);
-            }
+            //for (int i = (int)playerView.X + 1; i < map.GetLength(0) - playerView.X - 1; i++)
+            //{
+            //    map[i, (int)playerView.Y - 1].currentFrame = new Vector2(1, 8);
+            //}
 
-            map[(int)playerView.X, (int)playerView.Y - 2].currentFrame = new Vector2(0, 6);
-            map[(int)playerView.X, (int)playerView.Y - 1].currentFrame = new Vector2(0, 8);
+            //map[(int)playerView.X, (int)playerView.Y - 2].currentFrame = new Vector2(0, 6);
+            //map[(int)playerView.X, (int)playerView.Y - 1].currentFrame = new Vector2(0, 8);
 
-            map[map.GetLength(0) - (int)playerView.X - 1, (int)playerView.Y - 2].currentFrame = new Vector2(2, 6);
-            map[map.GetLength(0) - (int)playerView.X - 1, (int)playerView.Y - 1].currentFrame = new Vector2(2, 8);
+            //map[map.GetLength(0) - (int)playerView.X - 1, (int)playerView.Y - 2].currentFrame = new Vector2(2, 6);
+            //map[map.GetLength(0) - (int)playerView.X - 1, (int)playerView.Y - 1].currentFrame = new Vector2(2, 8);
 
-            map[49, 30].tiles = new List<TileParts>();
-            map[49, 30].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(1, 1), new Vector2(6, 13)));
-            map[49, 30].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(2, 11), new Vector2(6, 13)));
-            map[49, 30].tiles[1].above = true;
+            //map[49, 30].tiles = new List<TileParts>();
+            //map[49, 30].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(1, 1), new Vector2(6, 13)));
+            //map[49, 30].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(2, 11), new Vector2(6, 13)));
+            //map[49, 30].tiles[1].above = true;
 
-            map[49, 31].eventAction = area01.Statue;
-            map[49, 31].walkable = false;
-            map[49, 31].interactable = true;
-            map[49, 31].tiles = new List<TileParts>();
-            map[49, 31].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(1, 1), new Vector2(6, 13)));
-            map[49, 31].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(2, 12), new Vector2(6, 13)));
-            //World Map Initialization Ends//
+            //map[49, 31].eventAction = area01.Statue;
+            //map[49, 31].walkable = false;
+            //map[49, 31].interactable = true;
+            //map[49, 31].tiles = new List<TileParts>();
+            //map[49, 31].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(1, 1), new Vector2(6, 13)));
+            //map[49, 31].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(2, 12), new Vector2(6, 13)));
+            ////World Map Initialization Ends//
 
-            using (FileStream stream = File.Open("C:\\Users\\Nye\\Dropbox\\Programming\\C#\\Programs\\RPG-Game\\Saves\\TestMap.bin", FileMode.Create))
-            {
-                BinaryFormatter formatter = new BinaryFormatter();
-                formatter.Serialize(stream, map);
-            }
-
-            //using (FileStream stream = File.Open("C:\\Users\\Nye\\Dropbox\\Programming\\C#\\Programs\\RPG-Game\\Saves\\TestMap.bin", FileMode.Open))
+            //using (FileStream stream = File.Open("C:\\Users\\Nye\\Dropbox\\Programming\\C#\\Programs\\RPG-Game\\Saves\\TestMap.bin", FileMode.Create))
             //{
             //    BinaryFormatter formatter = new BinaryFormatter();
-            //    map = (Tile[,])formatter.Deserialize(stream);
+            //    formatter.Serialize(stream, map);
             //}
+
+            using (FileStream stream = File.Open("C:\\Users\\Nye\\Dropbox\\Programming\\C#\\Programs\\RPG-Game\\Saves\\TestMap.bin", FileMode.Open))
+            {
+                BinaryFormatter formatter = new BinaryFormatter();
+                map = (Tile[,])formatter.Deserialize(stream);
+            }
 
             targetState = 0;
         }
@@ -264,17 +264,11 @@ namespace RPG_Game
                 {
                     if (currentEvent.line != null)
                     {
-                        for (int i = 0; i < currentEvent.eventBox.parts.Count; i++)
-                        {
-                            currentEvent.eventBox.parts[i].Draw(spriteBatch);
-                        }
+                        currentEvent.eventBox.DrawParts(spriteBatch);
 
-                        if (currentEvent.line.Equals(currentEvent.lines[0]))
-                        {
-                            pointer.Draw(spriteBatch);
-                        }
+                        pointer.Draw(spriteBatch);
 
-                        spriteBatch.DrawString(calibri, currentEvent.line, new Vector2(10, 10), Color.White);
+                        spriteBatch.DrawString(calibri, currentEvent.line, currentEvent.lineUpperLeft, Color.White);
                     }
                 }
             }
@@ -283,15 +277,11 @@ namespace RPG_Game
 
         private void NaviMovement(GameTime gameTime)
         {
-            if (playerMovement != new Vector2(0, 0))
+            if (movementModifier != new Vector2(0, 0))
             {
-                if (gameTime.TotalGameTime.TotalSeconds <= timer + 0.4)
+                if (step.Invoke(gameTime, timer, 2, 0.4, heroMover, movementModifier))
                 {
-                    heroMover.UpperLeft += playerMovement;
-                }
-                else
-                {
-                    playerMovement = new Vector2(0, 0);
+                    movementModifier = new Vector2(0, 0);
                 }
             }
             else
@@ -300,20 +290,16 @@ namespace RPG_Game
                 {
                     if (heroMover.gridPosition.Y != 0)
                     {
-                        if (playerMovement == new Vector2(0, 0))
+                        if (movementModifier == new Vector2(0, 0))
                         {
-                            playerMovement = new Vector2(0, -2);
-
-                            heroMover.UpperLeft += playerMovement;
-
+                            movementModifier = new Vector2(0, -1);
+                            
                             heroMover.gridPosition.Y--;
                             if (heroMover.gridPosition.Y < 0 || !map[(int)heroMover.gridPosition.X, (int)heroMover.gridPosition.Y].walkable)
                             {
                                 heroMover.gridPosition.Y++;
-
-                                heroMover.UpperLeft -= playerMovement;
-
-                                playerMovement = new Vector2(0, 0);
+                                
+                                movementModifier = new Vector2(0, 0);
 
                                 heroMover.setCurrentFrame(1, 3);
                             }
@@ -332,20 +318,16 @@ namespace RPG_Game
                 {
                     if (heroMover.gridPosition.Y != map.GetLength(1) - 1)
                     {
-                        if (playerMovement == new Vector2(0, 0))
+                        if (movementModifier == new Vector2(0, 0))
                         {
-                            playerMovement = new Vector2(0, 2);
-
-                            heroMover.UpperLeft += playerMovement;
-
+                            movementModifier = new Vector2(0, 1);
+                            
                             heroMover.gridPosition.Y++;
                             if (heroMover.gridPosition.Y > map.GetLength(1) || !map[(int)heroMover.gridPosition.X, (int)heroMover.gridPosition.Y].walkable)
                             {
                                 heroMover.gridPosition.Y--;
-
-                                heroMover.UpperLeft -= playerMovement;
-
-                                playerMovement = new Vector2(0, 0);
+                                
+                                movementModifier = new Vector2(0, 0);
 
                                 heroMover.setCurrentFrame(1, 0);
                             }
@@ -364,20 +346,16 @@ namespace RPG_Game
                 {
                     if (heroMover.gridPosition.X != 0)
                     {
-                        if (playerMovement == new Vector2(0, 0))
+                        if (movementModifier == new Vector2(0, 0))
                         {
-                            playerMovement = new Vector2(-2, 0);
-
-                            heroMover.UpperLeft += playerMovement;
-
+                            movementModifier = new Vector2(-1, 0);
+                            
                             heroMover.gridPosition.X--;
                             if (heroMover.gridPosition.X < 0 || !map[(int)heroMover.gridPosition.X, (int)heroMover.gridPosition.Y].walkable)
                             {
                                 heroMover.gridPosition.X++;
-
-                                heroMover.UpperLeft -= playerMovement;
-
-                                playerMovement = new Vector2(0, 0);
+                                
+                                movementModifier = new Vector2(0, 0);
 
                                 heroMover.setCurrentFrame(1, 1);
                             }
@@ -396,20 +374,16 @@ namespace RPG_Game
                 {
                     if (heroMover.gridPosition.X != map.GetLength(0) - 1)
                     {
-                        if (playerMovement == new Vector2(0, 0))
+                        if (movementModifier == new Vector2(0, 0))
                         {
-                            playerMovement = new Vector2(2, 0);
-
-                            heroMover.UpperLeft += playerMovement;
-
+                            movementModifier = new Vector2(1, 0);
+                            
                             heroMover.gridPosition.X++;
                             if (heroMover.gridPosition.Y > map.GetLength(0) || !map[(int)heroMover.gridPosition.X, (int)heroMover.gridPosition.Y].walkable)
                             {
                                 heroMover.gridPosition.X--;
-
-                                heroMover.UpperLeft -= playerMovement;
-
-                                playerMovement = new Vector2(0, 0);
+                                
+                                movementModifier = new Vector2(0, 0);
 
                                 heroMover.setCurrentFrame(1, 2);
                             }

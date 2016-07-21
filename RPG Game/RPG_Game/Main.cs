@@ -20,7 +20,7 @@ namespace RPG_Game
         
         Vector2 screenSize;
 
-        int currentState = 0;
+        int currentState = 1;
         List<StateManager> states = new List<StateManager>();
 
         NaviState naviState = new NaviState();

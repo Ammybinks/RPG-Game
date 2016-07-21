@@ -1,244 +1,13 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
 
 namespace RPG_Game
 {
-    public class SpriteBase
-    {
-        // upper-left coordinate of the sprite image on the screen
-        public Vector2 UpperLeft = new Vector2(0, 0);
-
-        // X and Y stretching factors to adjust the final sprite dimensions
-        public Vector2 Scale = new Vector2(1.0f, 1.0f);
-
-        // this member holds the current Texture for the sprite
-        protected Texture2D spriteTexture;
-
-        // color array used internally for collision detection
-        protected Color[,] textureColors;
-
-        // This internal member represents the current source rectangle in the animation strip
-        protected Rectangle imageRect;
-
-        // current value, in degrees, of the rotation of the sprite
-        public double RotationAngle = 0;
-
-        // origin for the sprite (defaults to Upper-Left)
-        public Vector2 Origin = new Vector2(0, 0);
-
-        // indication of which depth to use when drawing sprite (for layering purposes)
-        public float LayerDepth = 0;
-
-        // This internal member tracks the current frame numerically, regardless of current line
-        protected int totalFrame = 0;
-
-        // This internal member tracks the number of frames and lines in the animation strip
-        protected int numFrames = 1;
-        protected int numLines = 1;
-
-        // This internal member tracks the number of frames in any given line
-        protected int lineFrames;
-
-        // These internal members specify the width and height of a single frame in the animation strip
-        // (Note:  overall strip dimensions should be an even multiple of this value!)
-        public int frameWidth;
-        public int frameHeight;
-
-        // This internal member shows the current animation frame on the current line (should be 0 -> numFrames-1)
-        protected int currentFrame = 0;
-
-        // This internal member shows the current animation line
-        protected int currentLine = 0;
-
-        public int getCurrentFrame()
-        {
-            return currentFrame;
-        }
-
-        public int getTotalFrame()
-        {
-            return totalFrame;
-        }
-
-        // Sets the current frame the sprite is displaying
-        // (NOTE: Input is taken in the form of the line, and frame along that line (Upper limit for frame is TotalFrames / TotalLines)
-        public void setCurrentFrame(int frame, int line)
-        {
-            if (frame > lineFrames - 1 || frame < 0)  // safety check!
-            {
-                frame = 0;
-            }
-
-            if (line > numLines - 1 || line < 0)
-            {
-                line = 0;
-            }
-
-            currentFrame = frame;
-
-            currentLine = line;
-
-            totalFrame = frame + (lineFrames * line);
-
-
-            imageRect = new Rectangle(frameWidth * frame, frameHeight * line, frameWidth, frameHeight);
-        }
-
-        // This method will load the Texture based on the image name
-        public void SetTexture(Texture2D texture)
-        {
-            SetTexture(texture, 1);
-        }
-
-        // This method will load the Texture based on the image name and number of frames
-        public void SetTexture(Texture2D texture, int frames)
-        {
-            SetTexture(texture, frames, 1);
-        }
-
-        // This method will load the Texture based on the image name and number of frames on each line and lines total
-        public void SetTexture(Texture2D texture, int frames, int lines)
-        {
-            lineFrames = frames;
-            numLines = lines;
-
-            numFrames = frames * lines;
-
-            spriteTexture = texture;
-
-            frameWidth = spriteTexture.Width / lineFrames;   // does not include effects of scaling!
-            frameHeight = spriteTexture.Height / numLines;
-
-            // does not include effects of scaling, which may change after SetTexture is finished!
-            imageRect = new Rectangle(0, 0, frameWidth, frameHeight);
-
-        }
-
-        // This method will draw the sprite using the current position, rotation, scale, and layer depth
-        public virtual void Draw(SpriteBatch theSpriteBatch)
-        {
-            float radians = MathHelper.ToRadians((float)RotationAngle);
-
-            theSpriteBatch.Draw(spriteTexture, UpperLeft + Origin, imageRect, Color.White,
-                                -radians, Origin / Scale, Scale, SpriteEffects.None, LayerDepth);
-        }
-
-        // This method will draw the sprite using the current position, rotation, scale, and layer depth
-        public virtual void Draw(SpriteBatch theSpriteBatch, Vector2 cameraUpperLeft)
-        {
-            UpperLeft -= cameraUpperLeft;
-            Draw(theSpriteBatch);
-            UpperLeft += cameraUpperLeft;
-        }
-
-        // calculate final sprite width, accounting for scale and assuming zero rotation
-        public int GetWidth()
-        {
-            return (int)(frameWidth * Scale.X);
-        }
-
-        // calculate final sprite height, accounting for scale and assuming zero rotation
-        public int GetHeight()
-        {
-            return (int)(frameHeight * Scale.Y);
-        }
-
-        // calculate current center offset from the UpperLeft, accounting for scale and assuming zero rotation
-        public Vector2 GetCenter()
-        {
-            return new Vector2(GetWidth() / 2, GetHeight() / 2);
-        }
-
-    }
-    
-    public class Parts : SpriteBase
-    {
-        public List<Sprite> parts = new List<Sprite>(9);
-
-        public void SetParts(Texture2D cornerTexture, Texture2D wallTexture, Texture2D backTexture)
-        {
-            parts.Clear();
-
-            Sprite corner;
-
-            corner = new Sprite();
-            corner.SetTexture(cornerTexture);
-            corner.UpperLeft = UpperLeft;
-            parts.Add(corner);
-
-            corner = new Sprite();
-            corner.SetTexture(cornerTexture);
-            corner.UpperLeft = new Vector2(UpperLeft.X, UpperLeft.Y + GetHeight());
-            corner.RotationAngle = 90;
-            parts.Add(corner);
-
-            corner = new Sprite();
-            corner.SetTexture(cornerTexture);
-            corner.UpperLeft = new Vector2(UpperLeft.X + GetWidth(), UpperLeft.Y + GetHeight());
-            corner.RotationAngle = 180;
-            parts.Add(corner);
-
-            corner = new Sprite();
-            corner.SetTexture(cornerTexture);
-            corner.UpperLeft = new Vector2(UpperLeft.X + GetWidth(), UpperLeft.Y);
-            corner.RotationAngle = 270;
-            parts.Add(corner);
-
-
-            Sprite wall;
-
-            wall = new Sprite();
-            wall.SetTexture(wallTexture);
-            wall.Scale = new Vector2(1, GetHeight() - corner.GetHeight() * 2);
-            wall.UpperLeft = new Vector2(UpperLeft.X, UpperLeft.Y + corner.GetHeight());
-            parts.Add(wall);
-
-            wall = new Sprite();
-            wall.SetTexture(wallTexture);
-            wall.Scale = new Vector2(1, GetWidth() - corner.GetWidth() * 2);
-            wall.UpperLeft = new Vector2(UpperLeft.X + corner.GetWidth(), UpperLeft.Y + GetHeight());
-            wall.RotationAngle = 90;
-            parts.Add(wall);
-
-            wall = new Sprite();
-            wall.SetTexture(wallTexture);
-            wall.Scale = new Vector2(1, GetHeight() - corner.GetHeight() * 2);
-            wall.UpperLeft = new Vector2(UpperLeft.X + GetWidth(), UpperLeft.Y + corner.GetHeight() + wall.GetHeight());
-            wall.RotationAngle = 180;
-            parts.Add(wall);
-
-            wall = new Sprite();
-            wall.SetTexture(wallTexture);
-            wall.Scale = new Vector2(1, GetWidth() - corner.GetWidth() * 2);
-            wall.UpperLeft = new Vector2(UpperLeft.X + GetWidth() - corner.GetWidth(), UpperLeft.Y);
-            wall.RotationAngle = 270;
-            parts.Add(wall);
-
-            Sprite back;
-
-            back = new Sprite();
-            back.SetTexture(backTexture);
-            back.Scale = new Vector2(GetWidth() - corner.GetWidth() * 2, GetHeight() - corner.GetHeight() * 2);
-            back.UpperLeft = new Vector2(UpperLeft.X + corner.GetWidth(), UpperLeft.Y + corner.GetHeight());
-            parts.Add(back);
-        }
-    }
-    
-    public class Box : Parts
-    {
-        public int activatorState;
-        public int activatorTrack;
-
-        public List<Button> buttons;
-    }
-
     public class Sprite : SpriteBase
     {
         // fastest absolute speed the sprite will move
         public double MaxSpeed = 10;
-        
+
         // the desired number of milliseconds between animation frame changes
         // if zero (default), animation will advae onnc each call to animate().
         public int AnimationInterval = 0;
@@ -262,7 +31,7 @@ namespace RPG_Game
         // this variable contains a single frame that will be displayed after
         // the short animation sequence is complete.
         private int animationShortFinalFrame = 0;
-        
+
         private Matrix getTransformMatrix()
         {
             // see this link for a great description of transformation matrix creation:
@@ -273,7 +42,7 @@ namespace RPG_Game
                 Matrix.CreateScale(Scale.X, Scale.Y, 1.0f) *
                 Matrix.CreateTranslation(UpperLeft.X + (float)Origin.X, UpperLeft.Y + (float)Origin.Y, 0);
         }
-        
+
         // adjust the current rotation angle by the indicated amount (in degrees)
         public void ChangeRotationAngle(double delta)
         {
@@ -351,7 +120,7 @@ namespace RPG_Game
                         break;
                     }
                 }
-                
+
                 // reduce starting frame by one, to make sure we're animating the first frame
                 startFrame--;
 
@@ -390,7 +159,7 @@ namespace RPG_Game
                 animationShortStopFrame = startFrame;
             }
             animationShortFinalFrame = finalFrame;
-            
+
             // launch the short animation!
             animationShortStarted = true;
         }
@@ -450,7 +219,7 @@ namespace RPG_Game
 
                 modifier = 1;
             }
- 
+
             // if we are not yet done with this sequence
             if (totalFrame * modifier < (endFrame + 1) * modifier)
             {
@@ -486,7 +255,7 @@ namespace RPG_Game
                 }
             }
 
-            if(totalFrame > numFrames - 1 || totalFrame < 0)  // safety check!
+            if (totalFrame > numFrames - 1 || totalFrame < 0)  // safety check!
             {
                 totalFrame = 0;
                 currentFrame = 0;
@@ -503,55 +272,5 @@ namespace RPG_Game
             // update last animation time
             lastAnimationTime = (int)gameTime.TotalGameTime.TotalMilliseconds;
         }
-
-    }
-    
-    public class Mover : Sprite
-    {
-        public Vector2 gridPosition;
-
-        public Vector2 lastMoved;
-    }
-
-    public class Character : Sprite
-    {
-        public int health;
-
-        public float PhAtk;
-        public float MgAtk;
-
-        public float PhDef;
-        public float MgDef;
-
-        public float speed;
-
-        public float Acc;
-        public float Eva;
-
-        public float meter;
-        public float pastMeter;
-
-        public Sprite meterSprite = new Sprite();
-
-        public Sprite shadow = new Sprite();
-
-        public List<Ability> abilities = new List<Ability>();
-        
-        public Vector2 battleOrigin;
-        public bool friendly;
-    }
-    
-    public class Button : Parts
-    {
-        public Sprite icon = new Sprite();
-
-        public string display;
-    }
-
-    public class Ability : Button
-    {
-        public int cost;
-
-        public Action<GameTime> action;
     }
 }

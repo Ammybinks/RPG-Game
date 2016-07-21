@@ -12,34 +12,34 @@ namespace RPG_Game
         Sprite backgroundSprite = new Sprite();
         
         Texture2D heroTexture;
-        Character hero;
+        Battler hero;
 
         Texture2D hiroTexture;
-        Character hiro;
+        Battler hiro;
 
         Texture2D hearoTexture;
-        Character hearo;
+        Battler hearo;
 
         Texture2D hieroTexture;
-        Character hiero;
+        Battler hiero;
 
         Texture2D werewolfTexture;
-        Character werewolf;
+        Battler werewolf;
 
-        List<Character> heroes = new List<Character>(4);
-        List<Character> enemies = new List<Character>(4);
+        List<Battler> heroes = new List<Battler>(4);
+        List<Battler> enemies = new List<Battler>(4);
 
-        List<Character> battlers = new List<Character>();
+        List<Battler> battlers = new List<Battler>();
         
         Texture2D meterTexture;
 
         Texture2D shadowTexture;
         LinkedList<Sprite> shadows = new LinkedList<Sprite>();
 
-        Character target = new Character();
-        List<Character> targets = new List<Character>(0);
+        Battler target = new Battler();
+        List<Battler> targets = new List<Battler>(0);
 
-        Character actor = new Character();
+        Battler actor = new Battler();
         
         Random rand = new Random();
 
@@ -89,7 +89,7 @@ namespace RPG_Game
 
             //Heroes Initialization Begins//
             //Hero Initialization
-            hero = new Character();
+            hero = new Battler();
             hero.SetTexture(heroTexture, 9, 6);
             hero.AnimationInterval = 250;
             hero.reverseAnimating = true;
@@ -110,7 +110,7 @@ namespace RPG_Game
             heroes.Add(hero);
 
             //Hiro Initialization
-            hiro = new Character();
+            hiro = new Battler();
             hiro.SetTexture(hiroTexture, 9, 6);
             hiro.AnimationInterval = 250;
             hiro.reverseAnimating = true;
@@ -131,7 +131,7 @@ namespace RPG_Game
             heroes.Add(hiro);
 
             //Hearo Initialization
-            hearo = new Character();
+            hearo = new Battler();
             hearo.SetTexture(hearoTexture, 9, 6);
             hearo.AnimationInterval = 250;
             hearo.reverseAnimating = true;
@@ -180,7 +180,7 @@ namespace RPG_Game
             heroes.Add(hearo);
 
             //Hiero Initialization
-            hiero = new Character();
+            hiero = new Battler();
             hiero.SetTexture(hieroTexture, 9, 6);
             hiero.AnimationInterval = 250;
             hiero.reverseAnimating = true;
@@ -203,7 +203,7 @@ namespace RPG_Game
             //Heroes Initialization Ends//
 
             //Enemies Initialization Begins//
-            werewolf = new Character();
+            werewolf = new Battler();
             werewolf.SetTexture(werewolfTexture);
             werewolf.Scale = new Vector2(0.5f, 0.5f);
             werewolf.UpperLeft = new Vector2(1200, 200);
@@ -218,11 +218,10 @@ namespace RPG_Game
             werewolf.meterSprite.SetTexture(meterTexture);
             werewolf.meterSprite.UpperLeft = new Vector2(werewolf.UpperLeft.X,
                                                       werewolf.UpperLeft.Y + werewolf.meterSprite.GetHeight() + (werewolf.GetHeight()) + 20);
-            werewolf.shadow.SetTexture(shadowTexture);
             enemies.Add(werewolf);
             ////enemies.Add(werewolf);
 
-            werewolf = new Character();
+            werewolf = new Battler();
             werewolf.SetTexture(werewolfTexture);
             werewolf.Scale = new Vector2(0.5f, 0.5f);
             werewolf.UpperLeft = new Vector2(1000, 300);
@@ -237,10 +236,9 @@ namespace RPG_Game
             werewolf.meterSprite.SetTexture(meterTexture);
             werewolf.meterSprite.UpperLeft = new Vector2(werewolf.UpperLeft.X,
                                                       werewolf.UpperLeft.Y + werewolf.meterSprite.GetHeight() + (werewolf.GetHeight()) + 20);
-            werewolf.shadow.SetTexture(shadowTexture);
             enemies.Add(werewolf);
 
-            werewolf = new Character();
+            werewolf = new Battler();
             werewolf.SetTexture(werewolfTexture);
             werewolf.Scale = new Vector2(0.5f, 0.5f);
             werewolf.UpperLeft = new Vector2(1200, 400);
@@ -255,11 +253,10 @@ namespace RPG_Game
             werewolf.meterSprite.SetTexture(meterTexture);
             werewolf.meterSprite.UpperLeft = new Vector2(werewolf.UpperLeft.X,
                                                       werewolf.UpperLeft.Y + werewolf.meterSprite.GetHeight() + (werewolf.GetHeight()) + 20);
-            werewolf.shadow.SetTexture(shadowTexture);
             enemies.Add(werewolf);
             ////enemies.Add(werewolf);
 
-            werewolf = new Character();
+            werewolf = new Battler();
             werewolf.SetTexture(werewolfTexture);
             werewolf.Scale = new Vector2(0.5f, 0.5f);
             werewolf.UpperLeft = new Vector2(1000, 500);
@@ -274,7 +271,6 @@ namespace RPG_Game
             werewolf.meterSprite.SetTexture(meterTexture);
             werewolf.meterSprite.UpperLeft = new Vector2(werewolf.UpperLeft.X,
                                                       werewolf.UpperLeft.Y + werewolf.meterSprite.GetHeight() + (werewolf.GetHeight()) + 20);
-            werewolf.shadow.SetTexture(shadowTexture);
             enemies.Add(werewolf);
 
             //Boxes Initialization Begins//
@@ -415,24 +411,19 @@ namespace RPG_Game
             //Enemy Draw Cycle
             for (int i = 0; i < enemies.Count; i++)
             {
-                enemies[i].shadow.Draw(spriteBatch);
-
                 enemies[i].Draw(spriteBatch);
 
                 enemies[i].meterSprite.Draw(spriteBatch);
 
-                if (enemies[i].health > 0)
-                {
-                    spriteBatch.DrawString(calibri,
-                                           enemies[i].health.ToString(),
-                                           new Vector2(enemies[i].UpperLeft.X,
-                                           enemies[i].UpperLeft.Y + enemies[i].GetHeight() + 5),
-                                           Color.Black,
-                                           0,
-                                           new Vector2(0, 0),
-                                           0.75f,
-                                           SpriteEffects.None, 0);
-                }
+                spriteBatch.DrawString(calibri,
+                                       enemies[i].health.ToString(),
+                                       new Vector2(enemies[i].UpperLeft.X,
+                                       enemies[i].UpperLeft.Y + enemies[i].GetHeight() + 5),
+                                       Color.Black,
+                                       0,
+                                       new Vector2(0, 0),
+                                       0.75f,
+                                       SpriteEffects.None, 0);
             }
 
             //Hero Draw Cycle
@@ -444,18 +435,15 @@ namespace RPG_Game
 
                 heroes[i].meterSprite.Draw(spriteBatch);
 
-                if (heroes[i].health > 0)
-                {
-                    spriteBatch.DrawString(calibri,
-                                           heroes[i].health.ToString(),
-                                           new Vector2(heroes[i].UpperLeft.X,
-                                           heroes[i].UpperLeft.Y + heroes[i].GetHeight() + 5),
-                                           Color.Black,
-                                           0,
-                                           new Vector2(0, 0),
-                                           0.75f,
-                                           SpriteEffects.None, 0);
-                }
+                spriteBatch.DrawString(calibri,
+                                       heroes[i].health.ToString(),
+                                       new Vector2(heroes[i].UpperLeft.X,
+                                       heroes[i].UpperLeft.Y + heroes[i].GetHeight() + 5),
+                                       Color.Black,
+                                       0,
+                                       new Vector2(0, 0),
+                                       0.75f,
+                                       SpriteEffects.None, 0);
             }
 
             //Damage Balloon Draw
@@ -479,17 +467,11 @@ namespace RPG_Game
             {
                 if (state[allBoxes[i].activatorState])
                 {
-                    for (int o = 0; o < allBoxes[i].parts.Count; o++)
-                    {
-                        allBoxes[i].parts[o].Draw(spriteBatch);
-                    }
+                    allBoxes[i].DrawParts(spriteBatch);
 
                     for (int o = 0; o < allBoxes[i].buttons.Count; o++)
                     {
-                        for (int p = 0; p < allBoxes[i].buttons[o].parts.Count; p++)
-                        {
-                            allBoxes[i].buttons[o].parts[p].Draw(spriteBatch);
-                        }
+                        allBoxes[i].buttons[o].DrawParts(spriteBatch);
 
                         if (allBoxes[i].buttons[o].icon != null)
                         {
@@ -515,7 +497,7 @@ namespace RPG_Game
         //If two or more characters are able to act in the same tick, randomly choose between them
         private void Idle(GameTime gameTime)
         {
-            List<Character> potentialActions = new List<Character>();
+            List<Battler> potentialActions = new List<Battler>();
 
             for (int i = 0; i < battlers.Count; i++)
             {
@@ -547,7 +529,7 @@ namespace RPG_Game
                 //Set actor to the acting character
                 actor = potentialActions[index];
 
-                //Switch to Step Forwards State
+                //Switch to step.Invoke Forwards State
                 ActivateState(1);
 
                 timer = gameTime.TotalGameTime.TotalSeconds;
@@ -557,7 +539,7 @@ namespace RPG_Game
 
         private void StepForwards(GameTime gameTime)
         {
-            if (Step(gameTime, timer, new Vector2(2, 0), 0.25, actor))
+            if (step.Invoke(gameTime, timer, 2, 0.25, actor, new Vector2(IFF(actor), 0)))
             {
                 //If the actor is playable
                 if (actor.friendly)
@@ -611,6 +593,8 @@ namespace RPG_Game
 
         private void Menu(GameTime gameTime)
         {
+            pointer.isAlive = true;
+
             Rectangle buttonRect = new Rectangle((int)activeButtons[buttonIndex].UpperLeft.X,
                                                  (int)activeButtons[buttonIndex].UpperLeft.Y,
                                                  activeButtons[buttonIndex].frameWidth,
@@ -652,6 +636,8 @@ namespace RPG_Game
             {
                 if (activateInput.inputType != Input.inputTypes.mouse | buttonRect.Contains(mousePosition))
                 {
+                    pointer.isAlive = false;
+
                     if (activeButtons[buttonIndex].display == "FIGHT")
                     {
                         //Switch to Target Menu State
@@ -709,6 +695,8 @@ namespace RPG_Game
 
         private void SkillsMenu(GameTime gameTime)
         {
+            pointer.isAlive = true;
+
             Rectangle buttonRect = new Rectangle((int)activeButtons[buttonIndex].UpperLeft.X,
                                                  (int)activeButtons[buttonIndex].UpperLeft.Y,
                                                  activeButtons[buttonIndex].frameWidth,
@@ -750,6 +738,8 @@ namespace RPG_Game
             {
                 if (activateInput.inputType != Input.inputTypes.mouse | buttonRect.Contains(mousePosition))
                 {
+                    pointer.isAlive = false;
+
                     ActivateState(6);
 
                     for (int i = 0; i < enemies.Count; i++)
@@ -769,6 +759,8 @@ namespace RPG_Game
 
         private void TargetMenu(GameTime gameTime)
         {
+            pointer.isAlive = true;
+
             if (targetIndex >= targets.Count)
             {
                 targetIndex = 0;
@@ -830,6 +822,8 @@ namespace RPG_Game
                 {
                     if (activateInput.inputType != Input.inputTypes.mouse | targetRect.Contains(mousePosition))
                     {
+                        pointer.isAlive = false;
+
                         //Switch to Animating State
                         ActivateState(2);
 
@@ -930,13 +924,13 @@ namespace RPG_Game
                 target.setCurrentFrame(0, 0);
 
                 //Stepping characters back to starting position
-                Step(gameTime, timer, new Vector2(-2, 0), 1.5, actor);
-                Step(gameTime, timer, new Vector2(2, 0), 1.5, target);
+                step.Invoke(gameTime, timer, -2, 1.5, actor, new Vector2(IFF(actor), 0));
+                step.Invoke(gameTime, timer, 2, 1.5, target, new Vector2(IFF(target), 0));
             }
             else if (gameTime.TotalGameTime.TotalSeconds >= timer + 0.75)
             {
-                //Step the target backwards
-                Step(gameTime, timer, new Vector2(-2, 0), 1, target);
+                //step.Invoke the target backwards
+                step.Invoke(gameTime, timer, -2, 1, target, new Vector2(IFF(target), 0));
 
                 //If we haven't dealt damage yet (Single run conditional)
                 if (damageDealt == 0)
@@ -1010,13 +1004,13 @@ namespace RPG_Game
                 target.setCurrentFrame(0, 0);
 
                 //Stepping characters back to starting position
-                Step(gameTime, timer, new Vector2(-2, 0), 1.5, actor);
-                Step(gameTime, timer, new Vector2(2, 0), 1.5, target);
+                step.Invoke(gameTime, timer, -2, 1.5, actor, new Vector2(IFF(actor), 0));
+                step.Invoke(gameTime, timer, 2, 1.5, target, new Vector2(IFF(target), 0));
             }
             else if (gameTime.TotalGameTime.TotalSeconds >= timer + 0.75)
             {
-                //Step the target backwards
-                Step(gameTime, timer, new Vector2(-2, 0), 1, target);
+                //step.Invoke the target backwards
+                step.Invoke(gameTime, timer, -2, 1, target, new Vector2(IFF(target), 0));
 
                 //If we haven't dealt damage yet (Single run conditional)
                 if (damageDealt == 0)
@@ -1046,38 +1040,23 @@ namespace RPG_Game
                 timer = gameTime.TotalGameTime.TotalSeconds;
             }
         }
-
-        //Steps a character forwards in a direction for a specified time, returning true if the movement is finished, false if not
-        private bool Step(GameTime gameTime, double timer, Vector2 speed, double duration, Character character)
+        
+        private int IFF(Battler character)
         {
-            //Initialise a modifier value for determining which direction to step the character
-            int modifier = 1;
-            if (!character.friendly)
+            if(character.friendly)
             {
-                modifier = -1;
-            }
-
-            return Step(gameTime, timer, speed, duration, character, modifier);
-        }
-        private bool Step(GameTime gameTime, double timer, Vector2 speed, double duration, Character character, int modifier)
-        {
-            if (gameTime.TotalGameTime.TotalSeconds >= timer + duration)
-            {
-                return true;
+                return 1;
             }
             else
             {
-                //Starts moving the character in the specified direction, inverting if the character is on the right side of the field
-                character.UpperLeft += new Vector2(speed.X * modifier, speed.Y);
-
-                return false;
+                return -1;
             }
         }
 
         private void FightBegin()
         {
 
-            List<Character> temp = new List<Character>();
+            List<Battler> temp = new List<Battler>();
 
             for (int i = 0; i < heroes.Count; i++)
             {

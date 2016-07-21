@@ -7,42 +7,43 @@ namespace RPG_Game
 {
     public class StateManager
     {
-        public int targetState;
+        internal int targetState;
 
-        public KeyboardState currentKeyState;
-        public KeyboardState oldKeyState;
+        internal KeyboardState currentKeyState;
+        internal KeyboardState oldKeyState;
 
-        public MouseState currentMouseState;
-        public MouseState oldMouseState;
-        public Point mousePosition;
-        public bool mouseMoving;
+        internal MouseState currentMouseState;
+        internal MouseState oldMouseState;
+        internal Point mousePosition;
+        internal bool mouseMoving;
 
-        public Input upInput = new Input();
-        public Input downInput = new Input();
-        public Input leftInput = new Input();
-        public Input rightInput = new Input();
-        public Input activateInput = new Input();
+        internal Input upInput = new Input();
+        internal Input downInput = new Input();
+        internal Input leftInput = new Input();
+        internal Input rightInput = new Input();
+        internal Input activateInput = new Input();
 
-        public Texture2D pointerTexture;
-        public Sprite pointer = new Sprite();
+        internal Texture2D pointerTexture;
+        internal Sprite pointer = new Sprite();
 
-        public Box box;
+        internal Box box;
 
-        public List<Box> allBoxes = new List<Box>(1);
+        internal List<Box> allBoxes = new List<Box>(1);
 
-        public List<Button> activeButtons;
+        internal List<Button> activeButtons;
 
-        public Texture2D iconTexture;
-        public Button button;
+        internal Texture2D iconTexture;
+        internal Button button;
 
-        public Texture2D cornerTexture;
-        public Texture2D wallTexture;
-        public Texture2D backTexture;
+        internal Texture2D cornerTexture;
+        internal Texture2D wallTexture;
+        internal Texture2D backTexture;
 
-        public SpriteFont calibri;
+        internal SpriteFont calibri;
 
-        public double timer;
+        internal double timer;
 
+        internal Step step = new Step();
 
         public virtual void LoadContent(Main main)
         {
