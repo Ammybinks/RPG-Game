@@ -18,3 +18,7 @@ Content\Characters\Heroes\Navigation\The Comic Relief.xnb
 Content\Characters\Heroes\Navigation\The Endearing Father Figure.xnb
 Content\Characters\Heroes\Navigation\The Absolutely-Not-Into-It Love Interest.xnb
 Content\World\Tilesets\Outside.xnb
+Content\Characters\Heroes\Portraits\The Adorable Manchild.xnb
+Content\Characters\Heroes\Portraits\The Comic Relief.xnb
+Content\Characters\Heroes\Portraits\The Endearing Father Figure.xnb
+Content\Characters\Heroes\Portraits\The Absolutely-Not-Into-It Love Interest.xnb

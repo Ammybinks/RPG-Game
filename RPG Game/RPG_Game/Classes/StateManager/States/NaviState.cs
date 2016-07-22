@@ -1,5 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -8,31 +10,40 @@ namespace RPG_Game
 {
     public class NaviState : StateManager
     {
-        public Texture2D heroMoverTexture;
-        public Mover heroMover;
+        Texture2D heroMoverTexture;
+        Texture2D heroFace;
+        Mover heroMover;
+        Battler heroBattler;
 
-        public Texture2D hiroMoverTexture;
-        public Mover hiroMover;
+        Texture2D hiroMoverTexture;
+        Texture2D hiroFace;
+        Mover hiroMover;
+        Battler hiroBattler;
 
-        public Texture2D hearoMoverTexture;
-        public Mover hearoMover;
+        Texture2D hearoMoverTexture;
+        Texture2D hearoFace;
+        Mover hearoMover;
+        Battler hearoBattler;
 
-        public Texture2D hieroMoverTexture;
-        public Mover hieroMover;
+        Texture2D hieroMoverTexture;
+        Texture2D hieroFace;
+        Mover hieroMover;
+        Battler hieroBattler;
 
-        public LinkedList<Mover> movers = new LinkedList<Mover>();
+        LinkedList<Mover> movers = new LinkedList<Mover>();
 
-        public Camera camera;
+        Camera camera;
 
-        public Tile[,] map = new Tile[100, 50];
-        public Tile tile;
-        public Tile eventTile;
+        Tile[,] map = new Tile[100, 50];
+        Tile tile;
+        Tile eventTile;
 
-        public bool[] state = new bool[2];
-        public int currentState;
+        Action<GameTime>[] stateMethods = new Action<GameTime>[3];
+        bool[] state = new bool[4];
+        int currentState;
 
-        public Vector2 movementModifier;
-        public Vector2 playerView = new Vector2(20, 11);
+        Vector2 movementModifier;
+        Vector2 playerView = new Vector2(20, 11);
 
         public Event currentEvent;
         Area01 area01 = new Area01();
@@ -53,6 +64,11 @@ namespace RPG_Game
             hearoMoverTexture = main.Content.Load<Texture2D>("Characters\\Heroes\\Navigation\\The Endearing Father Figure");
             hieroMoverTexture = main.Content.Load<Texture2D>("Characters\\Heroes\\Navigation\\The Comic Relief");
 
+            heroFace = main.Content.Load<Texture2D>("Characters\\Heroes\\Portraits\\The Adorable Manchild");
+            hiroFace = main.Content.Load<Texture2D>("Characters\\Heroes\\Portraits\\The Absolutely-Not-Into-It Love Interest");
+            hearoFace = main.Content.Load<Texture2D>("Characters\\Heroes\\Portraits\\The Endearing Father Figure");
+            hieroFace = main.Content.Load<Texture2D>("Characters\\Heroes\\Portraits\\The Comic Relief");
+
             pointer.SetTexture(pointerTexture);
             pointer.Scale = new Vector2(0.8f, 0.8f);
 
@@ -62,8 +78,9 @@ namespace RPG_Game
             camera.ViewWidth = 1920;
             camera.ViewHeight = 1080;
             camera.UpperLeft = new Vector2(0, 0);
-            //Miscellaneous Initialization Ends//
 
+            //Mover Initialization Begins//
+            //Hero Mover
             heroMover = new Mover();
             heroMover.ContinuousAnimation = false;
             heroMover.AnimationInterval = 100;
@@ -73,20 +90,38 @@ namespace RPG_Game
             heroMover.UpperLeft = new Vector2(heroMover.gridPosition.X * 48, heroMover.gridPosition.Y * 48);
             movers.AddFirst(heroMover);
 
+            //Hiro Mover
             hiroMover = new Mover();
             hiroMover.SetTexture(heroMoverTexture, 3, 4);
             hiroMover.UpperLeft = new Vector2(hiroMover.GetWidth(), hiroMover.GetHeight());
             movers.AddFirst(hiroMover);
 
+            //Hearo Mover
             hearoMover = new Mover();
             hearoMover.SetTexture(heroMoverTexture, 3, 4);
             hearoMover.UpperLeft = new Vector2(hearoMover.GetWidth(), hearoMover.GetHeight());
             movers.AddFirst(hearoMover);
 
+            //Hiero Mover
             hieroMover = new Mover();
             hieroMover.SetTexture(heroMoverTexture, 3, 4);
             hieroMover.UpperLeft = new Vector2(hieroMover.GetWidth(), hieroMover.GetHeight());
             movers.AddFirst(hieroMover);
+            //Mover Initialization Ends//
+
+            //Battler Initialization Begins//
+            //Hero Initialization
+            heroBattler = main.hero;
+
+            //Hiro Initialization
+            hiroBattler = main.hiro;
+
+            //Hearo Initialization
+            hearoBattler = main.hearo;
+
+            //Hiero Initialization
+            hieroBattler = main.hiero;
+            //Battler Initialization Ends//
 
             ////World Map Initialization Begins//
             ////Grass Base
@@ -203,21 +238,150 @@ namespace RPG_Game
                 map = (Tile[,])formatter.Deserialize(stream);
             }
 
+            //Boxes Initialization Begins//
+            ////Base Menu Box
+            box = new Box();
+            box.frameWidth = 280;
+            box.frameHeight = 335;
+            box.UpperLeft = new Vector2(5, 5);
+            box.SetParts(cornerTexture, wallTexture, backTexture);
+            box.activatorState = 2;
+            box.buttons = new List<Button>(5);
+            allBoxes.Add(box);
+
+            //Button that advances into status menu
+            button = new Button();
+            button.frameHeight = 50;
+            button.frameWidth = 200;
+            button.UpperLeft = new Vector2(75, 15 + ((button.GetHeight() + 15) * box.buttons.Count));
+            button.SetParts(cornerTexture, wallTexture, backTexture);
+            button.display = "Inventory";
+            button.action = Inventory;
+            button.icon.SetTexture(iconTexture, 16, 20);
+            button.icon.setCurrentFrame(9, 7);
+            button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 10, button.UpperLeft.Y + 9);
+            box.buttons.Add(button);
+
+            //Button that advances into status menu
+            button = new Button();
+            button.frameHeight = 50;
+            button.frameWidth = 200;
+            button.UpperLeft = new Vector2(75, 15 + ((button.GetHeight() + 15) * box.buttons.Count));
+            button.SetParts(cornerTexture, wallTexture, backTexture);
+            button.display = "Skills";
+            button.action = Skills;
+            button.icon.SetTexture(iconTexture, 16, 20);
+            button.icon.setCurrentFrame(15, 4);
+            button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 10, button.UpperLeft.Y + 9);
+            box.buttons.Add(button);
+
+            //Button that advances into status menu
+            button = new Button();
+            button.frameHeight = 50;
+            button.frameWidth = 200;
+            button.UpperLeft = new Vector2(75, 15 + ((button.GetHeight() + 15) * box.buttons.Count));
+            button.SetParts(cornerTexture, wallTexture, backTexture);
+            button.display = "Map";
+            button.action = Map;
+            button.icon.SetTexture(iconTexture, 16, 20);
+            button.icon.setCurrentFrame(14, 11);
+            button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 10, button.UpperLeft.Y + 9);
+            box.buttons.Add(button);
+
+            //Button that advances into status menu
+            button = new Button();
+            button.frameHeight = 50;
+            button.frameWidth = 200;
+            button.UpperLeft = new Vector2(75, 15 + ((button.GetHeight() + 15) * box.buttons.Count));
+            button.SetParts(cornerTexture, wallTexture, backTexture);
+            button.display = "Status";
+            button.action = Status;
+            button.icon.SetTexture(iconTexture, 16, 20);
+            button.icon.setCurrentFrame(3, 0);
+            button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 10, button.UpperLeft.Y + 9);
+            box.buttons.Add(button);
+
+            //Button that exits the game
+            button = new Button();
+            button.frameHeight = 50;
+            button.frameWidth = 200;
+            button.UpperLeft = new Vector2(75, 15 + ((button.GetHeight() + 15) * box.buttons.Count));
+            button.SetParts(cornerTexture, wallTexture, backTexture);
+            button.display = "Exit";
+            button.action = Exit;
+            button.icon.SetTexture(iconTexture, 16, 20);
+            button.icon.setCurrentFrame(5, 5);
+            button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 10, button.UpperLeft.Y + 9);
+            box.buttons.Add(button);
+
+            ////Hero Buttons Box
+            box = new Box();
+            box.frameWidth = 900;
+            box.frameHeight = 725;
+            box.UpperLeft = new Vector2(main.graphics.PreferredBackBufferWidth - box.GetWidth() - 5, 5);
+            box.SetParts(cornerTexture, wallTexture, backTexture);
+            box.activatorState = 3;
+            box.buttons = new List<Button>();
+            allBoxes.Add(box);
+
+            //Hero Button
+            button = new Button();
+            button.frameWidth = 800;
+            button.frameHeight = 150;
+            button.UpperLeft = new Vector2(main.graphics.PreferredBackBufferWidth - button.GetWidth() - 25, 25 + ((button.GetHeight() + 25) * box.buttons.Count));
+            button.SetParts(cornerTexture, wallTexture, backTexture);
+            button.display = "The Adorable Manchild";
+            button.action = Status;
+            button.icon.SetTexture(heroFace);
+            button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 15, button.UpperLeft.Y + 2);
+            box.buttons.Add(button);
+            
+            //Hiro Button
+            button = new Button();
+            button.frameWidth = 800;
+            button.frameHeight = 150;
+            button.UpperLeft = new Vector2(main.graphics.PreferredBackBufferWidth - button.GetWidth() - 25, 25 + ((button.GetHeight() + 25) * box.buttons.Count));
+            button.SetParts(cornerTexture, wallTexture, backTexture);
+            button.display = "The Absolutely-Not-Into-It Love Interest";
+            button.action = Status;
+            button.icon.SetTexture(hiroFace);
+            button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 15, button.UpperLeft.Y + 2);
+            box.buttons.Add(button);
+
+            //Hearo Button
+            button = new Button();
+            button.frameWidth = 800;
+            button.frameHeight = 150;
+            button.UpperLeft = new Vector2(main.graphics.PreferredBackBufferWidth - button.GetWidth() - 25, 25 + ((button.GetHeight() + 25) * box.buttons.Count));
+            button.SetParts(cornerTexture, wallTexture, backTexture);
+            button.display = "The Endearing Father Figure";
+            button.action = Status;
+            button.icon.SetTexture(hearoFace);
+            button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 15, button.UpperLeft.Y + 2);
+            box.buttons.Add(button);
+
+            //Hiero Button
+            button = new Button();
+            button.frameWidth = 800;
+            button.frameHeight = 150;
+            button.UpperLeft = new Vector2(main.graphics.PreferredBackBufferWidth - button.GetWidth() - 25, 25 + ((button.GetHeight() + 25) * box.buttons.Count));
+            button.SetParts(cornerTexture, wallTexture, backTexture);
+            button.display = "The Comic Relief";
+            button.action = Status;
+            button.icon.SetTexture(hieroFace);
+            button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 15, button.UpperLeft.Y + 2);
+            box.buttons.Add(button);
+
+            stateMethods[0] = Movement;
+            stateMethods[1] = Event;
+            stateMethods[2] = Menu;
+
             targetState = 0;
         }
         
         public override void Update(GameTime gameTime)
         {
-            targetState = 0;
-
-            if (currentState == 0)
-            {
-                NaviMovement(gameTime);
-            }
-            else if (currentState == 1)
-            {
-                NaviEvent(gameTime);
-            }
+            stateMethods[currentState].Invoke(gameTime);
 
             heroMover.Animate(gameTime);
         }
@@ -266,16 +430,44 @@ namespace RPG_Game
                     {
                         currentEvent.eventBox.DrawParts(spriteBatch);
 
-                        pointer.Draw(spriteBatch);
-
                         spriteBatch.DrawString(calibri, currentEvent.line, currentEvent.lineUpperLeft, Color.White);
                     }
                 }
             }
+            
+            //Boxes \ Buttons Draw Cycle
+            for (int i = 0; i < allBoxes.Count; i++)
+            {
+                if (state[allBoxes[i].activatorState])
+                {
+                    allBoxes[i].DrawParts(spriteBatch);
+
+                    for (int o = 0; o < allBoxes[i].buttons.Count; o++)
+                    {
+                        allBoxes[i].buttons[o].DrawParts(spriteBatch);
+
+                        if (allBoxes[i].buttons[o].icon != null)
+                        {
+                            allBoxes[i].buttons[o].icon.Draw(spriteBatch);
+                        }
+
+                        spriteBatch.DrawString(calibri,
+                                               allBoxes[i].buttons[o].display,
+                                               new Vector2(allBoxes[i].buttons[o].UpperLeft.X + allBoxes[i].buttons[o].icon.GetWidth() + 30, allBoxes[i].buttons[o].UpperLeft.Y + 8),
+                                               Color.Black,
+                                               0,
+                                               new Vector2(0, 0),
+                                               1f,
+                                               SpriteEffects.None, 0);
+                    }
+                }
+            }
+
+            pointer.Draw(spriteBatch);
         }
 
 
-        private void NaviMovement(GameTime gameTime)
+        private void Movement(GameTime gameTime)
         {
             if (movementModifier != new Vector2(0, 0))
             {
@@ -407,13 +599,31 @@ namespace RPG_Game
                         eventTile = map[(int)(heroMover.gridPosition.X + heroMover.lastMoved.X), (int)(heroMover.gridPosition.Y + heroMover.lastMoved.Y)];
                     }
                 }
+                if(menuInput.inputState == Input.inputStates.pressed)
+                {
+                    ActivateState(2);
+                    state[3] = true;
+
+                    activeButtons = new List<Button>();
+
+                    for (int i = 0; i < allBoxes.Count; i++)
+                    {
+                        if (allBoxes[i].activatorState == currentState)
+                        {
+                            for(int o = 0; o < allBoxes[i].buttons.Count; o++)
+                            {
+                                activeButtons.Add(allBoxes[i].buttons[o]);
+                            }
+                        }
+                    }
+                }
             }
 
             camera.UpperLeft = new Vector2((heroMover.UpperLeft.X + heroMover.GetWidth() / 2) - (camera.ViewWidth / 2),
                                            (heroMover.UpperLeft.Y + heroMover.GetHeight() / 2) - (camera.ViewHeight / 2));
         }
 
-        private void NaviEvent(GameTime gameTime)
+        private void Event(GameTime gameTime)
         {
             eventTile.eventAction.Invoke(this, gameTime);
 
@@ -425,6 +635,57 @@ namespace RPG_Game
             }
         }
 
+        private void Menu(GameTime gameTime)
+        {
+            pointer.isAlive = true;
+
+            Rectangle buttonRect = new Rectangle((int)activeButtons[buttonIndex].UpperLeft.X,
+                                                 (int)activeButtons[buttonIndex].UpperLeft.Y,
+                                                 activeButtons[buttonIndex].frameWidth,
+                                                 activeButtons[buttonIndex].frameHeight);
+
+            if (mouseMoving)
+            {
+                for (int i = 0; i < activeButtons.Count; i++)
+                {
+                    buttonRect = new Rectangle((int)activeButtons[i].UpperLeft.X,
+                                               (int)activeButtons[i].UpperLeft.Y,
+                                               activeButtons[i].frameWidth,
+                                               activeButtons[i].frameHeight);
+
+                    if (buttonRect.Contains(mousePosition))
+                    {
+                        buttonIndex = i;
+                    }
+                }
+            }
+
+            if (upInput.inputState == Input.inputStates.pressed)
+            {
+                buttonIndex -= 1;
+                if (buttonIndex < 0)
+                {
+                    buttonIndex = activeButtons.Count - 1;
+                }
+            }
+            if (downInput.inputState == Input.inputStates.pressed)
+            {
+                buttonIndex += 1;
+                if (buttonIndex > activeButtons.Count - 1)
+                {
+                    buttonIndex = 0;
+                }
+            }
+            if (activateInput.inputState == Input.inputStates.pressed)
+            {
+                if (activateInput.inputType != Input.inputTypes.mouse | buttonRect.Contains(mousePosition))
+                {
+                    activeButtons[buttonIndex].action.Invoke(gameTime);
+                }
+            }
+
+            pointer.UpperLeft = new Vector2(activeButtons[buttonIndex].UpperLeft.X - pointer.GetWidth() - 15, activeButtons[buttonIndex].UpperLeft.Y + 5);
+        }
 
         //Activates the target state, setting all states to false, while keeping the target state true
         private void ActivateState(int targetState)
@@ -463,6 +724,31 @@ namespace RPG_Game
 
                 currentState = targetState;
             }
+        }
+
+        private void Inventory(GameTime gameTime)
+        {
+
+        }
+
+        private void Skills(GameTime gameTime)
+        {
+
+        }
+
+        private void Map(GameTime gameTime)
+        {
+
+        }
+
+        private void Status(GameTime gameTime)
+        {
+
+        }
+
+        private void Exit(GameTime gameTime)
+        {
+            quitting = true;
         }
 
         private void tileDraw(Tile tile, Vector2 gridPosition, SpriteBatch spriteBatch, Main main)

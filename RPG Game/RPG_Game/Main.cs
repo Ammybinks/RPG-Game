@@ -20,11 +20,19 @@ namespace RPG_Game
         
         Vector2 screenSize;
 
-        int currentState = 1;
+        int currentState = 0;
         List<StateManager> states = new List<StateManager>();
 
         NaviState naviState = new NaviState();
         BattleState battleState = new BattleState();
+        
+        public Battler hero;
+        
+        public Battler hiro;
+        
+        public Battler hearo;
+        
+        public Battler hiero;
 
         public Main()
         {
@@ -60,12 +68,25 @@ namespace RPG_Game
             //graphics.IsFullScreen = true;
             graphics.ApplyChanges();
 
-            naviState.LoadContent(this);
-            states.Add(naviState);
+            //Heroes Initialization Begins//
+            //Hero Initialization
+            hero = new Battler();
+
+            //Hiro Initialization
+            hiro = new Battler();
+
+            //Hearo Initialization
+            hearo = new Battler();
+
+            //Hiero Initialization
+            hiero = new Battler();
+            //Heroes Initialization Ends//
 
             battleState.LoadContent(this);
             states.Add(battleState);
 
+            naviState.LoadContent(this);
+            states.Add(naviState);
         }
 
         /// <summary>
@@ -93,6 +114,11 @@ namespace RPG_Game
 
                     currentState = states[i].targetState;
                     states[i].targetState = i;
+
+                    if(states[i].quitting)
+                    {
+                        Exit();
+                    }
                 }
             }
 
@@ -116,7 +142,7 @@ namespace RPG_Game
                     states[i].Draw(spriteBatch, this);
                 }
             }
-
+            
             spriteBatch.End();
 
             base.Draw(gameTime);

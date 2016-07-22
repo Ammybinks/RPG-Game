@@ -38,3 +38,7 @@ C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\
 C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Characters\Heroes\Navigation\The Absolutely-Not-Into-It Love Interest.xnb
 C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\World\Battle Backs\Translucent.xnb
 C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\World\Tilesets\Outside.xnb
+C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Characters\Heroes\Portraits\The Adorable Manchild.xnb
+C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Characters\Heroes\Portraits\The Comic Relief.xnb
+C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Characters\Heroes\Portraits\The Endearing Father Figure.xnb
+C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Characters\Heroes\Portraits\The Absolutely-Not-Into-It Love Interest.xnb

@@ -43,11 +43,10 @@ namespace RPG_Game
         
         Random rand = new Random();
 
-        Ability ability;
+        Button ability;
         Action<GameTime> currentAction;
 
         int targetIndex = 0;
-        int buttonIndex = 0;
         float damageDealt;
         float damageLocation;
         bool actionComplete;
@@ -89,7 +88,7 @@ namespace RPG_Game
 
             //Heroes Initialization Begins//
             //Hero Initialization
-            hero = new Battler();
+            hero = main.hero;
             hero.SetTexture(heroTexture, 9, 6);
             hero.AnimationInterval = 250;
             hero.reverseAnimating = true;
@@ -110,7 +109,7 @@ namespace RPG_Game
             heroes.Add(hero);
 
             //Hiro Initialization
-            hiro = new Battler();
+            hiro = main.hiro;
             hiro.SetTexture(hiroTexture, 9, 6);
             hiro.AnimationInterval = 250;
             hiro.reverseAnimating = true;
@@ -131,7 +130,7 @@ namespace RPG_Game
             heroes.Add(hiro);
 
             //Hearo Initialization
-            hearo = new Battler();
+            hearo = main.hearo;
             hearo.SetTexture(hearoTexture, 9, 6);
             hearo.AnimationInterval = 250;
             hearo.reverseAnimating = true;
@@ -152,7 +151,7 @@ namespace RPG_Game
 
             ////Hearo Ability Initialization
             //Attack Ability
-            ability = new Ability();
+            ability = new Button();
             ability.action = Attack;
             ability.display = "ATTACK - Generic attack bullshit";
 
@@ -165,7 +164,7 @@ namespace RPG_Game
             hearo.abilities.Add(ability);
 
             //Murder Ability
-            ability = new Ability();
+            ability = new Button();
             ability.action = Murder;
             ability.display = "KILL THEM - Like, seriously. Kill them already";
 
@@ -180,7 +179,7 @@ namespace RPG_Game
             heroes.Add(hearo);
 
             //Hiero Initialization
-            hiero = new Battler();
+            hiero = main.hiero;
             hiero.SetTexture(hieroTexture, 9, 6);
             hiero.AnimationInterval = 250;
             hiero.reverseAnimating = true;
@@ -254,7 +253,6 @@ namespace RPG_Game
             werewolf.meterSprite.UpperLeft = new Vector2(werewolf.UpperLeft.X,
                                                       werewolf.UpperLeft.Y + werewolf.meterSprite.GetHeight() + (werewolf.GetHeight()) + 20);
             enemies.Add(werewolf);
-            ////enemies.Add(werewolf);
 
             werewolf = new Battler();
             werewolf.SetTexture(werewolfTexture);
@@ -281,7 +279,6 @@ namespace RPG_Game
             box.UpperLeft = new Vector2(5, main.graphics.PreferredBackBufferHeight - box.GetHeight() - 5);
             box.SetParts(cornerTexture, wallTexture, backTexture);
             box.activatorState = 3;
-            box.activatorTrack = 1;
             box.buttons = new List<Button>(3);
             allBoxes.Add(box);
 
@@ -292,6 +289,7 @@ namespace RPG_Game
             button.UpperLeft = new Vector2(75, main.graphics.PreferredBackBufferHeight - button.GetHeight() - 15 - (60 * ((box.buttons.Capacity - box.buttons.Count) - 1)));
             button.SetParts(cornerTexture, wallTexture, backTexture);
             button.display = "FIGHT";
+            button.action = TargetSwitch;
             button.icon.SetTexture(iconTexture, 16, 20);
             button.icon.setCurrentFrame(12, 4);
             button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 10, button.UpperLeft.Y + 9);
@@ -304,6 +302,7 @@ namespace RPG_Game
             button.UpperLeft = new Vector2(75, main.graphics.PreferredBackBufferHeight - button.GetHeight() - 15 - (60 * ((box.buttons.Capacity - box.buttons.Count) - 1)));
             button.SetParts(cornerTexture, wallTexture, backTexture);
             button.display = "SKILL";
+            button.action = SkillsSwitch;
             button.icon.SetTexture(iconTexture, 16, 20);
             button.icon.setCurrentFrame(15, 4);
             button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 10, button.UpperLeft.Y + 9);
@@ -316,7 +315,6 @@ namespace RPG_Game
             box.UpperLeft = new Vector2(main.graphics.PreferredBackBufferWidth / 2 - box.frameWidth / 2, 5);
             box.SetParts(cornerTexture, wallTexture, backTexture);
             box.activatorState = 4;
-            box.activatorTrack = 1;
             box.buttons = new List<Button>(0);
             allBoxes.Add(box);
 
@@ -339,34 +337,7 @@ namespace RPG_Game
             targetState = 1;
 
             //Execute main update method
-            if (currentState == 0)
-            {
-                Idle(gameTime);
-            }
-            else if (currentState == 1)
-            {
-                StepForwards(gameTime);
-            }
-            else if (currentState == 2)
-            {
-                Animate(gameTime);
-            }
-            else if (currentState == 3)
-            {
-                Menu(gameTime);
-            }
-            else if (currentState == 4)
-            {
-                SkillsMenu(gameTime);
-            }
-            else if (currentState == 6)
-            {
-                TargetMenu(gameTime);
-            }
-            else if (currentState == 7)
-            {
-                StateSwitch(gameTime);
-            }
+            stateMethods[currentState].Invoke(gameTime);
 
             //Update characters
             //Heroes
@@ -480,7 +451,7 @@ namespace RPG_Game
 
                         spriteBatch.DrawString(calibri,
                                                allBoxes[i].buttons[o].display,
-                                               new Vector2(allBoxes[i].buttons[o].UpperLeft.X + 70, allBoxes[i].buttons[o].UpperLeft.Y + 8),
+                                               new Vector2(allBoxes[i].buttons[o].UpperLeft.X + allBoxes[i].buttons[o].icon.GetWidth() + 30, allBoxes[i].buttons[o].UpperLeft.Y + 8),
                                                Color.Black,
                                                0,
                                                new Vector2(0, 0),
@@ -544,9 +515,6 @@ namespace RPG_Game
                 //If the actor is playable
                 if (actor.friendly)
                 {
-                    //actor.setCurrentFrame(0, 1);
-                    //actor.animationShortStarted = false;
-
                     //Switch to Battle Menu State
                     ActivateState(3);
 
@@ -638,50 +606,7 @@ namespace RPG_Game
                 {
                     pointer.isAlive = false;
 
-                    if (activeButtons[buttonIndex].display == "FIGHT")
-                    {
-                        //Switch to Target Menu State
-                        ActivateState(6);
-
-                        currentAction = Attack;
-
-                        for (int i = 0; i < enemies.Count; i++)
-                        {
-                            targets.Capacity += 1;
-                            targets.Add(enemies[i]);
-                        }
-                    }
-                    else if (activeButtons[buttonIndex].display == "SKILL")
-                    {
-                        //Switch to Skill Menu State
-                        SwitchState(4);
-
-                        for (int i = 0; i < allBoxes.Count; i++)
-                        {
-                            if (allBoxes[i].activatorState == currentState)
-                            {
-                                allBoxes[i].buttons.Clear();
-                                allBoxes[i].buttons.Capacity = 0;
-
-                                for (int o = 0; o < actor.abilities.Count; o++)
-                                {
-                                    actor.abilities[o].UpperLeft = new Vector2(allBoxes[i].UpperLeft.X + 80, allBoxes[i].UpperLeft.Y + 10 + (60 * o));
-                                    actor.abilities[o].frameWidth = allBoxes[i].frameWidth - 90;
-                                    actor.abilities[o].SetParts(cornerTexture, wallTexture, backTexture);
-                                    actor.abilities[o].icon.UpperLeft = new Vector2(actor.abilities[o].UpperLeft.X + 10, actor.abilities[o].UpperLeft.Y + 9);
-
-                                    allBoxes[i].buttons.Add(actor.abilities[o]);
-                                }
-
-                                allBoxes[i].frameHeight = (int)allBoxes[i].buttons[allBoxes[i].buttons.Count - 1].UpperLeft.Y + 60;
-                                allBoxes[i].SetParts(cornerTexture, wallTexture, backTexture);
-
-                                activeButtons = allBoxes[i].buttons;
-
-                                buttonIndex = 0;
-                            }
-                        }
-                    }
+                    activeButtons[buttonIndex].action.Invoke(gameTime);
                 }
             }
 
@@ -879,6 +804,52 @@ namespace RPG_Game
                 state[targetState] = true;
 
                 currentState = targetState;
+            }
+        }
+
+        private void TargetSwitch(GameTime gameTime)
+        {
+            //Switch to Target Menu State
+            ActivateState(6);
+
+            currentAction = Attack;
+
+            for (int i = 0; i < enemies.Count; i++)
+            {
+                targets.Capacity += 1;
+                targets.Add(enemies[i]);
+            }
+        }
+
+        private void SkillsSwitch(GameTime gameTime)
+        {
+            //Switch to Skill Menu State
+            SwitchState(4);
+
+            for (int i = 0; i < allBoxes.Count; i++)
+            {
+                if (allBoxes[i].activatorState == currentState)
+                {
+                    allBoxes[i].buttons.Clear();
+                    allBoxes[i].buttons.Capacity = 0;
+
+                    for (int o = 0; o < actor.abilities.Count; o++)
+                    {
+                        actor.abilities[o].UpperLeft = new Vector2(allBoxes[i].UpperLeft.X + 80, allBoxes[i].UpperLeft.Y + 10 + (60 * o));
+                        actor.abilities[o].frameWidth = allBoxes[i].frameWidth - 90;
+                        actor.abilities[o].SetParts(cornerTexture, wallTexture, backTexture);
+                        actor.abilities[o].icon.UpperLeft = new Vector2(actor.abilities[o].UpperLeft.X + 10, actor.abilities[o].UpperLeft.Y + 9);
+
+                        allBoxes[i].buttons.Add(actor.abilities[o]);
+                    }
+
+                    allBoxes[i].frameHeight = (int)allBoxes[i].buttons[allBoxes[i].buttons.Count - 1].UpperLeft.Y + 60;
+                    allBoxes[i].SetParts(cornerTexture, wallTexture, backTexture);
+
+                    activeButtons = allBoxes[i].buttons;
+
+                    buttonIndex = 0;
+                }
             }
         }
 

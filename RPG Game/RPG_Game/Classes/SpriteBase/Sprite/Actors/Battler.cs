@@ -25,7 +25,7 @@ namespace RPG_Game
 
         public Sprite shadow = new Sprite();
 
-        public List<Ability> abilities = new List<Ability>();
+        public List<Button> abilities = new List<Button>();
 
         public Vector2 battleOrigin;
         public bool friendly;

@@ -22,13 +22,14 @@ namespace RPG_Game
         internal Input leftInput = new Input();
         internal Input rightInput = new Input();
         internal Input activateInput = new Input();
+        internal Input menuInput = new Input();
 
         internal Texture2D pointerTexture;
         internal Sprite pointer = new Sprite();
 
         internal Box box;
 
-        internal List<Box> allBoxes = new List<Box>(1);
+        internal List<Box> allBoxes = new List<Box>();
 
         internal List<Button> activeButtons;
 
@@ -41,9 +42,13 @@ namespace RPG_Game
 
         internal SpriteFont calibri;
 
+        internal int buttonIndex = 0;
+
         internal double timer;
 
         internal Step step = new Step();
+
+        public bool quitting = false;
 
         public virtual void LoadContent(Main main)
         {
@@ -174,6 +179,26 @@ namespace RPG_Game
             {
                 activateInput.inputState = Input.inputStates.released;
                 activateInput.inputType = Input.inputTypes.keyboard;
+            }
+
+            //Menu input handling
+            if (((currentKeyState.IsKeyDown(Keys.X)) && (oldKeyState.IsKeyUp(Keys.X))) ||
+                ((currentKeyState.IsKeyDown(Keys.Escape)) && (oldKeyState.IsKeyUp(Keys.Escape))))
+            {
+                menuInput.inputState = Input.inputStates.pressed;
+                menuInput.inputType = Input.inputTypes.keyboard;
+            }
+            else if (((currentKeyState.IsKeyDown(Keys.X) && oldKeyState.IsKeyDown(Keys.X))) ||
+                     ((currentKeyState.IsKeyDown(Keys.Escape)) && (oldKeyState.IsKeyDown(Keys.Escape))))
+            {
+                menuInput.inputState = Input.inputStates.held;
+                menuInput.inputType = Input.inputTypes.keyboard;
+            }
+            else if (((currentKeyState.IsKeyUp(Keys.X) && oldKeyState.IsKeyDown(Keys.X))) ||
+                     ((currentKeyState.IsKeyUp(Keys.Escape)) && (oldKeyState.IsKeyDown(Keys.Escape))))
+            {
+                menuInput.inputState = Input.inputStates.released;
+                menuInput.inputType = Input.inputTypes.keyboard;
             }
 
             mousePosition = new Point(currentMouseState.X, currentMouseState.Y);
