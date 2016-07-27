@@ -26,30 +26,36 @@ namespace RPG_Game
         Texture2D werewolfTexture;
         Battler werewolf;
 
-        List<Battler> heroes = new List<Battler>(4);
-        List<Battler> enemies = new List<Battler>(4);
+        public List<Battler> heroes = new List<Battler>(4);
+        public List<Battler> enemies = new List<Battler>(4);
 
-        List<Battler> battlers = new List<Battler>();
+        public List<Battler> battlers = new List<Battler>();
         
         Texture2D meterTexture;
 
         Texture2D shadowTexture;
         LinkedList<Sprite> shadows = new LinkedList<Sprite>();
 
-        Battler target = new Battler();
-        List<Battler> targets = new List<Battler>(0);
+        public Battler target = new Battler();
+        public List<SpriteBase> targets = new List<SpriteBase>(0);
 
-        Battler actor = new Battler();
+        public Battler actor = new Battler();
         
         Random rand = new Random();
 
-        Button ability;
-        Action<GameTime> currentAction;
+        Box battleBox;
+        Box skillsBox;
+        Box itemsBox;
+
+        Usable currentAction;
+        Attack attack = new Attack();
+
+        public List<Item> heldItems = new List<Item>();
 
         int targetIndex = 0;
-        float damageDealt;
-        float damageLocation;
-        bool actionComplete;
+        public float damageDealt;
+        public float damageLocation;
+        public bool actionComplete;
 
         Action<GameTime>[] stateMethods = new Action<GameTime>[8];
         bool[] state = new bool[8];
@@ -86,6 +92,10 @@ namespace RPG_Game
             backgroundSprite.UpperLeft = new Vector2(0, (main.graphics.PreferredBackBufferHeight - backgroundSprite.GetHeight()) * -1);
             backgroundSprite.Scale = new Vector2(2f, 2f);
 
+            heldItems = main.heldItems;
+            //Miscellaneous Initialization Ends//
+
+
             //Heroes Initialization Begins//
             //Hero Initialization
             hero = main.hero;
@@ -95,6 +105,7 @@ namespace RPG_Game
             hero.ContinuousAnimation = false;
             hero.UpperLeft = new Vector2(500, 200);
             hero.battleOrigin = hero.UpperLeft;
+            hero.maxHealth = 1000;
             hero.health = 1000;
             hero.PhAtk = 10;
             hero.PhDef = 75;
@@ -108,6 +119,13 @@ namespace RPG_Game
             hero.shadow.SetTexture(shadowTexture);
             heroes.Add(hero);
 
+            ////Hero Ability Initialization
+            //Attack Ability
+            attack = new Attack();
+            attack.iconFrame = new Vector2(3, 4);
+            hero.abilities.Add(attack);
+
+
             //Hiro Initialization
             hiro = main.hiro;
             hiro.SetTexture(hiroTexture, 9, 6);
@@ -116,6 +134,7 @@ namespace RPG_Game
             hiro.ContinuousAnimation = false;
             hiro.UpperLeft = new Vector2(475, 350);
             hiro.battleOrigin = hiro.UpperLeft;
+            hiro.maxHealth = 100;
             hiro.health = 100;
             hiro.PhAtk = 5;
             hiro.PhDef = 50;
@@ -129,6 +148,13 @@ namespace RPG_Game
             hiro.shadow.SetTexture(shadowTexture);
             heroes.Add(hiro);
 
+            ////Hiro Ability Initialization
+            //Attack Ability
+            attack = new Attack();
+            attack.iconFrame = new Vector2(3, 4);
+            hiro.abilities.Add(attack);
+
+
             //Hearo Initialization
             hearo = main.hearo;
             hearo.SetTexture(hearoTexture, 9, 6);
@@ -137,6 +163,7 @@ namespace RPG_Game
             hearo.ContinuousAnimation = false;
             hearo.UpperLeft = new Vector2(450, 500);
             hearo.battleOrigin = hearo.UpperLeft;
+            hearo.maxHealth = 5;
             hearo.health = 5;
             hearo.PhAtk = 2;
             hearo.PhDef = 0;
@@ -151,31 +178,15 @@ namespace RPG_Game
 
             ////Hearo Ability Initialization
             //Attack Ability
-            ability = new Button();
-            ability.action = Attack;
-            ability.display = "ATTACK - Generic attack bullshit";
-
-            ability.frameHeight = 50;
-            ability.UpperLeft = new Vector2(10, 10);
-            ability.SetParts(cornerTexture, wallTexture, backTexture);
-            ability.icon.SetTexture(iconTexture, 16, 20);
-            ability.icon.setCurrentFrame(3, 4);
-            ability.icon.UpperLeft = new Vector2(ability.UpperLeft.X + 10, ability.UpperLeft.Y + 9);
-            hearo.abilities.Add(ability);
+            attack = new Attack();
+            attack.iconFrame = new Vector2(3, 4);
+            hearo.abilities.Add(attack);
 
             //Murder Ability
-            ability = new Button();
-            ability.action = Murder;
-            ability.display = "KILL THEM - Like, seriously. Kill them already";
-
-            ability.frameHeight = 50;
-            ability.UpperLeft = new Vector2(10, 10);
-            ability.SetParts(cornerTexture, wallTexture, backTexture);
-            ability.icon.SetTexture(iconTexture, 16, 20);
-            ability.icon.setCurrentFrame(10, 0);
-            ability.icon.UpperLeft = new Vector2(ability.UpperLeft.X + 10, ability.UpperLeft.Y + 9);
-            hearo.abilities.Add(ability);
-
+            Murder murder = new Murder();
+            murder.iconFrame = new Vector2(10, 0);
+            hearo.abilities.Add(murder);
+            
             heroes.Add(hearo);
 
             //Hiero Initialization
@@ -186,6 +197,7 @@ namespace RPG_Game
             hiero.ContinuousAnimation = false;
             hiero.UpperLeft = new Vector2(425, 650);
             hiero.battleOrigin = hiero.UpperLeft;
+            hiero.maxHealth = 50;
             hiero.health = 50;
             hiero.PhAtk = 5;
             hiero.PhDef = 70;
@@ -199,6 +211,12 @@ namespace RPG_Game
             hiero.shadow.SetTexture(shadowTexture);
             heroes.Add(hiero);
 
+            ////Hiero Ability Initialization
+            //Attack Ability
+            attack = new Attack();
+            attack.iconFrame = new Vector2(3, 4);
+            hiero.abilities.Add(attack);
+
             //Heroes Initialization Ends//
 
             //Enemies Initialization Begins//
@@ -207,6 +225,7 @@ namespace RPG_Game
             werewolf.Scale = new Vector2(0.5f, 0.5f);
             werewolf.UpperLeft = new Vector2(1200, 200);
             werewolf.battleOrigin = werewolf.UpperLeft;
+            werewolf.maxHealth = 20;
             werewolf.health = 20;
             werewolf.PhAtk = 99999;
             werewolf.PhDef = 0;
@@ -225,6 +244,7 @@ namespace RPG_Game
             werewolf.Scale = new Vector2(0.5f, 0.5f);
             werewolf.UpperLeft = new Vector2(1000, 300);
             werewolf.battleOrigin = werewolf.UpperLeft;
+            werewolf.maxHealth = 35;
             werewolf.health = 35;
             werewolf.PhAtk = 100;
             werewolf.PhDef = 50;
@@ -242,6 +262,7 @@ namespace RPG_Game
             werewolf.Scale = new Vector2(0.5f, 0.5f);
             werewolf.UpperLeft = new Vector2(1200, 400);
             werewolf.battleOrigin = werewolf.UpperLeft;
+            werewolf.maxHealth = 5;
             werewolf.health = 5;
             werewolf.PhAtk = 2;
             werewolf.PhDef = 0;
@@ -259,6 +280,7 @@ namespace RPG_Game
             werewolf.Scale = new Vector2(0.5f, 0.5f);
             werewolf.UpperLeft = new Vector2(1000, 500);
             werewolf.battleOrigin = werewolf.UpperLeft;
+            werewolf.maxHealth = 50;
             werewolf.health = 50;
             werewolf.PhAtk = 10;
             werewolf.PhDef = -50;
@@ -273,57 +295,80 @@ namespace RPG_Game
 
             //Boxes Initialization Begins//
             //Battle Menu Box
-            box = new Box();
-            box.frameWidth = 230;
-            box.frameHeight = 190;
-            box.UpperLeft = new Vector2(5, main.graphics.PreferredBackBufferHeight - box.GetHeight() - 5);
-            box.SetParts(cornerTexture, wallTexture, backTexture);
-            box.activatorState = 3;
-            box.buttons = new List<Button>(3);
-            allBoxes.Add(box);
+            battleBox = new Box();
+            battleBox.frameWidth = 230;
+            battleBox.frameHeight = 190;
+            battleBox.UpperLeft = new Vector2(5, main.graphics.PreferredBackBufferHeight - battleBox.GetHeight() - 5);
+            battleBox.SetParts(cornerTexture, wallTexture, backTexture);
+            battleBox.activatorState = 3;
+            battleBox.buttons = new List<Button>(3);
+            allBoxes.Add(battleBox);
 
             //Button that advances into targeting state
             button = new Button();
             button.frameHeight = 50;
             button.frameWidth = 150;
-            button.UpperLeft = new Vector2(75, main.graphics.PreferredBackBufferHeight - button.GetHeight() - 15 - (60 * ((box.buttons.Capacity - box.buttons.Count) - 1)));
+            button.UpperLeft = new Vector2(75, main.graphics.PreferredBackBufferHeight - button.GetHeight() - 15 - (60 * ((battleBox.buttons.Capacity - battleBox.buttons.Count) - 1)));
             button.SetParts(cornerTexture, wallTexture, backTexture);
             button.display = "FIGHT";
             button.action = TargetSwitch;
             button.icon.SetTexture(iconTexture, 16, 20);
             button.icon.setCurrentFrame(12, 4);
             button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 10, button.UpperLeft.Y + 9);
-            box.buttons.Add(button);
+            battleBox.buttons.Add(button);
 
             //Button that advances into skillsMenu Box
             button = new Button();
             button.frameHeight = 50;
             button.frameWidth = 150;
-            button.UpperLeft = new Vector2(75, main.graphics.PreferredBackBufferHeight - button.GetHeight() - 15 - (60 * ((box.buttons.Capacity - box.buttons.Count) - 1)));
+            button.UpperLeft = new Vector2(75, main.graphics.PreferredBackBufferHeight - button.GetHeight() - 15 - (60 * ((battleBox.buttons.Capacity - battleBox.buttons.Count) - 1)));
             button.SetParts(cornerTexture, wallTexture, backTexture);
             button.display = "SKILL";
             button.action = SkillsSwitch;
             button.icon.SetTexture(iconTexture, 16, 20);
             button.icon.setCurrentFrame(15, 4);
             button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 10, button.UpperLeft.Y + 9);
-            box.buttons.Add(button);
+            battleBox.buttons.Add(button);
+
+            //Button that advances into itemsMenu Box
+            button = new Button();
+            button.frameHeight = 50;
+            button.frameWidth = 150;
+            button.UpperLeft = new Vector2(75, main.graphics.PreferredBackBufferHeight - button.GetHeight() - 15 - (60 * ((battleBox.buttons.Capacity - battleBox.buttons.Count) - 1)));
+            button.SetParts(cornerTexture, wallTexture, backTexture);
+            button.display = "ITEM";
+            button.action = ItemSwitch;
+            button.icon.SetTexture(iconTexture, 16, 20);
+            button.icon.setCurrentFrame(1, 13);
+            button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 10, button.UpperLeft.Y + 9);
+            battleBox.buttons.Add(button);
 
             //skillsMenu Box
-            box = new Box();
-            box.frameWidth = 800;
-            box.frameHeight = 800;
-            box.UpperLeft = new Vector2(main.graphics.PreferredBackBufferWidth / 2 - box.frameWidth / 2, 5);
-            box.SetParts(cornerTexture, wallTexture, backTexture);
-            box.activatorState = 4;
-            box.buttons = new List<Button>(0);
-            allBoxes.Add(box);
+            skillsBox = new Box();
+            skillsBox.frameWidth = 800;
+            skillsBox.frameHeight = 800;
+            skillsBox.UpperLeft = new Vector2(main.graphics.PreferredBackBufferWidth / 2 - skillsBox.frameWidth / 2, 5);
+            skillsBox.SetParts(cornerTexture, wallTexture, backTexture);
+            skillsBox.activatorState = 4;
+            skillsBox.buttons = new List<Button>();
+            allBoxes.Add(skillsBox);
+
+            //itemsMenu Box
+            itemsBox = new Box();
+            itemsBox.frameWidth = 800;
+            itemsBox.frameHeight = 800;
+            itemsBox.UpperLeft = new Vector2(main.graphics.PreferredBackBufferWidth / 2 - skillsBox.frameWidth / 2, 5);
+            itemsBox.SetParts(cornerTexture, wallTexture, backTexture);
+            itemsBox.activatorState = 5;
+            itemsBox.buttons = new List<Button>();
+            allBoxes.Add(itemsBox);
 
             stateMethods[0] = Idle;
             stateMethods[1] = StepForwards;
             stateMethods[2] = Animate;
             stateMethods[3] = Menu;
             stateMethods[4] = SkillsMenu;
-            stateMethods[5] = Idle;
+            stateMethods[5] = ItemsMenu;
             stateMethods[6] = TargetMenu;
             stateMethods[7] = StateSwitch;
 
@@ -418,13 +463,27 @@ namespace RPG_Game
             }
 
             //Damage Balloon Draw
-            if (damageDealt > 0)
+            if (damageDealt != 0)
             {
+                Color tempColor = new Color();
+                float tempDamage = damageDealt;
+
+                if (tempDamage < 0)
+                {
+                    tempDamage *= -1;
+
+                    tempColor = Color.Red;
+                }
+                else
+                {
+                    tempColor = Color.Green;
+                }
+
                 spriteBatch.DrawString(calibri,
-                                       damageDealt.ToString(),
+                                       tempDamage.ToString(),
                                        new Vector2(target.UpperLeft.X,
                                        target.UpperLeft.Y - damageLocation),
-                                       Color.Black,
+                                       tempColor,
                                        0,
                                        new Vector2(0, 0),
                                        1f,
@@ -542,9 +601,7 @@ namespace RPG_Game
 
         private void Animate(GameTime gameTime)
         {
-            currentAction(gameTime);
-
-            if (actionComplete)
+            if (currentAction.Call(gameTime, this))
             {
                 if (enemies.Count == 0)
                 {
@@ -561,53 +618,14 @@ namespace RPG_Game
 
         private void Menu(GameTime gameTime)
         {
-            pointer.isAlive = true;
+            MenuUpdateReturn temp = MenuUpdate();
+            buttonIndex = temp.index;
 
-            Rectangle buttonRect = new Rectangle((int)activeButtons[buttonIndex].UpperLeft.X,
-                                                 (int)activeButtons[buttonIndex].UpperLeft.Y,
-                                                 activeButtons[buttonIndex].frameWidth,
-                                                 activeButtons[buttonIndex].frameHeight);
-
-            if (mouseMoving)
+            if (temp.pressed)
             {
-                for (int i = 0; i < activeButtons.Count; i++)
-                {
-                    buttonRect = new Rectangle((int)activeButtons[i].UpperLeft.X,
-                                               (int)activeButtons[i].UpperLeft.Y,
-                                               activeButtons[i].frameWidth,
-                                               activeButtons[i].frameHeight);
+                pointer.isAlive = false;
 
-                    if (buttonRect.Contains(mousePosition))
-                    {
-                        buttonIndex = i;
-                    }
-                }
-            }
-
-            if (upInput.inputState == Input.inputStates.pressed)
-            {
-                buttonIndex -= 1;
-                if (buttonIndex < 0)
-                {
-                    buttonIndex = activeButtons.Count - 1;
-                }
-            }
-            if (downInput.inputState == Input.inputStates.pressed)
-            {
-                buttonIndex += 1;
-                if (buttonIndex > activeButtons.Count - 1)
-                {
-                    buttonIndex = 0;
-                }
-            }
-            if (activateInput.inputState == Input.inputStates.pressed)
-            {
-                if (activateInput.inputType != Input.inputTypes.mouse | buttonRect.Contains(mousePosition))
-                {
-                    pointer.isAlive = false;
-
-                    activeButtons[buttonIndex].action.Invoke(gameTime);
-                }
+                activeButtons[buttonIndex].action.Invoke(gameTime);
             }
 
             pointer.UpperLeft = new Vector2(activeButtons[buttonIndex].UpperLeft.X - pointer.GetWidth() - 15, activeButtons[buttonIndex].UpperLeft.Y + 5);
@@ -620,139 +638,79 @@ namespace RPG_Game
 
         private void SkillsMenu(GameTime gameTime)
         {
-            pointer.isAlive = true;
+            MenuUpdateReturn temp = MenuUpdate();
+            buttonIndex = temp.index;
 
-            Rectangle buttonRect = new Rectangle((int)activeButtons[buttonIndex].UpperLeft.X,
-                                                 (int)activeButtons[buttonIndex].UpperLeft.Y,
-                                                 activeButtons[buttonIndex].frameWidth,
-                                                 activeButtons[buttonIndex].frameHeight);
-
-            if (mouseMoving)
+            if (temp.pressed)
             {
-                for (int i = 0; i < activeButtons.Count; i++)
-                {
-                    buttonRect = new Rectangle((int)activeButtons[i].UpperLeft.X,
-                                               (int)activeButtons[i].UpperLeft.Y,
-                                               activeButtons[i].frameWidth,
-                                               activeButtons[i].frameHeight);
+                pointer.isAlive = false;
 
-                    if (buttonRect.Contains(mousePosition))
-                    {
-                        buttonIndex = i;
-                    }
-                }
+                ActivateState(6);
+
+                targets = actor.abilities[buttonIndex].GetTargets(this);
+
+                currentAction = actor.abilities[buttonIndex];
+
+                timer = gameTime.TotalGameTime.TotalSeconds + 1;
+            }
+            
+
+            pointer.UpperLeft = new Vector2(activeButtons[buttonIndex].UpperLeft.X - pointer.GetWidth() - 15, activeButtons[buttonIndex].UpperLeft.Y + 5);
+        }
+
+        private void ItemsMenu(GameTime gameTime)
+        {
+            MenuUpdateReturn temp = MenuUpdate();
+            buttonIndex = temp.index;
+
+            if (temp.pressed)
+            {
+                pointer.isAlive = false;
+
+                ActivateState(6);
+
+                targets = heldItems[buttonIndex].GetTargets(this);
+
+                currentAction = heldItems[buttonIndex];
+
+                timer = gameTime.TotalGameTime.TotalSeconds + 1;
             }
 
-            if (upInput.inputState == Input.inputStates.pressed)
-            {
-                buttonIndex -= 1;
-                if (buttonIndex < 0)
-                {
-                    buttonIndex = activeButtons.Count - 1;
-                }
-            }
-            if (downInput.inputState == Input.inputStates.pressed)
-            {
-                buttonIndex += 1;
-                if (buttonIndex > activeButtons.Count - 1)
-                {
-                    buttonIndex = 0;
-                }
-            }
-            if (activateInput.inputState == Input.inputStates.pressed)
-            {
-                if (activateInput.inputType != Input.inputTypes.mouse | buttonRect.Contains(mousePosition))
-                {
-                    pointer.isAlive = false;
-
-                    ActivateState(6);
-
-                    for (int i = 0; i < enemies.Count; i++)
-                    {
-                        targets.Capacity += 1;
-                        targets.Add(enemies[i]);
-                    }
-
-                    currentAction = actor.abilities[buttonIndex].action;
-
-                    timer = gameTime.TotalGameTime.TotalSeconds + 1;
-                }
-            }
 
             pointer.UpperLeft = new Vector2(activeButtons[buttonIndex].UpperLeft.X - pointer.GetWidth() - 15, activeButtons[buttonIndex].UpperLeft.Y + 5);
         }
 
         private void TargetMenu(GameTime gameTime)
         {
-            pointer.isAlive = true;
-
-            if (targetIndex >= targets.Count)
-            {
-                targetIndex = 0;
-            }
-
-            Rectangle targetRect = new Rectangle((int)targets[targetIndex].UpperLeft.X,
-                                                 (int)targets[targetIndex].UpperLeft.Y,
-                                                 targets[targetIndex].GetWidth(),
-                                                 targets[targetIndex].GetHeight());
-
-            if (mouseMoving)
-            {
-                for (int i = 0; i < targets.Count; i++)
-                {
-                    targetRect = new Rectangle((int)targets[i].UpperLeft.X,
-                                               (int)targets[i].UpperLeft.Y,
-                                               targets[i].GetWidth(),
-                                               targets[i].GetHeight());
-
-                    if (targetRect.Contains(mousePosition))
-                    {
-                        targetIndex = i;
-                    }
-                }
-            }
-
-            if (targets.Count <= 1)
+            if (targets.Count == 1)
             {
                 //Switch to Animating State
                 ActivateState(2);
 
-                target = targets[targetIndex];
+                target = (Battler)targets[0];
                 targets.Clear();
                 targets.Capacity = 0;
                 timer = gameTime.TotalGameTime.TotalSeconds + 1;
             }
             else
             {
+                MenuUpdateReturn temp = MenuUpdate(targets, targetIndex);
+                targetIndex = temp.index;
+
                 pointer.UpperLeft = new Vector2(targets[targetIndex].UpperLeft.X - pointer.GetWidth() - 5,
                                                 targets[targetIndex].UpperLeft.Y + targets[targetIndex].GetHeight() - 5);
 
-                if (upInput.inputState == Input.inputStates.pressed)
-                {
-                    targetIndex -= 1;
-                    if (targetIndex < 0)
-                    {
-                        targetIndex = targets.Count - 1;
-                    }
-                }
-                if (downInput.inputState == Input.inputStates.pressed)
-                {
-                    targetIndex += 1;
-                    if (targetIndex > targets.Count - 1)
-                    {
-                        targetIndex = 0;
-                    }
-                }
+
                 if (activateInput.inputState == Input.inputStates.pressed)
                 {
-                    if (activateInput.inputType != Input.inputTypes.mouse | targetRect.Contains(mousePosition))
+                    if (temp.pressed)
                     {
                         pointer.isAlive = false;
 
                         //Switch to Animating State
                         ActivateState(2);
 
-                        target = targets[targetIndex];
+                        target = (Battler)targets[targetIndex];
                         targets.Clear();
                         targets.Capacity = 0;
                         timer = gameTime.TotalGameTime.TotalSeconds + 1;
@@ -812,13 +770,9 @@ namespace RPG_Game
             //Switch to Target Menu State
             ActivateState(6);
 
-            currentAction = Attack;
+            targets = actor.abilities[buttonIndex].GetTargets(this);
 
-            for (int i = 0; i < enemies.Count; i++)
-            {
-                targets.Capacity += 1;
-                targets.Add(enemies[i]);
-            }
+            currentAction = attack;
         }
 
         private void SkillsSwitch(GameTime gameTime)
@@ -826,193 +780,69 @@ namespace RPG_Game
             //Switch to Skill Menu State
             SwitchState(4);
 
-            for (int i = 0; i < allBoxes.Count; i++)
+            Button tempButton;
+
+            skillsBox.buttons.Clear();
+            skillsBox.buttons.Capacity = 0;
+
+            for (int i = 0; i < actor.abilities.Count; i++)
             {
-                if (allBoxes[i].activatorState == currentState)
-                {
-                    allBoxes[i].buttons.Clear();
-                    allBoxes[i].buttons.Capacity = 0;
+                tempButton = new Button();
 
-                    for (int o = 0; o < actor.abilities.Count; o++)
-                    {
-                        actor.abilities[o].UpperLeft = new Vector2(allBoxes[i].UpperLeft.X + 80, allBoxes[i].UpperLeft.Y + 10 + (60 * o));
-                        actor.abilities[o].frameWidth = allBoxes[i].frameWidth - 90;
-                        actor.abilities[o].SetParts(cornerTexture, wallTexture, backTexture);
-                        actor.abilities[o].icon.UpperLeft = new Vector2(actor.abilities[o].UpperLeft.X + 10, actor.abilities[o].UpperLeft.Y + 9);
+                tempButton.UpperLeft = new Vector2(skillsBox.UpperLeft.X + 80, skillsBox.UpperLeft.Y + 10 + (60 * i));
+                tempButton.display = actor.abilities[i].display;
+                tempButton.icon.SetTexture(iconTexture, 16, 20);
+                tempButton.icon.setCurrentFrame((int)actor.abilities[i].iconFrame.X, (int)actor.abilities[i].iconFrame.Y);
+                tempButton.frameWidth = skillsBox.frameWidth - 90;
+                tempButton.frameHeight = 50;
+                tempButton.SetParts(cornerTexture, wallTexture, backTexture);
+                tempButton.icon.UpperLeft = new Vector2(tempButton.UpperLeft.X + 10, tempButton.UpperLeft.Y + 9);
 
-                        allBoxes[i].buttons.Add(actor.abilities[o]);
-                    }
-
-                    allBoxes[i].frameHeight = (int)allBoxes[i].buttons[allBoxes[i].buttons.Count - 1].UpperLeft.Y + 60;
-                    allBoxes[i].SetParts(cornerTexture, wallTexture, backTexture);
-
-                    activeButtons = allBoxes[i].buttons;
-
-                    buttonIndex = 0;
-                }
+                skillsBox.buttons.Add(tempButton);
             }
+
+            skillsBox.frameHeight = (int)skillsBox.buttons[skillsBox.buttons.Count - 1].UpperLeft.Y + 60;
+            skillsBox.SetParts(cornerTexture, wallTexture, backTexture);
+
+            activeButtons = skillsBox.buttons;
+
+            buttonIndex = 0;
         }
 
-        //Animates a basic attack, animating both the actor and target, and removing health from the target.
-        //Keep in mind that the actor has already been moved forwards by the time this is called, 
-        //and that it is this function's job to return all its actors to their original positions
-        private void Attack(GameTime gameTime)
+        private void ItemSwitch(GameTime gameTime)
         {
-            actionComplete = false;
+            SwitchState(5);
 
-            if (gameTime.TotalGameTime.TotalSeconds >= timer + 1.5)
+            Button tempButton;
+
+            itemsBox.buttons.Clear();
+            itemsBox.buttons.Capacity = 0;
+
+            for (int i = 0; i < heldItems.Count; i++)
             {
-                //Reset all values ready for continuing the fight
-                damageDealt = 0;
-                damageLocation = 0;
-                timer = 0;
+                tempButton = new Button();
 
-                //Make sure our actor and targets aren't moving or animating and are in the correct position
-                actor.UpperLeft = actor.battleOrigin;
-                actor.setCurrentFrame(0, 0);
-                actor.animationShortStarted = false;
+                tempButton.UpperLeft = new Vector2(skillsBox.UpperLeft.X + 80, skillsBox.UpperLeft.Y + 10 + (60 * i));
+                tempButton.display = heldItems[i].display;
+                tempButton.icon.SetTexture(iconTexture, 16, 20);
+                tempButton.icon.setCurrentFrame((int)heldItems[i].iconFrame.X, (int)heldItems[i].iconFrame.Y);
+                tempButton.frameWidth = skillsBox.frameWidth - 90;
+                tempButton.frameHeight = 50;
+                tempButton.SetParts(cornerTexture, wallTexture, backTexture);
+                tempButton.icon.UpperLeft = new Vector2(tempButton.UpperLeft.X + 10, tempButton.UpperLeft.Y + 9);
 
-                target.UpperLeft = target.battleOrigin;
-                target.setCurrentFrame(0, 0);
-                target.animationShortStarted = false;
-
-                actionComplete = true;
+                itemsBox.buttons.Add(tempButton);
             }
-            else if (gameTime.TotalGameTime.TotalSeconds >= timer + 1.25)
-            {
-                actor.animationShortStarted = false;
-                actor.setCurrentFrame(0, 1);
 
-                //If the target is dead
-                if (target.health <= 0)
-                {
-                    battlers.Remove(target);
-                    enemies.Remove(target);
-                    heroes.Remove(target);
-                }
+            itemsBox.frameHeight = (int)itemsBox.buttons[itemsBox.buttons.Count - 1].UpperLeft.Y + 60;
+            itemsBox.SetParts(cornerTexture, wallTexture, backTexture);
 
-                //Reset target to a neutral frame
-                target.setCurrentFrame(0, 0);
+            activeButtons = itemsBox.buttons;
 
-                //Stepping characters back to starting position
-                step.Invoke(gameTime, timer, -2, 1.5, actor, new Vector2(IFF(actor), 0));
-                step.Invoke(gameTime, timer, 2, 1.5, target, new Vector2(IFF(target), 0));
-            }
-            else if (gameTime.TotalGameTime.TotalSeconds >= timer + 0.75)
-            {
-                //step.Invoke the target backwards
-                step.Invoke(gameTime, timer, -2, 1, target, new Vector2(IFF(target), 0));
-
-                //If we haven't dealt damage yet (Single run conditional)
-                if (damageDealt == 0)
-                {
-                    //Deal damage according to physical attack, reduced by physical defence
-                    damageDealt = (actor.PhAtk * ((100 - target.PhDef) / 100));
-                    damageDealt = (float)Math.Round(damageDealt, 0, MidpointRounding.AwayFromZero);
-                    target.health -= (int)damageDealt;
-
-                    //Reset the damage indicator
-                    damageLocation = 30;
-
-                    //Start animation on target, making sure they're not reversing or stepping through too fast or slow
-                    target.reverseAnimating = false;
-                    target.AnimationInterval = 50;
-                    target.StartAnimationShort(gameTime, 36, 38, 38);
-                }
-            }
-            else if (gameTime.TotalGameTime.TotalSeconds <= timer)
-            {
-                //Start animating the actor's attack
-                actor.reverseAnimating = false;
-                actor.AnimationInterval = 250;
-                actor.StartAnimationShort(gameTime, 2, 5, 5);
-
-                //Reset the timer (Should only run once)
-                timer = gameTime.TotalGameTime.TotalSeconds;
-            }
-        }
-
-        //Jokey test copy of Attack(), deals 1000x the damage Attack() does, to be removed later on.
-        private void Murder(GameTime gameTime)
-        {
-            actionComplete = false;
-
-            if (gameTime.TotalGameTime.TotalSeconds >= timer + 1.5)
-            {
-                //Switch to Idle State
-                ActivateState(0);
-
-                //Reset all values ready for continuing the fight
-                damageDealt = 0;
-                damageLocation = 0;
-                timer = 0;
-
-                //Make sure our actor and targets aren't moving or animating and are in the correct position
-                actor.UpperLeft = actor.battleOrigin;
-                actor.setCurrentFrame(0, 0);
-                actor.animationShortStarted = false;
-
-                target.UpperLeft = target.battleOrigin;
-                target.setCurrentFrame(0, 0);
-                target.animationShortStarted = false;
-
-                actionComplete = true;
-            }
-            else if (gameTime.TotalGameTime.TotalSeconds >= timer + 1.25)
-            {
-                actor.animationShortStarted = false;
-                actor.setCurrentFrame(0, 1);
-
-                //If the target is dead
-                if (target.health <= 0)
-                {
-                    battlers.Remove(target);
-                    enemies.Remove(target);
-                    heroes.Remove(target);
-                }
-
-                //Reset target to a neutral frame
-                target.setCurrentFrame(0, 0);
-
-                //Stepping characters back to starting position
-                step.Invoke(gameTime, timer, -2, 1.5, actor, new Vector2(IFF(actor), 0));
-                step.Invoke(gameTime, timer, 2, 1.5, target, new Vector2(IFF(target), 0));
-            }
-            else if (gameTime.TotalGameTime.TotalSeconds >= timer + 0.75)
-            {
-                //step.Invoke the target backwards
-                step.Invoke(gameTime, timer, -2, 1, target, new Vector2(IFF(target), 0));
-
-                //If we haven't dealt damage yet (Single run conditional)
-                if (damageDealt == 0)
-                {
-                    //Deal damage according to physical attack, reduced by physical defence
-                    damageDealt = (actor.PhAtk * ((100 - target.PhDef) / 100)) * 1000;
-                    damageDealt = (float)Math.Round(damageDealt, 0, MidpointRounding.AwayFromZero);
-                    target.health -= (int)damageDealt;
-
-                    //Reset the damage indicator
-                    damageLocation = 30;
-
-                    //Start animation on target, making sure they're not reversing or stepping through too fast or slow
-                    target.reverseAnimating = false;
-                    target.AnimationInterval = 50;
-                    target.StartAnimationShort(gameTime, 36, 38, 38);
-                }
-            }
-            else if (gameTime.TotalGameTime.TotalSeconds <= timer)
-            {
-                //Start animating the actor's attack
-                actor.reverseAnimating = false;
-                actor.AnimationInterval = 250;
-                actor.StartAnimationShort(gameTime, 2, 5, 5);
-
-                //Reset the timer (Should only run once)
-                timer = gameTime.TotalGameTime.TotalSeconds;
-            }
+            buttonIndex = 0;
         }
         
-        private int IFF(Battler character)
+        public int IFF(Battler character)
         {
             if(character.friendly)
             {

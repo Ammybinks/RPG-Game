@@ -1,8 +1,5 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using System.Xml.Serialization;
-using System.IO;
 using System.Collections.Generic;
 using System;
 
@@ -20,7 +17,12 @@ namespace RPG_Game
         
         Vector2 screenSize;
 
-        int currentState = 0;
+        public List<Item> heldItems = new List<Item>();
+        HP hPotion = new HP();
+        HPPlus hPotionPlus = new HPPlus();
+        HPPlusPlus hPotionPlusPlus = new HPPlusPlus();
+
+        int currentState = 1;
         List<StateManager> states = new List<StateManager>();
 
         NaviState naviState = new NaviState();
@@ -68,6 +70,15 @@ namespace RPG_Game
             //graphics.IsFullScreen = true;
             graphics.ApplyChanges();
 
+            hPotion.heldCount = 5;
+            heldItems.Add(hPotion);
+
+            hPotionPlus.heldCount = 5;
+            heldItems.Add(hPotionPlus);
+
+            hPotionPlusPlus.heldCount = 5;
+            heldItems.Add(hPotionPlusPlus);
+
             //Heroes Initialization Begins//
             //Hero Initialization
             hero = new Battler();
@@ -83,10 +94,10 @@ namespace RPG_Game
             //Heroes Initialization Ends//
 
             battleState.LoadContent(this);
-            states.Add(battleState);
-
             naviState.LoadContent(this);
+
             states.Add(naviState);
+            states.Add(battleState);
         }
 
         /// <summary>
@@ -147,9 +158,5 @@ namespace RPG_Game
 
             base.Draw(gameTime);
         }
-
-
-        //Initialises the beginning of a fight, including generating enemies and adding all fighters to the battlers<> list for processing
-
     }
 }

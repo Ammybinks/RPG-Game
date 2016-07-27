@@ -34,12 +34,15 @@ namespace RPG_Game
 
         Camera camera;
 
+        Box menuBox;
+        Box heroBox;
+
         Tile[,] map = new Tile[100, 50];
         Tile tile;
         Tile eventTile;
 
-        Action<GameTime>[] stateMethods = new Action<GameTime>[3];
-        bool[] state = new bool[4];
+        Action<GameTime>[] stateMethods = new Action<GameTime>[7];
+        bool[] state = new bool[7];
         int currentState;
 
         Vector2 movementModifier;
@@ -240,141 +243,145 @@ namespace RPG_Game
 
             //Boxes Initialization Begins//
             ////Base Menu Box
-            box = new Box();
-            box.frameWidth = 280;
-            box.frameHeight = 335;
-            box.UpperLeft = new Vector2(5, 5);
-            box.SetParts(cornerTexture, wallTexture, backTexture);
-            box.activatorState = 2;
-            box.buttons = new List<Button>(5);
-            allBoxes.Add(box);
+            menuBox = new Box();
+            menuBox.frameWidth = 280;
+            menuBox.frameHeight = 335;
+            menuBox.UpperLeft = new Vector2(5, 5);
+            menuBox.SetParts(cornerTexture, wallTexture, backTexture);
+            menuBox.activatorState = 2;
+            menuBox.buttons = new List<Button>(5);
+            allBoxes.Add(menuBox);
 
-            //Button that advances into status menu
+            //Button that advances into inventory menu
             button = new Button();
             button.frameHeight = 50;
             button.frameWidth = 200;
-            button.UpperLeft = new Vector2(75, 15 + ((button.GetHeight() + 15) * box.buttons.Count));
+            button.UpperLeft = new Vector2(75, 15 + ((button.GetHeight() + 15) * menuBox.buttons.Count));
             button.SetParts(cornerTexture, wallTexture, backTexture);
             button.display = "Inventory";
-            button.action = Inventory;
+            button.action = SwitchInventory;
             button.icon.SetTexture(iconTexture, 16, 20);
             button.icon.setCurrentFrame(9, 7);
             button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 10, button.UpperLeft.Y + 9);
-            box.buttons.Add(button);
+            menuBox.buttons.Add(button);
 
-            //Button that advances into status menu
+            //Button that advances into skills menu
             button = new Button();
             button.frameHeight = 50;
             button.frameWidth = 200;
-            button.UpperLeft = new Vector2(75, 15 + ((button.GetHeight() + 15) * box.buttons.Count));
+            button.UpperLeft = new Vector2(75, 15 + ((button.GetHeight() + 15) * menuBox.buttons.Count));
             button.SetParts(cornerTexture, wallTexture, backTexture);
             button.display = "Skills";
-            button.action = Skills;
+            button.action = SwitchSkills;
             button.icon.SetTexture(iconTexture, 16, 20);
             button.icon.setCurrentFrame(15, 4);
             button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 10, button.UpperLeft.Y + 9);
-            box.buttons.Add(button);
+            menuBox.buttons.Add(button);
 
-            //Button that advances into status menu
+            //Button that advances into map menu
             button = new Button();
             button.frameHeight = 50;
             button.frameWidth = 200;
-            button.UpperLeft = new Vector2(75, 15 + ((button.GetHeight() + 15) * box.buttons.Count));
+            button.UpperLeft = new Vector2(75, 15 + ((button.GetHeight() + 15) * menuBox.buttons.Count));
             button.SetParts(cornerTexture, wallTexture, backTexture);
             button.display = "Map";
-            button.action = Map;
+            button.action = SwitchMap;
             button.icon.SetTexture(iconTexture, 16, 20);
             button.icon.setCurrentFrame(14, 11);
             button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 10, button.UpperLeft.Y + 9);
-            box.buttons.Add(button);
+            menuBox.buttons.Add(button);
 
             //Button that advances into status menu
             button = new Button();
             button.frameHeight = 50;
             button.frameWidth = 200;
-            button.UpperLeft = new Vector2(75, 15 + ((button.GetHeight() + 15) * box.buttons.Count));
+            button.UpperLeft = new Vector2(75, 15 + ((button.GetHeight() + 15) * menuBox.buttons.Count));
             button.SetParts(cornerTexture, wallTexture, backTexture);
             button.display = "Status";
-            button.action = Status;
+            button.action = SwitchStatus;
             button.icon.SetTexture(iconTexture, 16, 20);
             button.icon.setCurrentFrame(3, 0);
             button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 10, button.UpperLeft.Y + 9);
-            box.buttons.Add(button);
+            menuBox.buttons.Add(button);
 
             //Button that exits the game
             button = new Button();
             button.frameHeight = 50;
             button.frameWidth = 200;
-            button.UpperLeft = new Vector2(75, 15 + ((button.GetHeight() + 15) * box.buttons.Count));
+            button.UpperLeft = new Vector2(75, 15 + ((button.GetHeight() + 15) * menuBox.buttons.Count));
             button.SetParts(cornerTexture, wallTexture, backTexture);
             button.display = "Exit";
             button.action = Exit;
             button.icon.SetTexture(iconTexture, 16, 20);
             button.icon.setCurrentFrame(5, 5);
             button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 10, button.UpperLeft.Y + 9);
-            box.buttons.Add(button);
+            menuBox.buttons.Add(button);
 
             ////Hero Buttons Box
-            box = new Box();
-            box.frameWidth = 900;
-            box.frameHeight = 725;
-            box.UpperLeft = new Vector2(main.graphics.PreferredBackBufferWidth - box.GetWidth() - 5, 5);
-            box.SetParts(cornerTexture, wallTexture, backTexture);
-            box.activatorState = 3;
-            box.buttons = new List<Button>();
-            allBoxes.Add(box);
+            heroBox = new Box();
+            heroBox.frameWidth = 900;
+            heroBox.frameHeight = 725;
+            heroBox.UpperLeft = new Vector2(main.graphics.PreferredBackBufferWidth - heroBox.GetWidth() - 5, 5);
+            heroBox.SetParts(cornerTexture, wallTexture, backTexture);
+            heroBox.activatorState = 3;
+            heroBox.buttons = new List<Button>();
+            allBoxes.Add(heroBox);
 
             //Hero Button
             button = new Button();
             button.frameWidth = 800;
             button.frameHeight = 150;
-            button.UpperLeft = new Vector2(main.graphics.PreferredBackBufferWidth - button.GetWidth() - 25, 25 + ((button.GetHeight() + 25) * box.buttons.Count));
+            button.UpperLeft = new Vector2(main.graphics.PreferredBackBufferWidth - button.GetWidth() - 25, 25 + ((button.GetHeight() + 25) * heroBox.buttons.Count));
             button.SetParts(cornerTexture, wallTexture, backTexture);
-            button.display = "The Adorable Manchild";
+            button.display = "The Adorable Manchild\n\nHP\nMP\nEXP";
             button.action = Status;
             button.icon.SetTexture(heroFace);
             button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 15, button.UpperLeft.Y + 2);
-            box.buttons.Add(button);
+            heroBox.buttons.Add(button);
             
             //Hiro Button
             button = new Button();
             button.frameWidth = 800;
             button.frameHeight = 150;
-            button.UpperLeft = new Vector2(main.graphics.PreferredBackBufferWidth - button.GetWidth() - 25, 25 + ((button.GetHeight() + 25) * box.buttons.Count));
+            button.UpperLeft = new Vector2(main.graphics.PreferredBackBufferWidth - button.GetWidth() - 25, 25 + ((button.GetHeight() + 25) * heroBox.buttons.Count));
             button.SetParts(cornerTexture, wallTexture, backTexture);
-            button.display = "The Absolutely-Not-Into-It Love Interest";
+            button.display = "The Absolutely-Not-Into-It Love Interest\n\nHP\nMP\nEXP";
             button.action = Status;
             button.icon.SetTexture(hiroFace);
             button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 15, button.UpperLeft.Y + 2);
-            box.buttons.Add(button);
+            heroBox.buttons.Add(button);
 
             //Hearo Button
             button = new Button();
             button.frameWidth = 800;
             button.frameHeight = 150;
-            button.UpperLeft = new Vector2(main.graphics.PreferredBackBufferWidth - button.GetWidth() - 25, 25 + ((button.GetHeight() + 25) * box.buttons.Count));
+            button.UpperLeft = new Vector2(main.graphics.PreferredBackBufferWidth - button.GetWidth() - 25, 25 + ((button.GetHeight() + 25) * heroBox.buttons.Count));
             button.SetParts(cornerTexture, wallTexture, backTexture);
-            button.display = "The Endearing Father Figure";
+            button.display = "The Endearing Father Figure\n\nHP\nMP\nEXP";
             button.action = Status;
             button.icon.SetTexture(hearoFace);
             button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 15, button.UpperLeft.Y + 2);
-            box.buttons.Add(button);
+            heroBox.buttons.Add(button);
 
             //Hiero Button
             button = new Button();
             button.frameWidth = 800;
             button.frameHeight = 150;
-            button.UpperLeft = new Vector2(main.graphics.PreferredBackBufferWidth - button.GetWidth() - 25, 25 + ((button.GetHeight() + 25) * box.buttons.Count));
+            button.UpperLeft = new Vector2(main.graphics.PreferredBackBufferWidth - button.GetWidth() - 25, 25 + ((button.GetHeight() + 25) * heroBox.buttons.Count));
             button.SetParts(cornerTexture, wallTexture, backTexture);
-            button.display = "The Comic Relief";
+            button.display = "The Comic Relief\n\nHP\nMP\nEXP";
             button.action = Status;
             button.icon.SetTexture(hieroFace);
             button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 15, button.UpperLeft.Y + 2);
-            box.buttons.Add(button);
+            heroBox.buttons.Add(button);
 
             stateMethods[0] = Movement;
             stateMethods[1] = Event;
             stateMethods[2] = Menu;
+            stateMethods[3] = Inventory;
+            stateMethods[4] = Skills;
+            stateMethods[5] = Map;
+            stateMethods[6] = StateSwitch;
 
             targetState = 0;
         }
@@ -469,6 +476,11 @@ namespace RPG_Game
 
         private void Movement(GameTime gameTime)
         {
+            if(pointer.isAlive)
+            {
+                pointer.isAlive = false;
+            }
+
             if (movementModifier != new Vector2(0, 0))
             {
                 if (step.Invoke(gameTime, timer, 2, 0.4, heroMover, movementModifier))
@@ -637,54 +649,40 @@ namespace RPG_Game
 
         private void Menu(GameTime gameTime)
         {
-            pointer.isAlive = true;
+            MenuUpdateReturn temp = MenuUpdate();
+            buttonIndex = temp.index;
 
-            Rectangle buttonRect = new Rectangle((int)activeButtons[buttonIndex].UpperLeft.X,
-                                                 (int)activeButtons[buttonIndex].UpperLeft.Y,
-                                                 activeButtons[buttonIndex].frameWidth,
-                                                 activeButtons[buttonIndex].frameHeight);
-
-            if (mouseMoving)
+            if (temp.pressed)
             {
-                for (int i = 0; i < activeButtons.Count; i++)
-                {
-                    buttonRect = new Rectangle((int)activeButtons[i].UpperLeft.X,
-                                               (int)activeButtons[i].UpperLeft.Y,
-                                               activeButtons[i].frameWidth,
-                                               activeButtons[i].frameHeight);
-
-                    if (buttonRect.Contains(mousePosition))
-                    {
-                        buttonIndex = i;
-                    }
-                }
-            }
-
-            if (upInput.inputState == Input.inputStates.pressed)
-            {
-                buttonIndex -= 1;
-                if (buttonIndex < 0)
-                {
-                    buttonIndex = activeButtons.Count - 1;
-                }
-            }
-            if (downInput.inputState == Input.inputStates.pressed)
-            {
-                buttonIndex += 1;
-                if (buttonIndex > activeButtons.Count - 1)
-                {
-                    buttonIndex = 0;
-                }
-            }
-            if (activateInput.inputState == Input.inputStates.pressed)
-            {
-                if (activateInput.inputType != Input.inputTypes.mouse | buttonRect.Contains(mousePosition))
-                {
-                    activeButtons[buttonIndex].action.Invoke(gameTime);
-                }
+                activeButtons[buttonIndex].action.Invoke(gameTime);
             }
 
             pointer.UpperLeft = new Vector2(activeButtons[buttonIndex].UpperLeft.X - pointer.GetWidth() - 15, activeButtons[buttonIndex].UpperLeft.Y + 5);
+        }
+
+        private void Inventory(GameTime gameTime)
+        {
+
+        }
+
+        private void Skills(GameTime gameTime)
+        {
+
+        }
+
+        private void Map(GameTime gameTime)
+        {
+
+        }
+
+        private void Status(GameTime gameTime)
+        {
+
+        }
+
+        private void StateSwitch(GameTime gameTime)
+        {
+
         }
 
         //Activates the target state, setting all states to false, while keeping the target state true
@@ -726,22 +724,23 @@ namespace RPG_Game
             }
         }
 
-        private void Inventory(GameTime gameTime)
+
+        private void SwitchInventory(GameTime gameTime)
         {
 
         }
 
-        private void Skills(GameTime gameTime)
+        private void SwitchSkills(GameTime gameTime)
         {
 
         }
 
-        private void Map(GameTime gameTime)
+        private void SwitchMap(GameTime gameTime)
         {
 
         }
 
-        private void Status(GameTime gameTime)
+        private void SwitchStatus(GameTime gameTime)
         {
 
         }
@@ -750,6 +749,7 @@ namespace RPG_Game
         {
             quitting = true;
         }
+
 
         private void tileDraw(Tile tile, Vector2 gridPosition, SpriteBatch spriteBatch, Main main)
         {

@@ -5,6 +5,7 @@ namespace RPG_Game
 {
     public class Battler : Sprite
     {
+        public int maxHealth;
         public int health;
 
         public float PhAtk;
@@ -25,7 +26,7 @@ namespace RPG_Game
 
         public Sprite shadow = new Sprite();
 
-        public List<Button> abilities = new List<Button>();
+        public List<Ability> abilities = new List<Ability>();
 
         public Vector2 battleOrigin;
         public bool friendly;

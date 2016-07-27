@@ -26,9 +26,7 @@ namespace RPG_Game
 
         internal Texture2D pointerTexture;
         internal Sprite pointer = new Sprite();
-
-        internal Box box;
-
+        
         internal List<Box> allBoxes = new List<Box>();
 
         internal List<Button> activeButtons;
@@ -44,7 +42,7 @@ namespace RPG_Game
 
         internal int buttonIndex = 0;
 
-        internal double timer;
+        public double timer;
 
         internal Step step = new Step();
 
@@ -217,5 +215,96 @@ namespace RPG_Game
 
         }
 
+        internal MenuUpdateReturn MenuUpdate()
+        {
+            List<SpriteBase> temp = new List<SpriteBase>();
+
+            for(int i = 0; i < activeButtons.Count; i++)
+            {
+                temp.Add(activeButtons[i]);
+            }
+
+            return MenuUpdate(temp, buttonIndex);
+        }
+        internal MenuUpdateReturn MenuUpdate(List<SpriteBase> list, int index)
+        {
+            pointer.isAlive = true;
+
+            if(index >= list.Count)
+            {
+                index = list.Count - 1;
+            }
+            Rectangle buttonRect = new Rectangle((int)list[index].UpperLeft.X,
+                                                 (int)list[index].UpperLeft.Y,
+                                                 list[index].frameWidth,
+                                                 list[index].frameHeight);
+
+            if (mouseMoving)
+            {
+                for (int i = 0; i < list.Count; i++)
+                {
+                    buttonRect = new Rectangle((int)list[i].UpperLeft.X,
+                                               (int)list[i].UpperLeft.Y,
+                                               list[i].frameWidth,
+                                               list[i].frameHeight);
+
+                    if (buttonRect.Contains(mousePosition))
+                    {
+                        index = i;
+                    }
+                }
+            }
+
+            if (upInput.inputState == Input.inputStates.pressed)
+            {
+                index -= 1;
+                if (index < 0)
+                {
+                    index = list.Count - 1;
+                }
+            }
+            if (downInput.inputState == Input.inputStates.pressed)
+            {
+                index += 1;
+                if (index > list.Count - 1)
+                {
+                    index = 0;
+                }
+            }
+
+            if (index < 0)
+            {
+                index = list.Count - 1;
+            }
+            if (index > list.Count - 1)
+            {
+                index = 0;
+            }
+
+            MenuUpdateReturn returnValue = new MenuUpdateReturn();
+
+            returnValue.index = index;
+
+            if (activateInput.inputState == Input.inputStates.pressed)
+            {
+                if (activateInput.inputType != Input.inputTypes.mouse | buttonRect.Contains(mousePosition))
+                {
+                    returnValue.pressed = true;
+                }
+            }
+            else
+            {
+                returnValue.pressed = false;
+            }
+
+            return returnValue;
+        }
     }
+
+    internal class MenuUpdateReturn
+    {
+        public bool pressed;
+
+        public int index;
+    } 
 }
