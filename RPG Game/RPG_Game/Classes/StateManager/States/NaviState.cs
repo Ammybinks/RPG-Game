@@ -435,7 +435,7 @@ namespace RPG_Game
                 {
                     if (currentEvent.line != null)
                     {
-                        currentEvent.eventBox.DrawParts(spriteBatch);
+                        currentEvent.eventBox.DrawParts(spriteBatch, calibri);
 
                         spriteBatch.DrawString(calibri, currentEvent.line, currentEvent.lineUpperLeft, Color.White);
                     }
@@ -447,25 +447,16 @@ namespace RPG_Game
             {
                 if (state[allBoxes[i].activatorState])
                 {
-                    allBoxes[i].DrawParts(spriteBatch);
+                    allBoxes[i].DrawParts(spriteBatch, calibri);
 
                     for (int o = 0; o < allBoxes[i].buttons.Count; o++)
                     {
-                        allBoxes[i].buttons[o].DrawParts(spriteBatch);
+                        allBoxes[i].buttons[o].DrawParts(spriteBatch, calibri);
 
                         if (allBoxes[i].buttons[o].icon != null)
                         {
                             allBoxes[i].buttons[o].icon.Draw(spriteBatch);
                         }
-
-                        spriteBatch.DrawString(calibri,
-                                               allBoxes[i].buttons[o].display,
-                                               new Vector2(allBoxes[i].buttons[o].UpperLeft.X + allBoxes[i].buttons[o].icon.GetWidth() + 30, allBoxes[i].buttons[o].UpperLeft.Y + 8),
-                                               Color.Black,
-                                               0,
-                                               new Vector2(0, 0),
-                                               1f,
-                                               SpriteEffects.None, 0);
                     }
                 }
             }
@@ -652,7 +643,7 @@ namespace RPG_Game
             MenuUpdateReturn temp = MenuUpdate();
             buttonIndex = temp.index;
 
-            if (temp.pressed)
+            if (temp.activate)
             {
                 activeButtons[buttonIndex].action.Invoke(gameTime);
             }

@@ -11,12 +11,13 @@ namespace RPG_Game
 
         public bool inMenu;
 
-        public string display;
+        public string name;
+        public string description;
 
         public Ability()
         {
             cost = 0;
-            display = "This ability isn't meant to be used, dummy";
+            name = "This ability isn't meant to be used, dummy";
         }
 
         internal override List<SpriteBase> GetTargets(BattleState battleState)

@@ -16,7 +16,8 @@ namespace RPG_Game
 
             iconFrame = new Vector2(8, 5);
 
-            display = "HP+ - Good for minor sores and bruises, not much else";
+            name = "Healthy Pot";
+            description = "A goopy cream sometimes used for medicinal purposes.\n\nRestores 50 Healthy Points to a single party member.";
         }
 
         internal override List<SpriteBase> GetTargets(BattleState battleState)

@@ -10,7 +10,10 @@ namespace RPG_Game
         {
             iconFrame = new Vector2(3, 4);
 
-            display = "ATTACK - Generic Attack Bullshit";
+            cost = 0;
+
+            name = "Attack";
+            description = "Just a regular attack.\n\nDeals normal damage based on your physical attack.";
         }
 
         internal override List<SpriteBase> GetTargets(BattleState battleState)

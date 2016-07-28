@@ -95,7 +95,8 @@
     <Compile Include="Classes\Items\Consumables\HP.cs" />
     <Compile Include="Classes\Items\Item.cs" />
     <Compile Include="Classes\SpriteBase\Parts\Box\Box.cs" />
-    <Compile Include="Classes\SpriteBase\Parts\Box\Button\Button.cs" />
+    <Compile Include="Classes\SpriteBase\Parts\ButtonBase\Button.cs" />
+    <Compile Include="Classes\SpriteBase\Parts\ButtonBase\MultiButton.cs" />
     <Compile Include="Classes\SpriteBase\Parts\Parts.cs" />
     <Compile Include="Classes\SpriteBase\Sprite\Actors\Battler.cs" />
     <Compile Include="Classes\SpriteBase\Sprite\Actors\Mover.cs" />

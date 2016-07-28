@@ -58,7 +58,9 @@ namespace RPG_Game
         public bool actionComplete;
 
         Action<GameTime>[] stateMethods = new Action<GameTime>[8];
+        Action<GameTime>[] switchStateMethods = new Action<GameTime>[8];
         bool[] state = new bool[8];
+        bool[] previousState = new bool[8];
         int currentState;
 
         public override void LoadContent(Main main)
@@ -372,6 +374,15 @@ namespace RPG_Game
             stateMethods[6] = TargetMenu;
             stateMethods[7] = StateSwitch;
 
+            switchStateMethods[0] = MenuSwitch;
+            switchStateMethods[1] = MenuSwitch;
+            switchStateMethods[2] = MenuSwitch;
+            switchStateMethods[3] = MenuSwitch;
+            switchStateMethods[4] = SkillsSwitch;
+            switchStateMethods[5] = ItemSwitch;
+            switchStateMethods[6] = TargetSwitch;
+            switchStateMethods[7] = MenuSwitch;
+
             targetState = 1;
 
             FightBegin();
@@ -492,30 +503,27 @@ namespace RPG_Game
                 damageLocation += damageLocation / 32;
             }
 
+            bool temp = false;
+
             //Boxes \ Buttons Draw Cycle
             for (int i = 0; i < allBoxes.Count; i++)
             {
                 if (state[allBoxes[i].activatorState])
                 {
-                    allBoxes[i].DrawParts(spriteBatch);
+                    allBoxes[i].DrawParts(spriteBatch, calibri);
 
                     for (int o = 0; o < allBoxes[i].buttons.Count; o++)
                     {
-                        allBoxes[i].buttons[o].DrawParts(spriteBatch);
-
-                        if (allBoxes[i].buttons[o].icon != null)
+                        if(o == buttonIndex)
                         {
-                            allBoxes[i].buttons[o].icon.Draw(spriteBatch);
+                            temp = true;
+                        }
+                        else
+                        {
+                            temp = false;
                         }
 
-                        spriteBatch.DrawString(calibri,
-                                               allBoxes[i].buttons[o].display,
-                                               new Vector2(allBoxes[i].buttons[o].UpperLeft.X + allBoxes[i].buttons[o].icon.GetWidth() + 30, allBoxes[i].buttons[o].UpperLeft.Y + 8),
-                                               Color.Black,
-                                               0,
-                                               new Vector2(0, 0),
-                                               1f,
-                                               SpriteEffects.None, 0);
+                        allBoxes[i].buttons[o].DrawParts(spriteBatch, calibri, temp);
                     }
                 }
             }
@@ -574,16 +582,7 @@ namespace RPG_Game
                 //If the actor is playable
                 if (actor.friendly)
                 {
-                    //Switch to Battle Menu State
-                    ActivateState(3);
-
-                    for (int i = 0; i < allBoxes.Count; i++)
-                    {
-                        if (allBoxes[i].activatorState == currentState)
-                        {
-                            activeButtons = allBoxes[i].buttons;
-                        }
-                    }
+                    MenuSwitch(gameTime);
                 }
                 else
                 {
@@ -621,7 +620,9 @@ namespace RPG_Game
             MenuUpdateReturn temp = MenuUpdate();
             buttonIndex = temp.index;
 
-            if (temp.pressed)
+            pointer.isAlive = true;
+
+            if (temp.activate)
             {
                 pointer.isAlive = false;
 
@@ -641,7 +642,7 @@ namespace RPG_Game
             MenuUpdateReturn temp = MenuUpdate();
             buttonIndex = temp.index;
 
-            if (temp.pressed)
+            if (temp.activate)
             {
                 pointer.isAlive = false;
 
@@ -653,7 +654,10 @@ namespace RPG_Game
 
                 timer = gameTime.TotalGameTime.TotalSeconds + 1;
             }
-            
+            else if (temp.menu)
+            {
+                SwitchState(4, gameTime);
+            }
 
             pointer.UpperLeft = new Vector2(activeButtons[buttonIndex].UpperLeft.X - pointer.GetWidth() - 15, activeButtons[buttonIndex].UpperLeft.Y + 5);
         }
@@ -663,7 +667,7 @@ namespace RPG_Game
             MenuUpdateReturn temp = MenuUpdate();
             buttonIndex = temp.index;
 
-            if (temp.pressed)
+            if (temp.activate)
             {
                 pointer.isAlive = false;
 
@@ -674,6 +678,10 @@ namespace RPG_Game
                 currentAction = heldItems[buttonIndex];
 
                 timer = gameTime.TotalGameTime.TotalSeconds + 1;
+            }
+            else if (temp.menu)
+            {
+                SwitchState(5, gameTime);
             }
 
 
@@ -701,20 +709,21 @@ namespace RPG_Game
                                                 targets[targetIndex].UpperLeft.Y + targets[targetIndex].GetHeight() - 5);
 
 
-                if (activateInput.inputState == Input.inputStates.pressed)
+                if (temp.activate)
                 {
-                    if (temp.pressed)
-                    {
-                        pointer.isAlive = false;
+                    pointer.isAlive = false;
 
-                        //Switch to Animating State
-                        ActivateState(2);
+                    //Switch to Animating State
+                    ActivateState(2);
 
-                        target = (Battler)targets[targetIndex];
-                        targets.Clear();
-                        targets.Capacity = 0;
-                        timer = gameTime.TotalGameTime.TotalSeconds + 1;
-                    }
+                    target = (Battler)targets[targetIndex];
+                    targets.Clear();
+                    targets.Capacity = 0;
+                    timer = gameTime.TotalGameTime.TotalSeconds + 1;
+                }
+                else if (temp.menu)
+                {
+                    SwitchState(6, gameTime);
                 }
             }
         }
@@ -729,6 +738,11 @@ namespace RPG_Game
         //Activates the target state, setting all states to false, while keeping the target state true
         private void ActivateState(int targetState)
         {
+            for(int i = 0; i < state.Length; i++)
+            {
+                previousState[i] = state[i];
+            }
+
             //Set all states to false
             for (int i = 0; i < state.Length; i++)
             {
@@ -739,64 +753,99 @@ namespace RPG_Game
             //Set the target state to true
             state[targetState] = true;
         }
-
+        
         //Switches the target state, setting it to true if it was false, and false otherwise
         //If target state was false, currentState will be set to the last state still active
-        private void SwitchState(int targetState)
+        private void SwitchState(int targetState, GameTime gameTime)
         {
             if (state[targetState])
             {
                 state[targetState] = false;
+                previousState[targetState] = false;
 
                 //Find the highest value state still active, and set currentState to it
-                for (int i = state.Length; i >= 0; i--)
+                for (int i = previousState.Length - 1; i >= 0; i--)
                 {
-                    if (state[i])
+                    if (previousState[i])
                     {
-                        currentState = i;
+                        switchStateMethods[i].Invoke(gameTime);
+
+                        for(int o = 0; o < previousState.Length; o++)
+                        {
+                            if(!state[o])
+                            {
+                                state[o] = previousState[o];
+                            }
+                        }
+
+                        break;
                     }
                 }
             }
             else
             {
                 state[targetState] = true;
+                previousState[targetState] = true;
 
                 currentState = targetState;
             }
         }
+        
 
-        private void TargetSwitch(GameTime gameTime)
+        private void MenuSwitch(GameTime gameTime)
         {
-            //Switch to Target Menu State
-            ActivateState(6);
+            //Switch to Battle Menu State
+            ActivateState(3);
 
-            targets = actor.abilities[buttonIndex].GetTargets(this);
-
-            currentAction = attack;
+            for (int i = 0; i < allBoxes.Count; i++)
+            {
+                if (allBoxes[i].activatorState == currentState)
+                {
+                    activeButtons = allBoxes[i].buttons;
+                }
+            }
         }
 
         private void SkillsSwitch(GameTime gameTime)
         {
             //Switch to Skill Menu State
-            SwitchState(4);
+            SwitchState(4, gameTime);
 
-            Button tempButton;
+            MultiButton tempButton;
 
             skillsBox.buttons.Clear();
             skillsBox.buttons.Capacity = 0;
 
             for (int i = 0; i < actor.abilities.Count; i++)
             {
-                tempButton = new Button();
+                tempButton = new MultiButton();
+                tempButton.extraButtons = new List<Button>();
 
                 tempButton.UpperLeft = new Vector2(skillsBox.UpperLeft.X + 80, skillsBox.UpperLeft.Y + 10 + (60 * i));
-                tempButton.display = actor.abilities[i].display;
+                tempButton.display = actor.abilities[i].name;
                 tempButton.icon.SetTexture(iconTexture, 16, 20);
                 tempButton.icon.setCurrentFrame((int)actor.abilities[i].iconFrame.X, (int)actor.abilities[i].iconFrame.Y);
-                tempButton.frameWidth = skillsBox.frameWidth - 90;
+                tempButton.frameWidth = skillsBox.frameWidth - 160;
                 tempButton.frameHeight = 50;
                 tempButton.SetParts(cornerTexture, wallTexture, backTexture);
                 tempButton.icon.UpperLeft = new Vector2(tempButton.UpperLeft.X + 10, tempButton.UpperLeft.Y + 9);
+
+                tempButton.extraButtons.Add(new Button());
+                tempButton.extraButtons[0].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth(), skillsBox.UpperLeft.Y + 10 + (60 * i));
+                tempButton.extraButtons[0].display = actor.abilities[i].cost.ToString();
+                tempButton.extraButtons[0].frameWidth = 70;
+                tempButton.extraButtons[0].frameHeight = 50;
+                tempButton.extraButtons[0].SetParts(cornerTexture, wallTexture, backTexture);
+                tempButton.extraButtons[0].icon = null;
+
+                tempButton.extraButtons.Add(new Button());
+                tempButton.extraButtons[1].UpperLeft = new Vector2(skillsBox.UpperLeft.X + 80, 200);
+                tempButton.extraButtons[1].display = actor.abilities[i].description;
+                tempButton.extraButtons[1].frameWidth = skillsBox.frameWidth - 90;
+                tempButton.extraButtons[1].frameHeight = 100;
+                tempButton.extraButtons[1].SetParts(cornerTexture, wallTexture, backTexture);
+                tempButton.extraButtons[1].showOnSelected = true;
+                tempButton.extraButtons[1].icon = null;
 
                 skillsBox.buttons.Add(tempButton);
             }
@@ -811,25 +860,43 @@ namespace RPG_Game
 
         private void ItemSwitch(GameTime gameTime)
         {
-            SwitchState(5);
+            SwitchState(5, gameTime);
 
-            Button tempButton;
+            MultiButton tempButton;
 
             itemsBox.buttons.Clear();
             itemsBox.buttons.Capacity = 0;
 
             for (int i = 0; i < heldItems.Count; i++)
             {
-                tempButton = new Button();
+                tempButton = new MultiButton();
+                tempButton.extraButtons = new List<Button>();
 
-                tempButton.UpperLeft = new Vector2(skillsBox.UpperLeft.X + 80, skillsBox.UpperLeft.Y + 10 + (60 * i));
-                tempButton.display = heldItems[i].display;
+                tempButton.UpperLeft = new Vector2(itemsBox.UpperLeft.X + 80, itemsBox.UpperLeft.Y + 10 + (60 * i));
+                tempButton.display = heldItems[i].name;
                 tempButton.icon.SetTexture(iconTexture, 16, 20);
                 tempButton.icon.setCurrentFrame((int)heldItems[i].iconFrame.X, (int)heldItems[i].iconFrame.Y);
-                tempButton.frameWidth = skillsBox.frameWidth - 90;
+                tempButton.frameWidth = skillsBox.frameWidth - 140;
                 tempButton.frameHeight = 50;
                 tempButton.SetParts(cornerTexture, wallTexture, backTexture);
                 tempButton.icon.UpperLeft = new Vector2(tempButton.UpperLeft.X + 10, tempButton.UpperLeft.Y + 9);
+
+                tempButton.extraButtons.Add(new Button());
+                tempButton.extraButtons[0].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth(), itemsBox.UpperLeft.Y + 10 + (60 * i));
+                tempButton.extraButtons[0].display = heldItems[i].heldCount.ToString();
+                tempButton.extraButtons[0].frameWidth = 50;
+                tempButton.extraButtons[0].frameHeight = 50;
+                tempButton.extraButtons[0].SetParts(cornerTexture, wallTexture, backTexture);
+                tempButton.extraButtons[0].icon = null;
+
+                tempButton.extraButtons.Add(new Button());
+                tempButton.extraButtons[1].UpperLeft = new Vector2(itemsBox.UpperLeft.X + 80, 200);
+                tempButton.extraButtons[1].display = heldItems[i].description;
+                tempButton.extraButtons[1].frameWidth = skillsBox.frameWidth - 90;
+                tempButton.extraButtons[1].frameHeight = 100;
+                tempButton.extraButtons[1].SetParts(cornerTexture, wallTexture, backTexture);
+                tempButton.extraButtons[1].showOnSelected = true;
+                tempButton.extraButtons[1].icon = null;
 
                 itemsBox.buttons.Add(tempButton);
             }
@@ -841,7 +908,18 @@ namespace RPG_Game
 
             buttonIndex = 0;
         }
-        
+
+        private void TargetSwitch(GameTime gameTime)
+        {
+            //Switch to Target Menu State
+            ActivateState(6);
+
+            targets = actor.abilities[buttonIndex].GetTargets(this);
+
+            currentAction = attack;
+        }
+
+
         public int IFF(Battler character)
         {
             if(character.friendly)

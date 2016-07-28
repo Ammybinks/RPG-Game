@@ -16,7 +16,8 @@ namespace RPG_Game
 
             iconFrame = new Vector2(7, 5);
 
-            display = "HP++ - Heals broken bones and terminal illnesses";
+            name = "Halcyon Philtre";
+            description = "Heals broken bones and terminal illnesses.\n\nRestores a massive 100 HP to a single party member.";
         }
 
         internal override List<SpriteBase> GetTargets(BattleState battleState)

@@ -10,7 +10,10 @@ namespace RPG_Game
         {
             iconFrame = new Vector2(10, 0);
 
-            display = "MURDER - No Crows Here.";
+            cost = 100;
+
+            name = "Murder";
+            description = "No crows here.\n\nDeals one thousand times the damage of a normal attack.";
         }
 
         internal override List<SpriteBase> GetTargets(BattleState battleState)

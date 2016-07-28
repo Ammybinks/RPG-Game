@@ -76,7 +76,7 @@ namespace RPG_Game
             hPotionPlus.heldCount = 5;
             heldItems.Add(hPotionPlus);
 
-            hPotionPlusPlus.heldCount = 5;
+            hPotionPlusPlus.heldCount = 20;
             heldItems.Add(hPotionPlusPlus);
 
             //Heroes Initialization Begins//

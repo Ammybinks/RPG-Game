@@ -90,6 +90,17 @@ namespace RPG_Game
                 activateInput.inputType = Input.inputTypes.mouse;
             }
 
+
+            if (currentMouseState.RightButton == ButtonState.Pressed && oldMouseState.RightButton == ButtonState.Released)
+            {
+                menuInput.inputState = Input.inputStates.pressed;
+                menuInput.inputType = Input.inputTypes.mouse;
+            }
+            else
+            {
+                menuInput.inputState = Input.inputStates.released;
+                menuInput.inputType = Input.inputTypes.mouse;
+            }
             ////Keyboard input handling
             //Up input handling
             if ((currentKeyState.IsKeyDown(Keys.W)) && (oldKeyState.IsKeyUp(Keys.W)))
@@ -289,12 +300,21 @@ namespace RPG_Game
             {
                 if (activateInput.inputType != Input.inputTypes.mouse | buttonRect.Contains(mousePosition))
                 {
-                    returnValue.pressed = true;
+                    returnValue.activate = true;
                 }
             }
             else
             {
-                returnValue.pressed = false;
+                returnValue.activate = false;
+            }
+
+            if (menuInput.inputState == Input.inputStates.pressed)
+            {
+                returnValue.menu = true;
+            }
+            else
+            {
+                returnValue.menu = false;
             }
 
             return returnValue;
@@ -303,7 +323,9 @@ namespace RPG_Game
 
     internal class MenuUpdateReturn
     {
-        public bool pressed;
+        public bool activate;
+
+        public bool menu;
 
         public int index;
     } 

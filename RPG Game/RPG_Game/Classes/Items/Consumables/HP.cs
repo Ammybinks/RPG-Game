@@ -16,7 +16,8 @@ namespace RPG_Game
 
             iconFrame = new Vector2(9, 5);
 
-            display = "HP - Heals your points, isn't that nice?";
+            name = "Healing Potion";
+            description = "Heals your points, isn't that nice?\n\nRestores 10 Health Points to a single party member.";
         }
 
         internal override List<SpriteBase> GetTargets(BattleState battleState)

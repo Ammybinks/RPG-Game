@@ -13,7 +13,8 @@ namespace RPG_Game
 
         public Vector2 iconFrame;
 
-        public string display;
+        public string name;
+        public string description;
 
         public Item()
         {
@@ -25,7 +26,7 @@ namespace RPG_Game
 
             iconFrame = new Vector2(1, 1);
 
-            display = "You're not meant to use this item, dummy";
+            name = "You're not meant to use this item, dummy";
         }
 
         internal override List<SpriteBase> GetTargets(BattleState battleState)
