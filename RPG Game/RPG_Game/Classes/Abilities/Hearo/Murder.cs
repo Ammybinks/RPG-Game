@@ -12,6 +12,9 @@ namespace RPG_Game
 
             cost = 100;
 
+            battleUsable = true;
+            mapUsable = false;
+
             name = "Murder";
             description = "No crows here.\n\nDeals one thousand times the damage of a normal attack.";
         }

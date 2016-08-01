@@ -9,9 +9,11 @@ namespace RPG_Game
         public Sprite icon = new Sprite();
 
         public string display;
+        public float displaySize = 1f;
+        public Color displayColour = Color.Black;
 
         public bool showOnSelected;
-
+        
         public Action<GameTime> action;
 
         public virtual void DrawParts(SpriteBatch spriteBatch, SpriteFont font, bool isSelected)
@@ -37,17 +39,22 @@ namespace RPG_Game
                 icon.Draw(spriteBatch);
             }
 
+            DrawDisplay(spriteBatch, font);
+        }
+
+        internal void DrawDisplay(SpriteBatch spriteBatch, SpriteFont font)
+        {
             if (display != null)
             {
-                if(icon != null)
+                if (icon != null)
                 {
                     spriteBatch.DrawString(font,
                                            display,
                                            new Vector2(UpperLeft.X + icon.GetWidth() + 30, UpperLeft.Y + 8),
-                                           Color.Black,
+                                           displayColour,
                                            0,
                                            new Vector2(0, 0),
-                                           1f,
+                                           displaySize,
                                            SpriteEffects.None, 0);
                 }
                 else
@@ -55,10 +62,10 @@ namespace RPG_Game
                     spriteBatch.DrawString(font,
                                            display,
                                            new Vector2(UpperLeft.X + 10, UpperLeft.Y + 8),
-                                           Color.Black,
+                                           displayColour,
                                            0,
                                            new Vector2(0, 0),
-                                           1f,
+                                           displaySize,
                                            SpriteEffects.None, 0);
                 }
             }

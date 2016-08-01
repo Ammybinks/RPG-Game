@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 using System.Collections.Generic;
 
 namespace RPG_Game
@@ -33,6 +34,7 @@ namespace RPG_Game
 
         internal Texture2D iconTexture;
         internal Button button;
+        internal MultiButton multiButton;
 
         internal Texture2D cornerTexture;
         internal Texture2D wallTexture;
@@ -45,6 +47,19 @@ namespace RPG_Game
         public double timer;
 
         internal Step step = new Step();
+
+        public List<Item> heldItems = new List<Item>();
+
+        internal Usable currentAction;
+
+        internal Action<GameTime>[] stateMethods = new Action<GameTime>[8];
+        internal Action<GameTime>[] switchStateMethods = new Action<GameTime>[8];
+        internal bool[] state = new bool[8];
+        internal bool[] previousState = new bool[8];
+        internal int currentState;
+        internal int nextState;
+
+        private bool switching = false;
 
         public bool quitting = false;
 
@@ -225,6 +240,85 @@ namespace RPG_Game
         {
 
         }
+        
+        internal void ClearStates()
+        {
+            for(int i = 0; i < state.Length; i++)
+            {
+                state[i] = false;
+                previousState[i] = false;
+            }
+        }
+
+        //Activates the target state, setting all states to false, while keeping the target state true
+        internal void ActivateState(int targetState)
+        {
+            for (int i = 0; i < state.Length; i++)
+            {
+                previousState[i] = state[i];
+            }
+
+            //Set all states to false
+            for (int i = 0; i < state.Length; i++)
+            {
+                state[i] = false;
+            }
+
+            currentState = targetState;
+            //Set the target state to true
+            state[targetState] = true;
+            previousState[targetState] = true;
+        }
+
+        //Switches the target state, setting it to true if it was false, and false otherwise
+        //If target state was false, currentState will be set to the last state still active
+        internal void SwitchState(int targetState, GameTime gameTime)
+        {
+            if (!switching)
+            {
+                switching = true;
+
+                if (state[targetState])
+                {
+                    state[targetState] = false;
+                    previousState[targetState] = false;
+
+                    //Find the highest value state still active, and set currentState to it
+                    for (int i = targetState; i >= 0; i--)
+                    {
+                        if (previousState[i])
+                        {
+                            currentState = i;
+                            switchStateMethods[i].Invoke(gameTime);
+
+                            for (int o = 0; o < previousState.Length; o++)
+                            {
+                                if (!state[o])
+                                {
+                                    state[o] = previousState[o];
+                                }
+                            }
+
+                            switching = false;
+                            return;
+                        }
+                    }
+                    
+                    ActivateState(0);
+                }
+                else
+                {
+                    state[targetState] = true;
+                    previousState[targetState] = true;
+
+                    currentState = targetState;
+                }
+                
+                switching = false;
+            }
+        }
+
+
 
         internal MenuUpdateReturn MenuUpdate()
         {

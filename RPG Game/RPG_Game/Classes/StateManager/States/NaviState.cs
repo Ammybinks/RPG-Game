@@ -31,22 +31,24 @@ namespace RPG_Game
         Battler hieroBattler;
 
         LinkedList<Mover> movers = new LinkedList<Mover>();
+        List<Battler> battlers = new List<Battler>();
 
         Camera camera;
 
         Box menuBox;
-        Box heroBox;
+        Box inventoryBox;
+        MultiBox heroBox;
 
         Tile[,] map = new Tile[100, 50];
         Tile tile;
         Tile eventTile;
 
-        Action<GameTime>[] stateMethods = new Action<GameTime>[7];
-        bool[] state = new bool[7];
-        int currentState;
-
         Vector2 movementModifier;
         Vector2 playerView = new Vector2(20, 11);
+
+        public Battler target;
+
+        bool runOnce = false;
 
         public Event currentEvent;
         Area01 area01 = new Area01();
@@ -54,7 +56,7 @@ namespace RPG_Game
         public override void LoadContent(Main main)
         {
             calibri = main.Content.Load<SpriteFont>("Fonts\\Calibri");
-            
+
             pointerTexture = main.Content.Load<Texture2D>("Misc\\Pointer");
             iconTexture = main.Content.Load<Texture2D>("Misc\\IconSet");
 
@@ -74,6 +76,10 @@ namespace RPG_Game
 
             pointer.SetTexture(pointerTexture);
             pointer.Scale = new Vector2(0.8f, 0.8f);
+
+            activeButtons = new List<Button>();
+
+            heldItems = main.heldItems;
 
             camera = new Camera();
             camera.WorldWidth = 3840;
@@ -115,15 +121,19 @@ namespace RPG_Game
             //Battler Initialization Begins//
             //Hero Initialization
             heroBattler = main.hero;
+            battlers.Add(heroBattler);
 
             //Hiro Initialization
             hiroBattler = main.hiro;
+            battlers.Add(hiroBattler);
 
             //Hearo Initialization
             hearoBattler = main.hearo;
+            battlers.Add(hearoBattler);
 
             //Hiero Initialization
             hieroBattler = main.hiero;
+            battlers.Add(hieroBattler);
             //Battler Initialization Ends//
 
             ////World Map Initialization Begins//
@@ -259,7 +269,7 @@ namespace RPG_Game
             button.UpperLeft = new Vector2(75, 15 + ((button.GetHeight() + 15) * menuBox.buttons.Count));
             button.SetParts(cornerTexture, wallTexture, backTexture);
             button.display = "Inventory";
-            button.action = SwitchInventory;
+            button.action = ItemSwitch;
             button.icon.SetTexture(iconTexture, 16, 20);
             button.icon.setCurrentFrame(9, 7);
             button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 10, button.UpperLeft.Y + 9);
@@ -272,7 +282,7 @@ namespace RPG_Game
             button.UpperLeft = new Vector2(75, 15 + ((button.GetHeight() + 15) * menuBox.buttons.Count));
             button.SetParts(cornerTexture, wallTexture, backTexture);
             button.display = "Skills";
-            button.action = SwitchSkills;
+            button.action = SkillsSwitch;
             button.icon.SetTexture(iconTexture, 16, 20);
             button.icon.setCurrentFrame(15, 4);
             button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 10, button.UpperLeft.Y + 9);
@@ -285,7 +295,7 @@ namespace RPG_Game
             button.UpperLeft = new Vector2(75, 15 + ((button.GetHeight() + 15) * menuBox.buttons.Count));
             button.SetParts(cornerTexture, wallTexture, backTexture);
             button.display = "Map";
-            button.action = SwitchMap;
+            button.action = MapSwitch;
             button.icon.SetTexture(iconTexture, 16, 20);
             button.icon.setCurrentFrame(14, 11);
             button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 10, button.UpperLeft.Y + 9);
@@ -298,7 +308,7 @@ namespace RPG_Game
             button.UpperLeft = new Vector2(75, 15 + ((button.GetHeight() + 15) * menuBox.buttons.Count));
             button.SetParts(cornerTexture, wallTexture, backTexture);
             button.display = "Status";
-            button.action = SwitchStatus;
+            button.action = StatusSwitch;
             button.icon.SetTexture(iconTexture, 16, 20);
             button.icon.setCurrentFrame(3, 0);
             button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 10, button.UpperLeft.Y + 9);
@@ -317,63 +327,177 @@ namespace RPG_Game
             button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 10, button.UpperLeft.Y + 9);
             menuBox.buttons.Add(button);
 
+            //Inventory Box
+            inventoryBox = new Box();
+            inventoryBox.frameWidth = 800;
+            inventoryBox.frameHeight = 800;
+            inventoryBox.UpperLeft = new Vector2(menuBox.GetWidth() + 10, 5);
+            inventoryBox.SetParts(cornerTexture, wallTexture, backTexture);
+            inventoryBox.activatorState = 3;
+            inventoryBox.buttons = new List<Button>();
+            allBoxes.Add(inventoryBox);
+
             ////Hero Buttons Box
-            heroBox = new Box();
-            heroBox.frameWidth = 900;
+            heroBox = new MultiBox();
+            heroBox.frameWidth = 820;
             heroBox.frameHeight = 725;
             heroBox.UpperLeft = new Vector2(main.graphics.PreferredBackBufferWidth - heroBox.GetWidth() - 5, 5);
             heroBox.SetParts(cornerTexture, wallTexture, backTexture);
-            heroBox.activatorState = 3;
-            heroBox.buttons = new List<Button>();
+            heroBox.activatorState = 6;
+            heroBox.multiButtons = new List<MultiButton>();
             allBoxes.Add(heroBox);
 
-            //Hero Button
-            button = new Button();
-            button.frameWidth = 800;
-            button.frameHeight = 150;
-            button.UpperLeft = new Vector2(main.graphics.PreferredBackBufferWidth - button.GetWidth() - 25, 25 + ((button.GetHeight() + 25) * heroBox.buttons.Count));
-            button.SetParts(cornerTexture, wallTexture, backTexture);
-            button.display = "The Adorable Manchild\n\nHP\nMP\nEXP";
-            button.action = Status;
-            button.icon.SetTexture(heroFace);
-            button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 15, button.UpperLeft.Y + 2);
-            heroBox.buttons.Add(button);
-            
-            //Hiro Button
-            button = new Button();
-            button.frameWidth = 800;
-            button.frameHeight = 150;
-            button.UpperLeft = new Vector2(main.graphics.PreferredBackBufferWidth - button.GetWidth() - 25, 25 + ((button.GetHeight() + 25) * heroBox.buttons.Count));
-            button.SetParts(cornerTexture, wallTexture, backTexture);
-            button.display = "The Absolutely-Not-Into-It Love Interest\n\nHP\nMP\nEXP";
-            button.action = Status;
-            button.icon.SetTexture(hiroFace);
-            button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 15, button.UpperLeft.Y + 2);
-            heroBox.buttons.Add(button);
+            //Hero MultiButton
+            multiButton = new MultiButton();
+            multiButton.extraButtons = new List<Button>();
+            multiButton.frameWidth = 150;
+            multiButton.frameHeight = 150;
+            multiButton.UpperLeft = new Vector2(heroBox.UpperLeft.X + 80, 25 + ((multiButton.GetHeight() + 25) * heroBox.multiButtons.Count));
+            multiButton.SetParts(cornerTexture, wallTexture, backTexture);
+            multiButton.icon.SetTexture(heroFace);
+            multiButton.icon.UpperLeft = new Vector2(multiButton.UpperLeft.X + 3, multiButton.UpperLeft.Y + 2);
 
-            //Hearo Button
-            button = new Button();
-            button.frameWidth = 800;
-            button.frameHeight = 150;
-            button.UpperLeft = new Vector2(main.graphics.PreferredBackBufferWidth - button.GetWidth() - 25, 25 + ((button.GetHeight() + 25) * heroBox.buttons.Count));
-            button.SetParts(cornerTexture, wallTexture, backTexture);
-            button.display = "The Endearing Father Figure\n\nHP\nMP\nEXP";
-            button.action = Status;
-            button.icon.SetTexture(hearoFace);
-            button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 15, button.UpperLeft.Y + 2);
-            heroBox.buttons.Add(button);
+            multiButton.extraButtons.Add(new Button());
+            multiButton.extraButtons[0].frameWidth = 560;
+            multiButton.extraButtons[0].frameHeight = 50;
+            multiButton.extraButtons[0].UpperLeft = new Vector2(multiButton.UpperLeft.X + multiButton.GetWidth() + 5, multiButton.UpperLeft.Y);
+            multiButton.extraButtons[0].SetParts(cornerTexture, wallTexture, backTexture);
+            multiButton.extraButtons[0].display = "The Adorable Manchild";
+            multiButton.extraButtons[0].icon = null;
 
-            //Hiero Button
-            button = new Button();
-            button.frameWidth = 800;
-            button.frameHeight = 150;
-            button.UpperLeft = new Vector2(main.graphics.PreferredBackBufferWidth - button.GetWidth() - 25, 25 + ((button.GetHeight() + 25) * heroBox.buttons.Count));
-            button.SetParts(cornerTexture, wallTexture, backTexture);
-            button.display = "The Comic Relief\n\nHP\nMP\nEXP";
-            button.action = Status;
-            button.icon.SetTexture(hieroFace);
-            button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 15, button.UpperLeft.Y + 2);
-            heroBox.buttons.Add(button);
+            multiButton.extraButtons.Add(new Button());
+            multiButton.extraButtons[1].frameWidth = 45;
+            multiButton.extraButtons[1].frameHeight = 42;
+            multiButton.extraButtons[1].UpperLeft = new Vector2(multiButton.UpperLeft.X + multiButton.GetWidth() + 5, multiButton.UpperLeft.Y + 50);
+            multiButton.extraButtons[1].SetParts(cornerTexture, wallTexture, backTexture);
+            multiButton.extraButtons[1].display = "HP:";
+            multiButton.extraButtons[1].displaySize = 0.75f;
+            multiButton.extraButtons[1].icon = null;
+
+            multiButton.extraButtons.Add(new Button());
+            multiButton.extraButtons[2].frameWidth = 115;
+            multiButton.extraButtons[2].frameHeight = 42;
+            multiButton.extraButtons[2].UpperLeft = new Vector2((multiButton.extraButtons[0].UpperLeft.X + multiButton.extraButtons[0].GetWidth()) - multiButton.extraButtons[2].GetWidth(), multiButton.UpperLeft.Y + 50);
+            multiButton.extraButtons[2].SetParts(cornerTexture, wallTexture, backTexture);
+            multiButton.extraButtons[2].display = heroBattler.health.ToString() + "/" + heroBattler.maxHealth.ToString();
+            multiButton.extraButtons[2].displaySize = 0.75f;
+            multiButton.extraButtons[2].icon = null;
+
+            heroBox.multiButtons.Add(multiButton);
+
+            //Hiro MultiButton
+            multiButton = new MultiButton();
+            multiButton.extraButtons = new List<Button>();
+            multiButton.frameWidth = 150;
+            multiButton.frameHeight = 150;
+            multiButton.UpperLeft = new Vector2(heroBox.UpperLeft.X + 80, 25 + ((multiButton.GetHeight() + 25) * heroBox.multiButtons.Count));
+            multiButton.SetParts(cornerTexture, wallTexture, backTexture);
+            multiButton.icon.SetTexture(hiroFace);
+            multiButton.icon.UpperLeft = new Vector2(multiButton.UpperLeft.X + 3, multiButton.UpperLeft.Y + 2);
+
+            multiButton.extraButtons.Add(new Button());
+            multiButton.extraButtons[0].frameWidth = 560;
+            multiButton.extraButtons[0].frameHeight = 50;
+            multiButton.extraButtons[0].UpperLeft = new Vector2(multiButton.UpperLeft.X + multiButton.GetWidth() + 5, multiButton.UpperLeft.Y);
+            multiButton.extraButtons[0].SetParts(cornerTexture, wallTexture, backTexture);
+            multiButton.extraButtons[0].display = "The Absolutely-Not-Into-It Love Interest";
+            multiButton.extraButtons[0].icon = null;
+
+            multiButton.extraButtons.Add(new Button());
+            multiButton.extraButtons[1].frameWidth = 45;
+            multiButton.extraButtons[1].frameHeight = 42;
+            multiButton.extraButtons[1].UpperLeft = new Vector2(multiButton.UpperLeft.X + multiButton.GetWidth() + 5, multiButton.UpperLeft.Y + 50);
+            multiButton.extraButtons[1].SetParts(cornerTexture, wallTexture, backTexture);
+            multiButton.extraButtons[1].display = "HP:";
+            multiButton.extraButtons[1].displaySize = 0.75f;
+            multiButton.extraButtons[1].icon = null;
+
+            multiButton.extraButtons.Add(new Button());
+            multiButton.extraButtons[2].frameWidth = 115;
+            multiButton.extraButtons[2].frameHeight = 42;
+            multiButton.extraButtons[2].UpperLeft = new Vector2((multiButton.extraButtons[0].UpperLeft.X + multiButton.extraButtons[0].GetWidth()) - multiButton.extraButtons[2].GetWidth(), multiButton.UpperLeft.Y + 50);
+            multiButton.extraButtons[2].SetParts(cornerTexture, wallTexture, backTexture);
+            multiButton.extraButtons[2].display = hiroBattler.health.ToString() + "/" + hiroBattler.maxHealth.ToString();
+            multiButton.extraButtons[2].displaySize = 0.75f;
+            multiButton.extraButtons[2].icon = null;
+
+            heroBox.multiButtons.Add(multiButton);
+
+            //Hearo MultiButton
+            multiButton = new MultiButton();
+            multiButton.extraButtons = new List<Button>();
+            multiButton.frameWidth = 150;
+            multiButton.frameHeight = 150;
+            multiButton.UpperLeft = new Vector2(heroBox.UpperLeft.X + 80, 25 + ((multiButton.GetHeight() + 25) * heroBox.multiButtons.Count));
+            multiButton.SetParts(cornerTexture, wallTexture, backTexture);
+            multiButton.icon.SetTexture(hearoFace);
+            multiButton.icon.UpperLeft = new Vector2(multiButton.UpperLeft.X + 3, multiButton.UpperLeft.Y + 2);
+
+            multiButton.extraButtons.Add(new Button());
+            multiButton.extraButtons[0].frameWidth = 560;
+            multiButton.extraButtons[0].frameHeight = 50;
+            multiButton.extraButtons[0].UpperLeft = new Vector2(multiButton.UpperLeft.X + multiButton.GetWidth() + 5, multiButton.UpperLeft.Y);
+            multiButton.extraButtons[0].SetParts(cornerTexture, wallTexture, backTexture);
+            multiButton.extraButtons[0].display = "The Endearing Father Figure";
+            multiButton.extraButtons[0].icon = null;
+
+            multiButton.extraButtons.Add(new Button());
+            multiButton.extraButtons[1].frameWidth = 45;
+            multiButton.extraButtons[1].frameHeight = 42;
+            multiButton.extraButtons[1].UpperLeft = new Vector2(multiButton.UpperLeft.X + multiButton.GetWidth() + 5, multiButton.UpperLeft.Y + 50);
+            multiButton.extraButtons[1].SetParts(cornerTexture, wallTexture, backTexture);
+            multiButton.extraButtons[1].display = "HP:";
+            multiButton.extraButtons[1].displaySize = 0.75f;
+            multiButton.extraButtons[1].icon = null;
+
+            multiButton.extraButtons.Add(new Button());
+            multiButton.extraButtons[2].frameWidth = 115;
+            multiButton.extraButtons[2].frameHeight = 42;
+            multiButton.extraButtons[2].UpperLeft = new Vector2((multiButton.extraButtons[0].UpperLeft.X + multiButton.extraButtons[0].GetWidth()) - multiButton.extraButtons[2].GetWidth(), multiButton.UpperLeft.Y + 50);
+            multiButton.extraButtons[2].SetParts(cornerTexture, wallTexture, backTexture);
+            multiButton.extraButtons[2].display = hearoBattler.health.ToString() + "/" + hearoBattler.maxHealth.ToString();
+            multiButton.extraButtons[2].displaySize = 0.75f;
+            multiButton.extraButtons[2].icon = null;
+
+            heroBox.multiButtons.Add(multiButton);
+
+            //Hiero MultiButton
+            multiButton = new MultiButton();
+            multiButton.extraButtons = new List<Button>();
+            multiButton.frameWidth = 150;
+            multiButton.frameHeight = 150;
+            multiButton.UpperLeft = new Vector2(heroBox.UpperLeft.X + 80, 25 + ((multiButton.GetHeight() + 25) * heroBox.multiButtons.Count));
+            multiButton.SetParts(cornerTexture, wallTexture, backTexture);
+            multiButton.icon.SetTexture(hieroFace);
+            multiButton.icon.UpperLeft = new Vector2(multiButton.UpperLeft.X + 3, multiButton.UpperLeft.Y + 2);
+
+            multiButton.extraButtons.Add(new Button());
+            multiButton.extraButtons[0].frameWidth = 560;
+            multiButton.extraButtons[0].frameHeight = 50;
+            multiButton.extraButtons[0].UpperLeft = new Vector2(multiButton.UpperLeft.X + multiButton.GetWidth() + 5, multiButton.UpperLeft.Y);
+            multiButton.extraButtons[0].SetParts(cornerTexture, wallTexture, backTexture);
+            multiButton.extraButtons[0].display = "The Comic Relief";
+            multiButton.extraButtons[0].icon = null;
+
+            multiButton.extraButtons.Add(new Button());
+            multiButton.extraButtons[1].frameWidth = 45;
+            multiButton.extraButtons[1].frameHeight = 42;
+            multiButton.extraButtons[1].UpperLeft = new Vector2(multiButton.UpperLeft.X + multiButton.GetWidth() + 5, multiButton.UpperLeft.Y + 50);
+            multiButton.extraButtons[1].SetParts(cornerTexture, wallTexture, backTexture);
+            multiButton.extraButtons[1].display = "HP:";
+            multiButton.extraButtons[1].displaySize = 0.75f;
+            multiButton.extraButtons[1].icon = null;
+
+            multiButton.extraButtons.Add(new Button());
+            multiButton.extraButtons[2].frameWidth = 115;
+            multiButton.extraButtons[2].frameHeight = 42;
+            multiButton.extraButtons[2].UpperLeft = new Vector2((multiButton.extraButtons[0].UpperLeft.X + multiButton.extraButtons[0].GetWidth()) - multiButton.extraButtons[2].GetWidth(), multiButton.UpperLeft.Y + 50);
+            multiButton.extraButtons[2].SetParts(cornerTexture, wallTexture, backTexture);
+            multiButton.extraButtons[2].display = hieroBattler.health.ToString() + "/" + hieroBattler.maxHealth.ToString();
+            multiButton.extraButtons[2].displaySize = 0.75f;
+            multiButton.extraButtons[2].icon = null;
+
+            heroBox.multiButtons.Add(multiButton);
 
             stateMethods[0] = Movement;
             stateMethods[1] = Event;
@@ -381,11 +505,21 @@ namespace RPG_Game
             stateMethods[3] = Inventory;
             stateMethods[4] = Skills;
             stateMethods[5] = Map;
-            stateMethods[6] = StateSwitch;
+            stateMethods[6] = Target;
+            stateMethods[7] = StateSwitch;
+
+            switchStateMethods[0] = MovementSwitch;
+            switchStateMethods[1] = MovementSwitch;
+            switchStateMethods[2] = MenuSwitch;
+            switchStateMethods[3] = ItemSwitch;
+            switchStateMethods[4] = MovementSwitch;
+            switchStateMethods[5] = MovementSwitch;
+            switchStateMethods[6] = TargetSwitch;
+            switchStateMethods[7] = StateSwitch;
 
             targetState = 0;
         }
-        
+
         public override void Update(GameTime gameTime)
         {
             stateMethods[currentState].Invoke(gameTime);
@@ -431,43 +565,52 @@ namespace RPG_Game
 
             if (currentState == 1)
             {
-                if (currentEvent != null)
+                if (currentAction != null)
+                {
+                    currentAction.DrawAll(spriteBatch, calibri);
+                }
+                else
                 {
                     if (currentEvent.line != null)
                     {
-                        currentEvent.eventBox.DrawParts(spriteBatch, calibri);
+                        currentEvent.eventBox.DrawParts(spriteBatch);
 
                         spriteBatch.DrawString(calibri, currentEvent.line, currentEvent.lineUpperLeft, Color.White);
                     }
                 }
             }
-            
+
+            bool temp = false;
+
             //Boxes \ Buttons Draw Cycle
             for (int i = 0; i < allBoxes.Count; i++)
             {
                 if (state[allBoxes[i].activatorState])
                 {
-                    allBoxes[i].DrawParts(spriteBatch, calibri);
+                    allBoxes[i].DrawParts(spriteBatch);
 
-                    for (int o = 0; o < allBoxes[i].buttons.Count; o++)
+                    for (int o = 0; o < allBoxes[i].GetButtons().Count; o++)
                     {
-                        allBoxes[i].buttons[o].DrawParts(spriteBatch, calibri);
-
-                        if (allBoxes[i].buttons[o].icon != null)
+                        if (allBoxes[i].activatorState == currentState && o == buttonIndex)
                         {
-                            allBoxes[i].buttons[o].icon.Draw(spriteBatch);
+                            temp = true;
                         }
+                        else
+                        {
+                            temp = false;
+                        }
+
+                        allBoxes[i].GetButtons()[o].DrawParts(spriteBatch, calibri, temp);
                     }
                 }
             }
-
             pointer.Draw(spriteBatch);
         }
 
 
         private void Movement(GameTime gameTime)
         {
-            if(pointer.isAlive)
+            if (pointer.isAlive)
             {
                 pointer.isAlive = false;
             }
@@ -488,12 +631,12 @@ namespace RPG_Game
                         if (movementModifier == new Vector2(0, 0))
                         {
                             movementModifier = new Vector2(0, -1);
-                            
+
                             heroMover.gridPosition.Y--;
                             if (heroMover.gridPosition.Y < 0 || !map[(int)heroMover.gridPosition.X, (int)heroMover.gridPosition.Y].walkable)
                             {
                                 heroMover.gridPosition.Y++;
-                                
+
                                 movementModifier = new Vector2(0, 0);
 
                                 heroMover.setCurrentFrame(1, 3);
@@ -516,12 +659,12 @@ namespace RPG_Game
                         if (movementModifier == new Vector2(0, 0))
                         {
                             movementModifier = new Vector2(0, 1);
-                            
+
                             heroMover.gridPosition.Y++;
                             if (heroMover.gridPosition.Y > map.GetLength(1) || !map[(int)heroMover.gridPosition.X, (int)heroMover.gridPosition.Y].walkable)
                             {
                                 heroMover.gridPosition.Y--;
-                                
+
                                 movementModifier = new Vector2(0, 0);
 
                                 heroMover.setCurrentFrame(1, 0);
@@ -544,12 +687,12 @@ namespace RPG_Game
                         if (movementModifier == new Vector2(0, 0))
                         {
                             movementModifier = new Vector2(-1, 0);
-                            
+
                             heroMover.gridPosition.X--;
                             if (heroMover.gridPosition.X < 0 || !map[(int)heroMover.gridPosition.X, (int)heroMover.gridPosition.Y].walkable)
                             {
                                 heroMover.gridPosition.X++;
-                                
+
                                 movementModifier = new Vector2(0, 0);
 
                                 heroMover.setCurrentFrame(1, 1);
@@ -572,12 +715,12 @@ namespace RPG_Game
                         if (movementModifier == new Vector2(0, 0))
                         {
                             movementModifier = new Vector2(1, 0);
-                            
+
                             heroMover.gridPosition.X++;
                             if (heroMover.gridPosition.Y > map.GetLength(0) || !map[(int)heroMover.gridPosition.X, (int)heroMover.gridPosition.Y].walkable)
                             {
                                 heroMover.gridPosition.X--;
-                                
+
                                 movementModifier = new Vector2(0, 0);
 
                                 heroMover.setCurrentFrame(1, 2);
@@ -602,23 +745,11 @@ namespace RPG_Game
                         eventTile = map[(int)(heroMover.gridPosition.X + heroMover.lastMoved.X), (int)(heroMover.gridPosition.Y + heroMover.lastMoved.Y)];
                     }
                 }
-                if(menuInput.inputState == Input.inputStates.pressed)
+                if (menuInput.inputState == Input.inputStates.pressed)
                 {
-                    ActivateState(2);
-                    state[3] = true;
+                    ActivateState(6);
 
-                    activeButtons = new List<Button>();
-
-                    for (int i = 0; i < allBoxes.Count; i++)
-                    {
-                        if (allBoxes[i].activatorState == currentState)
-                        {
-                            for(int o = 0; o < allBoxes[i].buttons.Count; o++)
-                            {
-                                activeButtons.Add(allBoxes[i].buttons[o]);
-                            }
-                        }
-                    }
+                    MenuSwitch(gameTime);
                 }
             }
 
@@ -628,13 +759,50 @@ namespace RPG_Game
 
         private void Event(GameTime gameTime)
         {
-            eventTile.eventAction.Invoke(this, gameTime);
-
-            if(currentEvent.complete)
+            if (currentAction != null)
             {
-                ActivateState(0);
+                if (currentAction.Call(gameTime, this))
+                {
+                    int tempButtons = inventoryBox.buttons.Count;
+                    int tempItems = heldItems.Count;
+                    
+                    if(heldItems.IndexOf((Item)currentAction) == -1)
+                    {
+                        ItemRefresh();
+                        currentState = 3;
+                    }
+                    else
+                    {
+                        TargetRefresh();
+                        currentState = 6;
+                    }
+                    
+                    state[1] = false;
+                    previousState[1] = false;
 
-                currentEvent.complete = false;
+                    runOnce = false;
+                }
+                if(currentAction.runOnce)
+                {
+                    if (!runOnce)
+                    {
+                        ItemRefresh();
+                        TargetRefresh();
+
+                        runOnce = true;
+                    }
+                }
+            }
+            else
+            {
+                eventTile.eventAction.Invoke(this, gameTime);
+
+                if (currentEvent.complete)
+                {
+                    ActivateState(0);
+
+                    currentEvent.complete = false;
+                }
             }
         }
 
@@ -643,17 +811,38 @@ namespace RPG_Game
             MenuUpdateReturn temp = MenuUpdate();
             buttonIndex = temp.index;
 
+            pointer.UpperLeft = new Vector2(activeButtons[buttonIndex].UpperLeft.X - pointer.GetWidth() - 15, activeButtons[buttonIndex].UpperLeft.Y + 5);
+
             if (temp.activate)
             {
                 activeButtons[buttonIndex].action.Invoke(gameTime);
             }
-
-            pointer.UpperLeft = new Vector2(activeButtons[buttonIndex].UpperLeft.X - pointer.GetWidth() - 15, activeButtons[buttonIndex].UpperLeft.Y + 5);
+            else if (temp.menu)
+            {
+                SwitchState(2, gameTime);
+            }
         }
 
         private void Inventory(GameTime gameTime)
         {
+            MenuUpdateReturn temp = MenuUpdate();
+            buttonIndex = temp.index;
 
+            pointer.UpperLeft = new Vector2(activeButtons[buttonIndex].UpperLeft.X - pointer.GetWidth() - 15, activeButtons[buttonIndex].UpperLeft.Y + 5);
+
+            if (temp.activate)
+            {
+                if (heldItems[buttonIndex].mapUsable)
+                {
+                    TargetSwitch(gameTime);
+
+                    currentAction = heldItems[buttonIndex];
+                }
+            }
+            else if (temp.menu)
+            {
+                SwitchState(3, gameTime);
+            }
         }
 
         private void Skills(GameTime gameTime)
@@ -671,69 +860,169 @@ namespace RPG_Game
 
         }
 
+        private void Target(GameTime gameTime)
+        {
+            MenuUpdateReturn temp = MenuUpdate();
+            buttonIndex = temp.index;
+
+            pointer.UpperLeft = new Vector2(activeButtons[buttonIndex].UpperLeft.X - pointer.GetWidth() - 15, activeButtons[buttonIndex].UpperLeft.Y + 50);
+
+            if (temp.activate)
+            {
+                pointer.isAlive = false;
+
+                target = battlers[buttonIndex];
+                
+                SwitchState(1, gameTime);
+            }
+            else if (temp.menu)
+            {
+                currentAction = null;
+
+                SwitchState(3, gameTime);
+                ItemSwitch(gameTime);
+                currentState = 3;
+            }
+        }
+
         private void StateSwitch(GameTime gameTime)
         {
 
         }
 
-        //Activates the target state, setting all states to false, while keeping the target state true
-        private void ActivateState(int targetState)
-        {
-            //Set all states to false
-            for (int i = 0; i < state.Length; i++)
-            {
-                state[i] = false;
-            }
 
-            currentState = targetState;
-            //Set the target state to true
-            state[targetState] = true;
+        private void MovementSwitch(GameTime gameTime)
+        {
+            ClearStates();
+            ActivateState(0);
         }
 
-        //Switches the target state, setting it to true if it was false, and false otherwise
-        //If target state was false, currentState will be set to the last state still active
-        private void SwitchState(int targetState)
+        private void MenuSwitch(GameTime gameTime)
         {
-            if (state[targetState])
-            {
-                state[targetState] = false;
+            SwitchState(2, gameTime);
 
-                //Find the highest value state still active, and set currentState to it
-                for (int i = state.Length; i >= 0; i--)
+            activeButtons.Clear();
+
+            for (int i = 0; i < allBoxes.Count; i++)
+            {
+                if (allBoxes[i].activatorState == currentState)
                 {
-                    if (state[i])
+                    for (int o = 0; o < allBoxes[i].buttons.Count; o++)
                     {
-                        currentState = i;
+                        activeButtons.Add(allBoxes[i].buttons[o]);
                     }
                 }
             }
-            else
-            {
-                state[targetState] = true;
 
-                currentState = targetState;
+            for(int i = 0; i < heroBox.multiButtons.Count; i++)
+            {
+                heroBox.multiButtons[i].extraButtons[2].display = battlers[i].health + "/" + battlers[i].maxHealth;
             }
         }
 
+        private void ItemSwitch(GameTime gameTime)
+        {
+            SwitchState(3, gameTime);
 
-        private void SwitchInventory(GameTime gameTime)
+            ItemRefresh();
+        }
+
+        private void ItemRefresh()
+        {
+            MultiButton tempButton;
+
+            inventoryBox.buttons.Clear();
+            inventoryBox.buttons.Capacity = 0;
+
+            if (heldItems.Count == 0)
+            {
+                Item item = new Item();
+                item.name = "--Empty, really empty--";
+                item.description = "Looks like you don't have any items on you,\nmaybe this is a good time to stock up?";
+                item.iconFrame = new Vector2(7, 10);
+                item.heldCount = 13;
+                heldItems.Add(item);
+            }
+
+            for (int i = 0; i < heldItems.Count; i++)
+            {
+                tempButton = new MultiButton();
+                tempButton.extraButtons = new List<Button>();
+
+                tempButton.UpperLeft = new Vector2(inventoryBox.UpperLeft.X + 80, inventoryBox.UpperLeft.Y + 10 + (60 * i));
+                tempButton.display = heldItems[i].name;
+                tempButton.icon.SetTexture(iconTexture, 16, 20);
+                tempButton.icon.setCurrentFrame((int)heldItems[i].iconFrame.X, (int)heldItems[i].iconFrame.Y);
+                tempButton.frameWidth = inventoryBox.frameWidth - 140;
+                tempButton.frameHeight = 50;
+                tempButton.SetParts(cornerTexture, wallTexture, backTexture);
+                tempButton.icon.UpperLeft = new Vector2(tempButton.UpperLeft.X + 10, tempButton.UpperLeft.Y + 9);
+
+                tempButton.extraButtons.Add(new Button());
+                tempButton.extraButtons[0].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth(), inventoryBox.UpperLeft.Y + 10 + (60 * i));
+                tempButton.extraButtons[0].display = heldItems[i].heldCount.ToString();
+                tempButton.extraButtons[0].frameWidth = 50;
+                tempButton.extraButtons[0].frameHeight = 50;
+                tempButton.extraButtons[0].SetParts(cornerTexture, wallTexture, backTexture);
+                tempButton.extraButtons[0].icon = null;
+
+                tempButton.extraButtons.Add(new Button());
+                tempButton.extraButtons[1].UpperLeft = new Vector2(inventoryBox.UpperLeft.X + 80, 200);
+                tempButton.extraButtons[1].display = heldItems[i].description;
+                tempButton.extraButtons[1].frameWidth = inventoryBox.frameWidth - 90;
+                tempButton.extraButtons[1].frameHeight = 100;
+                tempButton.extraButtons[1].SetParts(cornerTexture, wallTexture, backTexture);
+                tempButton.extraButtons[1].showOnSelected = true;
+                tempButton.extraButtons[1].icon = null;
+
+                if (!heldItems[i].mapUsable)
+                {
+                    tempButton.displayColour = Color.Gray;
+                    tempButton.extraButtons[0].displayColour = Color.Gray;
+                }
+                inventoryBox.buttons.Add(tempButton);
+            }
+
+            inventoryBox.frameHeight = (int)inventoryBox.buttons[inventoryBox.buttons.Count - 1].UpperLeft.Y + 60;
+            inventoryBox.SetParts(cornerTexture, wallTexture, backTexture);
+
+            activeButtons = inventoryBox.buttons;
+
+            buttonIndex = 0;
+        }
+
+        private void SkillsSwitch(GameTime gameTime)
         {
 
         }
 
-        private void SwitchSkills(GameTime gameTime)
+        private void MapSwitch(GameTime gameTime)
         {
 
         }
 
-        private void SwitchMap(GameTime gameTime)
+        private void StatusSwitch(GameTime gameTime)
         {
 
         }
 
-        private void SwitchStatus(GameTime gameTime)
+        private void TargetSwitch(GameTime gameTime)
         {
+            currentState = 6;
 
+            TargetRefresh();
+        }
+
+        private void TargetRefresh()
+        {
+            activeButtons = new List<Button>();
+
+            for (int i = 0; i < heroBox.multiButtons.Count; i++)
+            {
+                heroBox.multiButtons[i].extraButtons[2].display = battlers[i].health.ToString() + "/" + battlers[i].maxHealth.ToString();
+
+                activeButtons.Add(heroBox.multiButtons[i]);
+            }
         }
 
         private void Exit(GameTime gameTime)

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace RPG_Game
 {
-    class HPPlusPlus : Item
+    class HPPlusPlus : HP
     {
         public HPPlusPlus()
         {
@@ -13,13 +14,16 @@ namespace RPG_Game
 
             heldCount = 1;
             maxStack = 99;
+            
+            mapUsable = true;
+            battleUsable = false;
 
-            iconFrame = new Vector2(7, 5);
+            iconFrame = new Vector2(4, 14);
 
             name = "Halcyon Philtre";
             description = "Heals broken bones and terminal illnesses.\n\nRestores a massive 100 HP to a single party member.";
         }
-
+        
         internal override List<SpriteBase> GetTargets(BattleState battleState)
         {
             AllAllies allAllies = new AllAllies();
@@ -93,6 +97,47 @@ namespace RPG_Game
 
                 //Reset the timer (Should only run once)
                 battleState.timer = gameTime.TotalGameTime.TotalSeconds;
+            }
+
+            return false;
+        }
+        public override bool Call(GameTime gameTime, NaviState naviState)
+        {
+            if (!runOnce)
+            {
+                if (box == null)
+                {
+                    box = new Box();
+
+                    box.frameWidth = 800;
+                    box.frameHeight = 200;
+                    box.UpperLeft = new Vector2(560, 880);
+
+                    box.SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
+
+                    display = naviState.target.name + " recovered\n100 Halcyon... Points?\nThat doesn't sound right...";
+                }
+
+                naviState.target.health += 100;
+
+                Consume(naviState);
+
+                naviState.pointer.Scale = new Vector2(0.4f, 0.4f);
+                naviState.pointer.UpperLeft = new Vector2(1360 - naviState.pointer.GetWidth() - 20, 1080 - naviState.pointer.GetHeight() - 20);
+                naviState.pointer.isAlive = true;
+
+                runOnce = true;
+            }
+            
+            if (naviState.activateInput.inputState == Input.inputStates.pressed)
+            {
+                naviState.pointer.Scale = new Vector2(0.8f, 0.8f);
+                naviState.pointer.isAlive = false;
+
+                box = null;
+                runOnce = false;
+
+                return true;
             }
 
             return false;

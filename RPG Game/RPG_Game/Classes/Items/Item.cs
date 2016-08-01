@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace RPG_Game
 {
@@ -15,6 +16,9 @@ namespace RPG_Game
 
         public string name;
         public string description;
+
+        public bool battleUsable = false;
+        public bool mapUsable = false;
 
         public Item()
         {
@@ -42,14 +46,19 @@ namespace RPG_Game
         {
             return true;
         }
+        public override bool Call(GameTime gameTime, NaviState naviState)
+        {
+            return true;
+        }
 
-        public void Consume(BattleState battleState)
+
+        public void Consume(StateManager state)
         {
             heldCount--;
 
             if(heldCount <= 0)
             {
-                battleState.heldItems.Remove(this);
+                state.heldItems.Remove(this);
             }
         }
     }

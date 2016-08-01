@@ -9,7 +9,8 @@ namespace RPG_Game
 
         public int cost;
 
-        public bool inMenu;
+        public bool battleUsable = false;
+        public bool mapUsable = false;
 
         public string name;
         public string description;

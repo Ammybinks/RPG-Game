@@ -7,5 +7,10 @@ namespace RPG_Game
         public int activatorState;
 
         public List<Button> buttons;
+
+        public virtual List<Button> GetButtons()
+        {
+            return buttons;
+        }
     }
 }

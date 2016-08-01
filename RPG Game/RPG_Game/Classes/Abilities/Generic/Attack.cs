@@ -12,6 +12,9 @@ namespace RPG_Game
 
             cost = 0;
 
+            battleUsable = true;
+            mapUsable = false;
+
             name = "Attack";
             description = "Just a regular attack.\n\nDeals normal damage based on your physical attack.";
         }

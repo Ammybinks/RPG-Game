@@ -82,7 +82,7 @@ namespace RPG_Game
             list.Add(back);
         }
 
-        public virtual void DrawParts(SpriteBatch spriteBatch, SpriteFont font)
+        public virtual void DrawParts(SpriteBatch spriteBatch)
         {
             if (isAlive)
             {

@@ -5,6 +5,8 @@ namespace RPG_Game
 {
     public class Battler : Sprite
     {
+        public string name;
+
         public int maxHealth;
         public int health;
 

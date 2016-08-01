@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace RPG_Game
 {
-    class HPPlus : Item
+    class HPPlus : HP
     {
         public HPPlus()
         {
@@ -14,12 +15,15 @@ namespace RPG_Game
             heldCount = 1;
             maxStack = 99;
 
-            iconFrame = new Vector2(8, 5);
+            battleUsable = true;
+            mapUsable = true;
+
+            iconFrame = new Vector2(4, 14);
 
             name = "Healthy Pot";
             description = "A goopy cream sometimes used for medicinal purposes.\n\nRestores 50 Healthy Points to a single party member.";
         }
-
+        
         internal override List<SpriteBase> GetTargets(BattleState battleState)
         {
             AllAllies allAllies = new AllAllies();
@@ -93,6 +97,47 @@ namespace RPG_Game
 
                 //Reset the timer (Should only run once)
                 battleState.timer = gameTime.TotalGameTime.TotalSeconds;
+            }
+
+            return false;
+        }
+        public override bool Call(GameTime gameTime, NaviState naviState)
+        {
+            if (!runOnce)
+            {
+                if (box == null)
+                {
+                    box = new Box();
+
+                    box.frameWidth = 800;
+                    box.frameHeight = 200;
+                    box.UpperLeft = new Vector2(560, 880);
+
+                    box.SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
+
+                    display = naviState.target.name + " recovered\n50 Healthy Points!";
+                }
+
+                naviState.target.health += 50;
+
+                Consume(naviState);
+
+                naviState.pointer.Scale = new Vector2(0.4f, 0.4f);
+                naviState.pointer.UpperLeft = new Vector2(1360 - naviState.pointer.GetWidth() - 20, 1080 - naviState.pointer.GetHeight() - 20);
+                naviState.pointer.isAlive = true;
+
+                runOnce = true;
+            }
+
+            if (naviState.activateInput.inputState == Input.inputStates.pressed)
+            {
+                naviState.pointer.Scale = new Vector2(0.8f, 0.8f);
+                naviState.pointer.isAlive = false;
+
+                box = null;
+                runOnce = false;
+                
+                return true;
             }
 
             return false;
