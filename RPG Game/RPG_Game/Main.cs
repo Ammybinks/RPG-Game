@@ -22,7 +22,7 @@ namespace RPG_Game
         HPPlus hPotionPlus = new HPPlus();
         HPPlusPlus hPotionPlusPlus = new HPPlusPlus();
 
-        int currentState = 1;
+        int currentState = 0;
         List<StateManager> states = new List<StateManager>();
 
         NaviState naviState = new NaviState();

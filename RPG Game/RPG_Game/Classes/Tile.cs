@@ -13,6 +13,7 @@ namespace RPG_Game
         public string texture;
         public Vector2 textureDimensions;
 
+        public Event currentEvent;
         public Action<NaviState, GameTime> eventAction;
 
         public Vector2 currentFrame;

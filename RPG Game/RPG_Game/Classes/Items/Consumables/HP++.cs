@@ -33,7 +33,6 @@ namespace RPG_Game
 
         public override bool Call(GameTime gameTime, BattleState battleState)
         {
-
             if (gameTime.TotalGameTime.TotalSeconds >= battleState.timer + 1.5)
             {
                 //Reset all values ready for continuing the fight
@@ -119,12 +118,18 @@ namespace RPG_Game
                 }
 
                 naviState.target.health += 100;
+                if (naviState.target.health > naviState.target.maxHealth)
+                {
+                    naviState.target.health = naviState.target.maxHealth;
+                }
 
                 Consume(naviState);
 
                 naviState.pointer.Scale = new Vector2(0.4f, 0.4f);
                 naviState.pointer.UpperLeft = new Vector2(1360 - naviState.pointer.GetWidth() - 20, 1080 - naviState.pointer.GetHeight() - 20);
                 naviState.pointer.isAlive = true;
+
+                LoadOnce(naviState);
 
                 runOnce = true;
             }
@@ -136,6 +141,8 @@ namespace RPG_Game
 
                 box = null;
                 runOnce = false;
+
+                Complete(naviState);
 
                 return true;
             }

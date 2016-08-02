@@ -9,8 +9,8 @@ namespace RPG_Game
 
         public int cost;
 
-        public bool battleUsable = false;
-        public bool mapUsable = false;
+        public bool battleUsable;
+        public bool mapUsable;
 
         public string name;
         public string description;
@@ -19,8 +19,11 @@ namespace RPG_Game
         {
             cost = 0;
             name = "This ability isn't meant to be used, dummy";
-        }
 
+            battleUsable = false;
+            mapUsable = false;
+        }
+        
         internal override List<SpriteBase> GetTargets(BattleState battleState)
         {
             List<SpriteBase> temp = new List<SpriteBase>();
@@ -29,12 +32,32 @@ namespace RPG_Game
 
             return temp;
         }
-
-        //If this is called, the user will instantly die.
-        public override bool Call(GameTime gameTime, BattleState battleState)
+        
+        internal void Complete(NaviState naviState)
         {
-            battleState.target.health -= 9001;
-            return true;
+            if (false)
+            {
+                naviState.SkillsRefresh();
+                naviState.currentState = 4;
+            }
+            else
+            {
+                naviState.TargetRefresh();
+                naviState.currentState = 6;
+            }
+
+            naviState.state[1] = false;
+            naviState.previousState[1] = false;
+
+            runOnce = false;
+        }
+
+        internal void LoadOnce(NaviState naviState)
+        {
+            naviState.SkillsRefresh();
+            naviState.TargetRefresh();
+
+            runOnce = true;
         }
     }
 }

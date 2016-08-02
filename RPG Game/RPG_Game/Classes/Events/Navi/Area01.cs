@@ -37,6 +37,20 @@ namespace RPG_Game
             }
 
             Type(naviState, gameTime, 0.01);
+
+            if(complete)
+            {
+                if(runOnce)
+                {
+                    Uninitialize(naviState);
+
+                    runOnce = false;
+                }
+                else
+                {
+                    runOnce = true;
+                }
+            }
         }
     }
 }

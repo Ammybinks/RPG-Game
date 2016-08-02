@@ -36,7 +36,8 @@ namespace RPG_Game
         Camera camera;
 
         Box menuBox;
-        Box inventoryBox;
+        public Box inventoryBox;
+        Box skillsBox;
         MultiBox heroBox;
 
         Tile[,] map = new Tile[100, 50];
@@ -47,9 +48,8 @@ namespace RPG_Game
         Vector2 playerView = new Vector2(20, 11);
 
         public Battler target;
-
-        bool runOnce = false;
-
+        public Battler actor;
+        
         public Event currentEvent;
         Area01 area01 = new Area01();
 
@@ -136,120 +136,121 @@ namespace RPG_Game
             battlers.Add(hieroBattler);
             //Battler Initialization Ends//
 
-            ////World Map Initialization Begins//
-            ////Grass Base
-            //for (int i = 0; i < map.GetLength(0); i++)
-            //{
-            //    for (int o = 0; o < map.GetLength(1); o++)
-            //    {
-            //        tile = new Tile("World\\Tilesets\\Outside", new Vector2(1, 1), new Vector2(6, 13));
+            //World Map Initialization Begins//
+            //Grass Base
+            for (int i = 0; i < map.GetLength(0); i++)
+            {
+                for (int o = 0; o < map.GetLength(1); o++)
+                {
+                    tile = new Tile("World\\Tilesets\\Outside", new Vector2(1, 1), new Vector2(6, 13));
 
-            //        tile.walkable = true;
-            //        tile.interactable = false;
+                    tile.walkable = true;
+                    tile.interactable = false;
 
-            //        map[i, o] = tile;
-            //    }
-            //}
+                    map[i, o] = tile;
+                }
+            }
 
-            ////Stone Edges
-            //for (int i = 0; i < playerView.X; i++)
-            //{
-            //    for (int o = 0; o < map.GetLength(1); o++)
-            //    {
-            //        map[i, o].walkable = false;
-            //        map[i, o].currentFrame = new Vector2(1, 4);
-            //    }
-            //}
+            //Stone Edges
+            for (int i = 0; i < playerView.X; i++)
+            {
+                for (int o = 0; o < map.GetLength(1); o++)
+                {
+                    map[i, o].walkable = false;
+                    map[i, o].currentFrame = new Vector2(1, 4);
+                }
+            }
 
-            //for (int i = map.GetLength(0) - (int)playerView.X; i < map.GetLength(0); i++)
-            //{
-            //    for (int o = 0; o < map.GetLength(1); o++)
-            //    {
-            //        map[i, o].walkable = false;
-            //        map[i, o].currentFrame = new Vector2(1, 4);
-            //    }
-            //}
+            for (int i = map.GetLength(0) - (int)playerView.X; i < map.GetLength(0); i++)
+            {
+                for (int o = 0; o < map.GetLength(1); o++)
+                {
+                    map[i, o].walkable = false;
+                    map[i, o].currentFrame = new Vector2(1, 4);
+                }
+            }
 
-            //for (int i = (int)playerView.X; i < map.GetLength(0) - playerView.X; i++)
-            //{
-            //    for (int o = 0; o < playerView.Y; o++)
-            //    {
-            //        map[i, o].walkable = false;
-            //        map[i, o].currentFrame = new Vector2(1, 4);
-            //    }
-            //}
+            for (int i = (int)playerView.X; i < map.GetLength(0) - playerView.X; i++)
+            {
+                for (int o = 0; o < playerView.Y; o++)
+                {
+                    map[i, o].walkable = false;
+                    map[i, o].currentFrame = new Vector2(1, 4);
+                }
+            }
 
-            //for (int i = (int)playerView.X; i < map.GetLength(0) - playerView.X; i++)
-            //{
-            //    for (int o = map.GetLength(1) - (int)playerView.Y; o < map.GetLength(1); o++)
-            //    {
-            //        map[i, o].walkable = false;
-            //        map[i, o].currentFrame = new Vector2(1, 4);
-            //    }
-            //}
+            for (int i = (int)playerView.X; i < map.GetLength(0) - playerView.X; i++)
+            {
+                for (int o = map.GetLength(1) - (int)playerView.Y; o < map.GetLength(1); o++)
+                {
+                    map[i, o].walkable = false;
+                    map[i, o].currentFrame = new Vector2(1, 4);
+                }
+            }
 
-            ////Stone Edge Edges
-            //for (int o = (int)playerView.Y; o < map.GetLength(1) - playerView.Y; o++)
-            //{
-            //    map[(int)playerView.X - 1, o].currentFrame = new Vector2(2, 4);
-            //}
+            //Stone Edge Edges
+            for (int o = (int)playerView.Y; o < map.GetLength(1) - playerView.Y; o++)
+            {
+                map[(int)playerView.X - 1, o].currentFrame = new Vector2(2, 4);
+            }
 
-            //for (int i = (int)playerView.X; i < map.GetLength(0) - playerView.X; i++)
-            //{
-            //    map[i, (int)playerView.Y - 3].currentFrame = new Vector2(1, 5);
-            //}
+            for (int i = (int)playerView.X; i < map.GetLength(0) - playerView.X; i++)
+            {
+                map[i, (int)playerView.Y - 3].currentFrame = new Vector2(1, 5);
+            }
 
-            //for (int i = (int)playerView.X; i < map.GetLength(0) - (int)playerView.X; i++)
-            //{
-            //    map[i, map.GetLength(1) - (int)playerView.Y].currentFrame = new Vector2(1, 3);
-            //}
+            for (int i = (int)playerView.X; i < map.GetLength(0) - (int)playerView.X; i++)
+            {
+                map[i, map.GetLength(1) - (int)playerView.Y].currentFrame = new Vector2(1, 3);
+            }
 
-            //for (int o = (int)playerView.Y; o < map.GetLength(1) - playerView.Y; o++)
-            //{
-            //    map[map.GetLength(0) - (int)playerView.X, o].currentFrame = new Vector2(0, 4);
-            //}
+            for (int o = (int)playerView.Y; o < map.GetLength(1) - playerView.Y; o++)
+            {
+                map[map.GetLength(0) - (int)playerView.X, o].currentFrame = new Vector2(0, 4);
+            }
 
-            ////Stone Walls
-            //for (int i = (int)playerView.X + 1; i < map.GetLength(0) - playerView.X - 1; i++)
-            //{
-            //    map[i, (int)playerView.Y - 2].currentFrame = new Vector2(1, 6);
-            //}
+            //Stone Walls
+            for (int i = (int)playerView.X + 1; i < map.GetLength(0) - playerView.X - 1; i++)
+            {
+                map[i, (int)playerView.Y - 2].currentFrame = new Vector2(1, 6);
+            }
 
-            //for (int i = (int)playerView.X + 1; i < map.GetLength(0) - playerView.X - 1; i++)
-            //{
-            //    map[i, (int)playerView.Y - 1].currentFrame = new Vector2(1, 8);
-            //}
+            for (int i = (int)playerView.X + 1; i < map.GetLength(0) - playerView.X - 1; i++)
+            {
+                map[i, (int)playerView.Y - 1].currentFrame = new Vector2(1, 8);
+            }
 
-            //map[(int)playerView.X, (int)playerView.Y - 2].currentFrame = new Vector2(0, 6);
-            //map[(int)playerView.X, (int)playerView.Y - 1].currentFrame = new Vector2(0, 8);
+            map[(int)playerView.X, (int)playerView.Y - 2].currentFrame = new Vector2(0, 6);
+            map[(int)playerView.X, (int)playerView.Y - 1].currentFrame = new Vector2(0, 8);
 
-            //map[map.GetLength(0) - (int)playerView.X - 1, (int)playerView.Y - 2].currentFrame = new Vector2(2, 6);
-            //map[map.GetLength(0) - (int)playerView.X - 1, (int)playerView.Y - 1].currentFrame = new Vector2(2, 8);
+            map[map.GetLength(0) - (int)playerView.X - 1, (int)playerView.Y - 2].currentFrame = new Vector2(2, 6);
+            map[map.GetLength(0) - (int)playerView.X - 1, (int)playerView.Y - 1].currentFrame = new Vector2(2, 8);
 
-            //map[49, 30].tiles = new List<TileParts>();
-            //map[49, 30].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(1, 1), new Vector2(6, 13)));
-            //map[49, 30].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(2, 11), new Vector2(6, 13)));
-            //map[49, 30].tiles[1].above = true;
+            map[49, 30].tiles = new List<TileParts>();
+            map[49, 30].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(1, 1), new Vector2(6, 13)));
+            map[49, 30].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(2, 11), new Vector2(6, 13)));
+            map[49, 30].tiles[1].above = true;
+            
+            map[49, 31].currentEvent = new Area01();
+            map[49, 31].eventAction = area01.Statue;
+            map[49, 31].walkable = false;
+            map[49, 31].interactable = true;
+            map[49, 31].tiles = new List<TileParts>();
+            map[49, 31].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(1, 1), new Vector2(6, 13)));
+            map[49, 31].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(2, 12), new Vector2(6, 13)));
+            //World Map Initialization Ends//
 
-            //map[49, 31].eventAction = area01.Statue;
-            //map[49, 31].walkable = false;
-            //map[49, 31].interactable = true;
-            //map[49, 31].tiles = new List<TileParts>();
-            //map[49, 31].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(1, 1), new Vector2(6, 13)));
-            //map[49, 31].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(2, 12), new Vector2(6, 13)));
-            ////World Map Initialization Ends//
-
-            //using (FileStream stream = File.Open("C:\\Users\\Nye\\Dropbox\\Programming\\C#\\Programs\\RPG-Game\\Saves\\TestMap.bin", FileMode.Create))
-            //{
-            //    BinaryFormatter formatter = new BinaryFormatter();
-            //    formatter.Serialize(stream, map);
-            //}
-
-            using (FileStream stream = File.Open("C:\\Users\\Nye\\Dropbox\\Programming\\C#\\Programs\\RPG-Game\\Saves\\TestMap.bin", FileMode.Open))
+            using (FileStream stream = File.Open("C:\\Users\\Nye\\Dropbox\\Programming\\C#\\Programs\\RPG-Game\\Saves\\TestMap.bin", FileMode.Create))
             {
                 BinaryFormatter formatter = new BinaryFormatter();
-                map = (Tile[,])formatter.Deserialize(stream);
+                formatter.Serialize(stream, map);
             }
+
+            //using (FileStream stream = File.Open("C:\\Users\\Nye\\Dropbox\\Programming\\C#\\Programs\\RPG-Game\\Saves\\TestMap.bin", FileMode.Open))
+            //{
+            //    BinaryFormatter formatter = new BinaryFormatter();
+            //    map = (Tile[,])formatter.Deserialize(stream);
+            //}
 
             //Boxes Initialization Begins//
             ////Base Menu Box
@@ -336,6 +337,16 @@ namespace RPG_Game
             inventoryBox.activatorState = 3;
             inventoryBox.buttons = new List<Button>();
             allBoxes.Add(inventoryBox);
+
+            //Inventory Box
+            skillsBox = new Box();
+            skillsBox.frameWidth = 800;
+            skillsBox.frameHeight = 800;
+            skillsBox.UpperLeft = new Vector2(menuBox.GetWidth() + 10, 5);
+            skillsBox.SetParts(cornerTexture, wallTexture, backTexture);
+            skillsBox.activatorState = 4;
+            skillsBox.buttons = new List<Button>();
+            allBoxes.Add(skillsBox);
 
             ////Hero Buttons Box
             heroBox = new MultiBox();
@@ -512,7 +523,7 @@ namespace RPG_Game
             switchStateMethods[1] = MovementSwitch;
             switchStateMethods[2] = MenuSwitch;
             switchStateMethods[3] = ItemSwitch;
-            switchStateMethods[4] = MovementSwitch;
+            switchStateMethods[4] = SkillsMenuSwitch;
             switchStateMethods[5] = MovementSwitch;
             switchStateMethods[6] = TargetSwitch;
             switchStateMethods[7] = StateSwitch;
@@ -571,11 +582,9 @@ namespace RPG_Game
                 }
                 else
                 {
-                    if (currentEvent.line != null)
+                    if(currentEvent != null)
                     {
-                        currentEvent.eventBox.DrawParts(spriteBatch);
-
-                        spriteBatch.DrawString(calibri, currentEvent.line, currentEvent.lineUpperLeft, Color.White);
+                        currentEvent.DrawAll(spriteBatch, calibri);
                     }
                 }
             }
@@ -761,37 +770,7 @@ namespace RPG_Game
         {
             if (currentAction != null)
             {
-                if (currentAction.Call(gameTime, this))
-                {
-                    int tempButtons = inventoryBox.buttons.Count;
-                    int tempItems = heldItems.Count;
-                    
-                    if(heldItems.IndexOf((Item)currentAction) == -1)
-                    {
-                        ItemRefresh();
-                        currentState = 3;
-                    }
-                    else
-                    {
-                        TargetRefresh();
-                        currentState = 6;
-                    }
-                    
-                    state[1] = false;
-                    previousState[1] = false;
-
-                    runOnce = false;
-                }
-                if(currentAction.runOnce)
-                {
-                    if (!runOnce)
-                    {
-                        ItemRefresh();
-                        TargetRefresh();
-
-                        runOnce = true;
-                    }
-                }
+                currentAction.Call(gameTime, this);
             }
             else
             {
@@ -801,7 +780,7 @@ namespace RPG_Game
                 {
                     ActivateState(0);
 
-                    currentEvent.complete = false;
+                    eventTile.eventAction.Invoke(this, gameTime);
                 }
             }
         }
@@ -847,7 +826,25 @@ namespace RPG_Game
 
         private void Skills(GameTime gameTime)
         {
+            MenuUpdateReturn temp = MenuUpdate();
+            buttonIndex = temp.index;
 
+            pointer.UpperLeft = new Vector2(activeButtons[buttonIndex].UpperLeft.X - pointer.GetWidth() - 15, activeButtons[buttonIndex].UpperLeft.Y + 5);
+
+            if (temp.activate)
+            {
+                if (actor.abilities[buttonIndex].mapUsable)
+                {
+                    TargetSwitch(gameTime);
+
+                    currentAction = actor.abilities[buttonIndex];
+                }
+            }
+            else if (temp.menu)
+            {
+                SwitchState(4, gameTime);
+                TargetSwitch(gameTime);
+            }
         }
 
         private void Map(GameTime gameTime)
@@ -879,9 +876,10 @@ namespace RPG_Game
             {
                 currentAction = null;
 
-                SwitchState(3, gameTime);
-                ItemSwitch(gameTime);
-                currentState = 3;
+                SwitchState(6, gameTime);
+                int i = currentState;
+                SwitchState(6, gameTime);
+                currentState = i;
             }
         }
 
@@ -927,7 +925,7 @@ namespace RPG_Game
             ItemRefresh();
         }
 
-        private void ItemRefresh()
+        public void ItemRefresh()
         {
             MultiButton tempButton;
 
@@ -993,7 +991,88 @@ namespace RPG_Game
 
         private void SkillsSwitch(GameTime gameTime)
         {
+            TargetSwitch(gameTime);
 
+            SkillsMenuSwitcher switcher = new SkillsMenuSwitcher();
+
+            currentAction = switcher;
+        }
+
+        public void SkillsMenuSwitch(GameTime gameTime)
+        {
+            //Switch to Skill Menu State
+            SwitchState(4, gameTime);
+
+            SkillsMenuSwitcher switcher = new SkillsMenuSwitcher();
+
+            currentAction = switcher;
+
+            SkillsRefresh();
+        }
+
+        public void SkillsRefresh()
+        {
+            MultiButton tempButton;
+
+            skillsBox.buttons.Clear();
+            skillsBox.buttons.Capacity = 0;
+
+            if (actor.abilities.Count == 0)
+            {
+                Ability ability = new Ability();
+                ability.name = "--Overwhelming Ineptitude--";
+                ability.description = actor.name + " doesn't seem very clever.\nThey don't know a single ability,\nand might not be much use in a fight.";
+                ability.iconFrame = new Vector2(5, 0);
+                ability.cost = 137;
+                actor.abilities.Add(ability);
+            }
+
+            for (int i = 0; i < actor.abilities.Count; i++)
+            {
+                tempButton = new MultiButton();
+                tempButton.extraButtons = new List<Button>();
+
+                tempButton.UpperLeft = new Vector2(skillsBox.UpperLeft.X + 80, skillsBox.UpperLeft.Y + 10 + (60 * i));
+                tempButton.display = actor.abilities[i].name;
+                tempButton.icon.SetTexture(iconTexture, 16, 20);
+                tempButton.icon.setCurrentFrame((int)actor.abilities[i].iconFrame.X, (int)actor.abilities[i].iconFrame.Y);
+                tempButton.frameWidth = skillsBox.frameWidth - 160;
+                tempButton.frameHeight = 50;
+                tempButton.SetParts(cornerTexture, wallTexture, backTexture);
+                tempButton.icon.UpperLeft = new Vector2(tempButton.UpperLeft.X + 10, tempButton.UpperLeft.Y + 9);
+
+                tempButton.extraButtons.Add(new Button());
+                tempButton.extraButtons[0].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth(), skillsBox.UpperLeft.Y + 10 + (60 * i));
+                tempButton.extraButtons[0].display = actor.abilities[i].cost.ToString();
+                tempButton.extraButtons[0].frameWidth = 70;
+                tempButton.extraButtons[0].frameHeight = 50;
+                tempButton.extraButtons[0].SetParts(cornerTexture, wallTexture, backTexture);
+                tempButton.extraButtons[0].icon = null;
+
+                tempButton.extraButtons.Add(new Button());
+                tempButton.extraButtons[1].UpperLeft = new Vector2(skillsBox.UpperLeft.X + 80, 200);
+                tempButton.extraButtons[1].display = actor.abilities[i].description;
+                tempButton.extraButtons[1].frameWidth = skillsBox.frameWidth - 90;
+                tempButton.extraButtons[1].frameHeight = 100;
+                tempButton.extraButtons[1].SetParts(cornerTexture, wallTexture, backTexture);
+                tempButton.extraButtons[1].showOnSelected = true;
+                tempButton.extraButtons[1].icon = null;
+
+
+                if (!actor.abilities[i].mapUsable)
+                {
+                    tempButton.displayColour = Color.Gray;
+                    tempButton.extraButtons[0].displayColour = Color.Gray;
+                }
+                skillsBox.buttons.Add(tempButton);
+            }
+
+            skillsBox.frameHeight = (int)skillsBox.buttons[skillsBox.buttons.Count - 1].UpperLeft.Y + 60;
+            skillsBox.SetParts(cornerTexture, wallTexture, backTexture);
+
+            activeButtons = skillsBox.buttons;
+
+            buttonIndex = 0;
         }
 
         private void MapSwitch(GameTime gameTime)
@@ -1013,7 +1092,7 @@ namespace RPG_Game
             TargetRefresh();
         }
 
-        private void TargetRefresh()
+        public void TargetRefresh()
         {
             activeButtons = new List<Button>();
 

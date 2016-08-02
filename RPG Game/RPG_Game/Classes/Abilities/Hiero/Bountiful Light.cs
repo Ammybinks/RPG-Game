@@ -1,39 +1,58 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace RPG_Game
 {
-    class HPPlus : HP
+    class Bountiful_Light : Ability
     {
-        public HPPlus()
-        {
-            buyingWorth = 50;
-            sellingWorth = 10;
+        internal Box box;
 
-            heldCount = 1;
-            maxStack = 99;
+        internal string display;
+
+        public Bountiful_Light()
+        {
+            iconFrame = new Vector2(6, 4);
+
+            cost = 20;
 
             battleUsable = true;
             mapUsable = true;
 
-            iconFrame = new Vector2(4, 14);
-
-            name = "Healthy Pot";
-            description = "A goopy cream sometimes used for medicinal purposes.\n\nRestores 50 Healthy Points to a single party member.";
+            name = "Bountiful Light";
+            description = "This spell's healing capacity is second only to its beauty.\n\nRestores 250HP and looks great while doing so.";
         }
-        
+
         internal override List<SpriteBase> GetTargets(BattleState battleState)
         {
-            AllAllies allAllies = new AllAllies();
+            List<SpriteBase> temp = new List<SpriteBase>();
 
-            return allAllies.Call(battleState);
+            for(int i = 0; i < battleState.heroes.Count; i++)
+            {
+                temp.Add(battleState.heroes[i]);
+            }
+
+            return temp;
+        }
+
+        public override void DrawAll(SpriteBatch spriteBatch, SpriteFont spriteFont)
+        {
+            if (box != null)
+            {
+                box.DrawParts(spriteBatch);
+
+                spriteBatch.DrawString(spriteFont,
+                                       display,
+                                       new Vector2(580, 900),
+                                       Color.Black);
+            }
         }
 
         public override bool Call(GameTime gameTime, BattleState battleState)
         {
-
             if (gameTime.TotalGameTime.TotalSeconds >= battleState.timer + 1.5)
             {
                 //Reset all values ready for continuing the fight
@@ -45,10 +64,7 @@ namespace RPG_Game
                 battleState.actor.UpperLeft = battleState.actor.battleOrigin;
                 battleState.actor.setCurrentFrame(0, 0);
                 battleState.actor.animationShortStarted = false;
-
-                //Consume a charge of the item
-                Consume(battleState);
-
+                
                 return true;
             }
             else if (gameTime.TotalGameTime.TotalSeconds >= battleState.timer + 1.25)
@@ -76,10 +92,10 @@ namespace RPG_Game
                 if (battleState.damageDealt == 0)
                 {
                     //Deal damage according to physical attack, reduced by physical defence
-                    battleState.damageDealt = 50;
+                    battleState.damageDealt = 250;
                     battleState.target.health += (int)battleState.damageDealt;
 
-                    if(battleState.target.health >= battleState.target.maxHealth)
+                    if (battleState.target.health >= battleState.target.maxHealth)
                     {
                         battleState.target.health = battleState.target.maxHealth;
                     }
@@ -93,7 +109,7 @@ namespace RPG_Game
                 //Start animating the actor's attack
                 battleState.actor.reverseAnimating = false;
                 battleState.actor.AnimationInterval = 250;
-                battleState.actor.StartAnimationShort(gameTime, 48, 50, 50);
+                battleState.actor.StartAnimationShort(gameTime, 30, 32, 32);
 
                 //Reset the timer (Should only run once)
                 battleState.timer = gameTime.TotalGameTime.TotalSeconds;
@@ -115,17 +131,15 @@ namespace RPG_Game
 
                     box.SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
 
-                    display = naviState.target.name + " recovered\n50 Healthy Points!";
+                    display = naviState.actor.name + " healed\n" + naviState.target.name + "\nby 250 HP!\n\n\n...It looked kinda pretty, too.";
                 }
 
-                naviState.target.health += 50;
-                if (naviState.target.health > naviState.target.maxHealth)
+                naviState.target.health += 250;
+                if(naviState.target.health > naviState.target.maxHealth)
                 {
                     naviState.target.health = naviState.target.maxHealth;
                 }
-
-                Consume(naviState);
-
+                
                 naviState.pointer.Scale = new Vector2(0.4f, 0.4f);
                 naviState.pointer.UpperLeft = new Vector2(1360 - naviState.pointer.GetWidth() - 20, 1080 - naviState.pointer.GetHeight() - 20);
                 naviState.pointer.isAlive = true;

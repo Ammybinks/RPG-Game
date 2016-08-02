@@ -61,5 +61,35 @@ namespace RPG_Game
                 state.heldItems.Remove(this);
             }
         }
+
+        internal void Complete(NaviState naviState)
+        {
+            int tempButtons = naviState.inventoryBox.buttons.Count;
+            int tempItems = naviState.heldItems.Count;
+
+            if (naviState.heldItems.IndexOf((Item)naviState.currentAction) == -1)
+            {
+                naviState.ItemRefresh();
+                naviState.currentState = 3;
+            }
+            else
+            {
+                naviState.TargetRefresh();
+                naviState.currentState = 6;
+            }
+
+            naviState.state[1] = false;
+            naviState.previousState[1] = false;
+
+            runOnce = false;
+        }
+
+        internal void LoadOnce(NaviState naviState)
+        {
+            naviState.ItemRefresh();
+            naviState.TargetRefresh();
+
+            runOnce = true;
+        }
     }
 }

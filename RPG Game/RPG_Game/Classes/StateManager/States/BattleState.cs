@@ -116,7 +116,6 @@ namespace RPG_Game
             ////Hero Ability Initialization
             //Attack Ability
             attack = new Attack();
-            attack.iconFrame = new Vector2(3, 4);
             hero.abilities.Add(attack);
 
 
@@ -143,13 +142,6 @@ namespace RPG_Game
             hiro.shadow.SetTexture(shadowTexture);
             heroes.Add(hiro);
 
-            ////Hiro Ability Initialization
-            //Attack Ability
-            attack = new Attack();
-            attack.iconFrame = new Vector2(3, 4);
-            hiro.abilities.Add(attack);
-
-
             //Hearo Initialization
             hearo = main.hearo;
             hearo.name = "The Endearing Father Figure";
@@ -172,16 +164,14 @@ namespace RPG_Game
                                                       hearo.UpperLeft.Y + hearo.meterSprite.GetHeight() + (hearo.GetHeight()) + 20);
             hearo.shadow.SetTexture(shadowTexture);
 
-            //////Hearo Ability Initialization
-            ////Attack Ability
-            //attack = new Attack();
-            //attack.iconFrame = new Vector2(3, 4);
-            //hearo.abilities.Add(attack);
+            ////Hearo Ability Initialization
+            //Attack Ability
+            attack = new Attack();
+            hearo.abilities.Add(attack);
 
-            ////Murder Ability
-            //Murder murder = new Murder();
-            //murder.iconFrame = new Vector2(10, 0);
-            //hearo.abilities.Add(murder);
+            //Murder Ability
+            Murder murder = new Murder();
+            hearo.abilities.Add(murder);
 
             heroes.Add(hearo);
 
@@ -197,8 +187,8 @@ namespace RPG_Game
             hiero.maxHealth = 50;
             hiero.health = 50;
             hiero.PhAtk = 5;
-            hiero.PhDef = 70;
-            hiero.speed = 10;
+            hiero.PhDef = -100;
+            hiero.speed = 25;
             hiero.Acc = 100;
             hiero.Eva = 0;
             hiero.friendly = true;
@@ -207,6 +197,11 @@ namespace RPG_Game
                                                       hiero.UpperLeft.Y + hiero.meterSprite.GetHeight() + (hiero.GetHeight()) + 20);
             hiero.shadow.SetTexture(shadowTexture);
             heroes.Add(hiero);
+
+            ////Hiero Ability Initialization
+            //Heal Ability
+            Bountiful_Light bountiful_Light = new Bountiful_Light();
+            hiero.abilities.Add(bountiful_Light);
             
             //Heroes Initialization Ends//
 
@@ -769,7 +764,7 @@ namespace RPG_Game
                 tempButton.display = actor.abilities[i].name;
                 tempButton.icon.SetTexture(iconTexture, 16, 20);
                 tempButton.icon.setCurrentFrame((int)actor.abilities[i].iconFrame.X, (int)actor.abilities[i].iconFrame.Y);
-                tempButton.frameWidth = itemsBox.frameWidth - 160;
+                tempButton.frameWidth = skillsBox.frameWidth - 160;
                 tempButton.frameHeight = 50;
                 tempButton.SetParts(cornerTexture, wallTexture, backTexture);
                 tempButton.icon.UpperLeft = new Vector2(tempButton.UpperLeft.X + 10, tempButton.UpperLeft.Y + 9);
@@ -783,7 +778,7 @@ namespace RPG_Game
                 tempButton.extraButtons[0].icon = null;
 
                 tempButton.extraButtons.Add(new Button());
-                tempButton.extraButtons[1].UpperLeft = new Vector2(itemsBox.UpperLeft.X + 80, 200);
+                tempButton.extraButtons[1].UpperLeft = new Vector2(skillsBox.UpperLeft.X + 80, 200);
                 tempButton.extraButtons[1].display = actor.abilities[i].description;
                 tempButton.extraButtons[1].frameWidth = skillsBox.frameWidth - 90;
                 tempButton.extraButtons[1].frameHeight = 100;
@@ -879,7 +874,12 @@ namespace RPG_Game
             //Switch to Target Menu State
             ActivateState(6);
 
-            targets = actor.abilities[buttonIndex].GetTargets(this);
+            targets.Clear();
+
+            for(int i = 0; i < enemies.Count; i++)
+            {
+                targets.Add(enemies[i]);
+            }
 
             currentAction = attack;
         }

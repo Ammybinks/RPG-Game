@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace RPG_Game
 {
@@ -17,7 +18,22 @@ namespace RPG_Game
         [NonSerialized()]public Box eventBox;
 
         internal List<string> lines;
-        
+
+        internal bool runOnce;
+
+        public virtual void DrawAll(SpriteBatch spriteBatch, SpriteFont spriteFont)
+        {
+            if (eventBox != null)
+            {
+                eventBox.DrawParts(spriteBatch);
+
+                spriteBatch.DrawString(spriteFont,
+                                       line,
+                                       new Vector2(580, 900),
+                                       Color.Black);
+            }
+        }
+
         internal void Type(NaviState naviState, GameTime gameTime)
         {
             Type(naviState, gameTime, 0.05);
@@ -110,6 +126,15 @@ namespace RPG_Game
             naviState.currentEvent = this;
 
             lineUpperLeft = new Vector2(20, 20);
+        }
+
+        internal void Uninitialize(NaviState naviState)
+        {
+            naviState.currentEvent = null;
+
+            line = null;
+
+            complete = false;
         }
     }
 }
