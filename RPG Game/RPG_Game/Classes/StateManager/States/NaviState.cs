@@ -12,7 +12,7 @@ namespace RPG_Game
     {
         Texture2D heroMoverTexture;
         Texture2D heroFace;
-        Mover heroMover;
+        public Mover heroMover;
         Battler heroBattler;
 
         Texture2D hiroMoverTexture;
@@ -30,7 +30,10 @@ namespace RPG_Game
         Mover hieroMover;
         Battler hieroBattler;
 
-        LinkedList<Mover> movers = new LinkedList<Mover>();
+        Texture2D shopkeepTexture;
+        Shopkeep1 shopkeep;
+
+        List<Mover> movers = new List<Mover>();
         List<Battler> battlers = new List<Battler>();
 
         Camera camera;
@@ -44,7 +47,8 @@ namespace RPG_Game
         Tile tile;
         Tile eventTile;
 
-        Vector2 movementModifier;
+        public EventMover eventMover;
+        
         Vector2 playerView = new Vector2(20, 11);
 
         public Battler target;
@@ -69,6 +73,8 @@ namespace RPG_Game
             hearoMoverTexture = main.Content.Load<Texture2D>("Characters\\Heroes\\Navigation\\The Endearing Father Figure");
             hieroMoverTexture = main.Content.Load<Texture2D>("Characters\\Heroes\\Navigation\\The Comic Relief");
 
+            shopkeepTexture = main.Content.Load<Texture2D>("Characters\\Friendlies\\Navigation\\Shopkeep The First");
+
             heroFace = main.Content.Load<Texture2D>("Characters\\Heroes\\Portraits\\The Adorable Manchild");
             hiroFace = main.Content.Load<Texture2D>("Characters\\Heroes\\Portraits\\The Absolutely-Not-Into-It Love Interest");
             hearoFace = main.Content.Load<Texture2D>("Characters\\Heroes\\Portraits\\The Endearing Father Figure");
@@ -89,6 +95,7 @@ namespace RPG_Game
             camera.UpperLeft = new Vector2(0, 0);
 
             //Mover Initialization Begins//
+
             //Hero Mover
             heroMover = new Mover();
             heroMover.ContinuousAnimation = false;
@@ -97,25 +104,34 @@ namespace RPG_Game
             heroMover.Scale = new Vector2(1, 1);
             heroMover.gridPosition = new Vector2(49, 24);
             heroMover.UpperLeft = new Vector2(heroMover.gridPosition.X * 48, heroMover.gridPosition.Y * 48);
-            movers.AddFirst(heroMover);
+            movers.Add(heroMover);
 
             //Hiro Mover
             hiroMover = new Mover();
             hiroMover.SetTexture(heroMoverTexture, 3, 4);
             hiroMover.UpperLeft = new Vector2(hiroMover.GetWidth(), hiroMover.GetHeight());
-            movers.AddFirst(hiroMover);
+            movers.Add(hiroMover);
 
             //Hearo Mover
             hearoMover = new Mover();
             hearoMover.SetTexture(heroMoverTexture, 3, 4);
             hearoMover.UpperLeft = new Vector2(hearoMover.GetWidth(), hearoMover.GetHeight());
-            movers.AddFirst(hearoMover);
+            movers.Add(hearoMover);
 
             //Hiero Mover
             hieroMover = new Mover();
             hieroMover.SetTexture(heroMoverTexture, 3, 4);
             hieroMover.UpperLeft = new Vector2(hieroMover.GetWidth(), hieroMover.GetHeight());
-            movers.AddFirst(hieroMover);
+            movers.Add(hieroMover);
+            
+            shopkeep = new Shopkeep1();
+            shopkeep.ContinuousAnimation = false;
+            shopkeep.AnimationInterval = 100;
+            shopkeep.SetTexture(shopkeepTexture, 3, 4);
+            shopkeep.Scale = new Vector2(1, 1);
+            shopkeep.gridPosition = new Vector2(49, 30);
+            shopkeep.UpperLeft = new Vector2(shopkeep.gridPosition.X * 48, shopkeep.gridPosition.Y * 48);
+            movers.Add(shopkeep);
             //Mover Initialization Ends//
 
             //Battler Initialization Begins//
@@ -145,6 +161,7 @@ namespace RPG_Game
                     tile = new Tile("World\\Tilesets\\Outside", new Vector2(1, 1), new Vector2(6, 13));
 
                     tile.walkable = true;
+                    tile.occupied = false;
                     tile.interactable = false;
 
                     map[i, o] = tile;
@@ -230,7 +247,7 @@ namespace RPG_Game
             map[49, 30].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(1, 1), new Vector2(6, 13)));
             map[49, 30].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(2, 11), new Vector2(6, 13)));
             map[49, 30].tiles[1].above = true;
-            
+
             map[49, 31].currentEvent = new Area01();
             map[49, 31].eventAction = area01.Statue;
             map[49, 31].walkable = false;
@@ -533,9 +550,24 @@ namespace RPG_Game
 
         public override void Update(GameTime gameTime)
         {
-            stateMethods[currentState].Invoke(gameTime);
+            for (int i = 0; i < movers.Count; i++)
+            {
+                movers[i].Animate(gameTime);
 
-            heroMover.Animate(gameTime);
+                if (currentState != 0)
+                {
+                    if (movers[i].movementModifier != new Vector2(0, 0))
+                    {
+                        movers[i].Move(gameTime, map);
+                    }
+                    else
+                    {
+                        movers[i].timeSinceStop = gameTime.TotalGameTime.TotalSeconds - movers[i].timerDifference;
+                    }
+                }
+            }
+
+            stateMethods[currentState].Invoke(gameTime);
         }
 
         public override void Draw(SpriteBatch spriteBatch, Main main)
@@ -567,7 +599,10 @@ namespace RPG_Game
                 }
             }
 
-            heroMover.Draw(spriteBatch, camera.UpperLeft);
+            for(int i = 0; i < movers.Count; i++)
+            {
+                movers[i].Draw(spriteBatch, camera.UpperLeft);
+            }
 
             for (int i = 0; i < drawAbove.Count; i++)
             {
@@ -580,12 +615,13 @@ namespace RPG_Game
                 {
                     currentAction.DrawAll(spriteBatch, calibri);
                 }
-                else
+                else if(eventMover.typingStrings != null)
                 {
-                    if(currentEvent != null)
-                    {
-                        currentEvent.DrawAll(spriteBatch, calibri);
-                    }
+                    eventMover.DrawAll(spriteBatch, calibri);
+                }
+                else if (currentEvent != null)
+                {
+                    currentEvent.DrawAll(spriteBatch, calibri);
                 }
             }
 
@@ -624,130 +660,83 @@ namespace RPG_Game
                 pointer.isAlive = false;
             }
 
-            if (movementModifier != new Vector2(0, 0))
+            if (heroMover.movementModifier != new Vector2(0, 0))
             {
-                if (step.Invoke(gameTime, timer, 2, 0.4, heroMover, movementModifier))
+                if (step.Invoke(gameTime, heroMover.timer, 2, 0.4, heroMover, heroMover.movementModifier))
                 {
-                    movementModifier = new Vector2(0, 0);
+                    if (heroMover.UpperLeft != heroMover.gridPosition * 48)
+                    {
+                        heroMover.UpperLeft = heroMover.gridPosition * 48;
+                    }
+
+                    heroMover.movementModifier = new Vector2(0, 0);
                 }
             }
             else
             {
                 if (upInput.inputState == Input.inputStates.held)
                 {
-                    if (heroMover.gridPosition.Y != 0)
+                    if (heroMover.MoveOnce(new Vector2(0, -1), map))
                     {
-                        if (movementModifier == new Vector2(0, 0))
-                        {
-                            movementModifier = new Vector2(0, -1);
-
-                            heroMover.gridPosition.Y--;
-                            if (heroMover.gridPosition.Y < 0 || !map[(int)heroMover.gridPosition.X, (int)heroMover.gridPosition.Y].walkable)
-                            {
-                                heroMover.gridPosition.Y++;
-
-                                movementModifier = new Vector2(0, 0);
-
-                                heroMover.setCurrentFrame(1, 3);
-                            }
-                            else
-                            {
-                                heroMover.StartAnimationShort(gameTime, 9, 11, 10);
-                            }
-
-                            heroMover.lastMoved = new Vector2(0, -1);
-
-                            timer = gameTime.TotalGameTime.TotalSeconds;
-                        }
+                        heroMover.StartAnimationShort(gameTime, 9, 11, 10);
                     }
+                    else
+                    {
+                        heroMover.setCurrentFrame(1, 3);
+                    }
+
+                    heroMover.timer = gameTime.TotalGameTime.TotalSeconds;
                 }
-                if (downInput.inputState == Input.inputStates.held)
+                else if (downInput.inputState == Input.inputStates.held)
                 {
-                    if (heroMover.gridPosition.Y != map.GetLength(1) - 1)
+                    if (heroMover.MoveOnce(new Vector2(0, 1), map))
                     {
-                        if (movementModifier == new Vector2(0, 0))
-                        {
-                            movementModifier = new Vector2(0, 1);
-
-                            heroMover.gridPosition.Y++;
-                            if (heroMover.gridPosition.Y > map.GetLength(1) || !map[(int)heroMover.gridPosition.X, (int)heroMover.gridPosition.Y].walkable)
-                            {
-                                heroMover.gridPosition.Y--;
-
-                                movementModifier = new Vector2(0, 0);
-
-                                heroMover.setCurrentFrame(1, 0);
-                            }
-                            else
-                            {
-                                heroMover.StartAnimationShort(gameTime, 0, 2, 1);
-                            }
-
-                            heroMover.lastMoved = new Vector2(0, 1);
-
-                            timer = gameTime.TotalGameTime.TotalSeconds;
-                        }
+                        heroMover.StartAnimationShort(gameTime, 0, 2, 1);
                     }
+                    else
+                    {
+                        heroMover.setCurrentFrame(1, 0);
+                    }
+
+                    heroMover.timer = gameTime.TotalGameTime.TotalSeconds;
                 }
-                if (leftInput.inputState == Input.inputStates.held)
+                else if (leftInput.inputState == Input.inputStates.held)
                 {
-                    if (heroMover.gridPosition.X != 0)
+                    if (heroMover.MoveOnce(new Vector2(-1, 0), map))
                     {
-                        if (movementModifier == new Vector2(0, 0))
-                        {
-                            movementModifier = new Vector2(-1, 0);
-
-                            heroMover.gridPosition.X--;
-                            if (heroMover.gridPosition.X < 0 || !map[(int)heroMover.gridPosition.X, (int)heroMover.gridPosition.Y].walkable)
-                            {
-                                heroMover.gridPosition.X++;
-
-                                movementModifier = new Vector2(0, 0);
-
-                                heroMover.setCurrentFrame(1, 1);
-                            }
-                            else
-                            {
-                                heroMover.StartAnimationShort(gameTime, 3, 5, 4);
-                            }
-
-                            heroMover.lastMoved = new Vector2(-1, 0);
-
-                            timer = gameTime.TotalGameTime.TotalSeconds;
-                        }
+                        heroMover.StartAnimationShort(gameTime, 3, 5, 4);
                     }
+                    else
+                    {
+                        heroMover.setCurrentFrame(1, 1);
+                    }
+
+                    heroMover.timer = gameTime.TotalGameTime.TotalSeconds;
                 }
-                if (rightInput.inputState == Input.inputStates.held)
+                else if (rightInput.inputState == Input.inputStates.held)
                 {
-                    if (heroMover.gridPosition.X != map.GetLength(0) - 1)
+                    if (heroMover.MoveOnce(new Vector2(1, 0), map))
                     {
-                        if (movementModifier == new Vector2(0, 0))
-                        {
-                            movementModifier = new Vector2(1, 0);
-
-                            heroMover.gridPosition.X++;
-                            if (heroMover.gridPosition.Y > map.GetLength(0) || !map[(int)heroMover.gridPosition.X, (int)heroMover.gridPosition.Y].walkable)
-                            {
-                                heroMover.gridPosition.X--;
-
-                                movementModifier = new Vector2(0, 0);
-
-                                heroMover.setCurrentFrame(1, 2);
-                            }
-                            else
-                            {
-                                heroMover.StartAnimationShort(gameTime, 6, 8, 7);
-                            }
-
-                            heroMover.lastMoved = new Vector2(1, 0);
-
-                            timer = gameTime.TotalGameTime.TotalSeconds;
-                        }
+                        heroMover.StartAnimationShort(gameTime, 6, 8, 7);
                     }
+                    else
+                    {
+                        heroMover.setCurrentFrame(1, 2);
+                    }
+
+                    heroMover.timer = gameTime.TotalGameTime.TotalSeconds;
                 }
+
+
                 if (activateInput.inputState == Input.inputStates.pressed)
                 {
-                    if (map[(int)(heroMover.gridPosition.X + heroMover.lastMoved.X), (int)(heroMover.gridPosition.Y + heroMover.lastMoved.Y)].interactable)
+                    if (map[(int)(heroMover.gridPosition.X + heroMover.lastMoved.X), (int)(heroMover.gridPosition.Y + heroMover.lastMoved.Y)].occupied)
+                    {
+                        ActivateState(1);
+
+                        eventMover = (EventMover)map[(int)(heroMover.gridPosition.X + heroMover.lastMoved.X), (int)(heroMover.gridPosition.Y + heroMover.lastMoved.Y)].occupier;
+                    }
+                    else if (map[(int)(heroMover.gridPosition.X + heroMover.lastMoved.X), (int)(heroMover.gridPosition.Y + heroMover.lastMoved.Y)].interactable)
                     {
                         ActivateState(1);
 
@@ -762,6 +751,11 @@ namespace RPG_Game
                 }
             }
 
+            for(int i = 0; i < movers.Count; i++)
+            {
+                movers[i].Move(gameTime, map);
+            }
+
             camera.UpperLeft = new Vector2((heroMover.UpperLeft.X + heroMover.GetWidth() / 2) - (camera.ViewWidth / 2),
                                            (heroMover.UpperLeft.Y + heroMover.GetHeight() / 2) - (camera.ViewHeight / 2));
         }
@@ -771,6 +765,10 @@ namespace RPG_Game
             if (currentAction != null)
             {
                 currentAction.Call(gameTime, this);
+            }
+            else if(eventMover != null)
+            {
+                eventMover.Call(gameTime, this);
             }
             else
             {
@@ -1121,5 +1119,91 @@ namespace RPG_Game
             drawSprite.UpperLeft = new Vector2(gridPosition.X * drawSprite.frameWidth, gridPosition.Y * drawSprite.frameHeight);
             drawSprite.Draw(spriteBatch, camera.UpperLeft);
         }
+
+        internal bool Type(TypingStrings strings, GameTime gameTime)
+        {
+            return Type(strings, gameTime, 0.05);
+        }
+        internal bool Type(TypingStrings strings, GameTime gameTime, double typeSpeed)
+        {
+            if (strings.lines.Count == 0)
+            {
+                pointer.Scale = new Vector2(0.8f, 0.8f);
+
+                return true;
+            }
+
+            if (strings.line.Length >= strings.previousLines.Length)
+            {
+                strings.line = strings.line.Substring(strings.previousLines.Length);
+            }
+
+            if (strings.line.Equals(strings.lines[0]))
+            {
+                timer = gameTime.TotalGameTime.TotalSeconds;
+
+                pointer.isAlive = true;
+
+                if (activateInput.inputState == Input.inputStates.pressed)
+                {
+                    if (strings.lines[0].EndsWith("\n") && strings.lines.Count > 1)
+                    {
+                        strings.previousLines += strings.lines[0];
+                        strings.lines.RemoveAt(0);
+                        strings.line = "";
+                    }
+                    else
+                    {
+                        strings.lines.RemoveAt(0);
+                        strings.line = "";
+                        strings.previousLines = "";
+                    }
+                }
+            }
+            else
+            {
+                pointer.isAlive = false;
+            }
+
+            if (gameTime.TotalGameTime.TotalSeconds < timer + typeSpeed)
+            {
+                strings.line = strings.previousLines + strings.line;
+
+                return false;
+            }
+
+            if (strings.line.Length + 1 < strings.lines[0].Length)
+            {
+                string i = strings.lines[0].Substring(strings.line.Length);
+                if (i.StartsWith(" "))
+                {
+                    int o = 0;
+
+                    while (i.StartsWith(" "))
+                    {
+                        i = strings.lines[0].Substring(strings.line.Length + o);
+
+                        o++;
+                    }
+
+                    strings.line = strings.lines[0].Remove(strings.line.Length + o);
+                }
+                else
+                {
+                    strings.line = strings.lines[0].Remove(strings.line.Length + 1);
+                }
+            }
+            else
+            {
+                strings.line = strings.lines[0];
+            }
+
+            strings.line = strings.previousLines + strings.line;
+
+            timer = gameTime.TotalGameTime.TotalSeconds;
+
+            return false;
+        }
+
     }
 }

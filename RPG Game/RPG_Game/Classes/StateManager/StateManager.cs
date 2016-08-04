@@ -57,7 +57,6 @@ namespace RPG_Game
         internal bool[] state = new bool[8];
         internal bool[] previousState = new bool[8];
         internal int currentState;
-        internal int nextState;
 
         private bool switching = false;
 
