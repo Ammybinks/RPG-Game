@@ -103,14 +103,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="RPG_Game.exe" size="75184">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="RPG_Game.exe" size="78256">
       <assemblyIdentity name="RPG_Game" version="1.0.0.0" language="neutral" processorArchitecture="x86" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>R4AndN79rPIqLm3FGQam1qX3Svk=</dsig:DigestValue>
+        <dsig:DigestValue>qxyD1lImggipTAe5/2N+PyTjl/Y=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -121,6 +121,15 @@
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
       <dsig:DigestValue>iTKb09lKQwtxT2ZLEXi/RxUEeoo=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Content\Characters\Friendlies\Navigation\Shopkeep The First.xnb" size="110779">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>Nprk4PS9IwwgQUoKbrX706TLwOY=</dsig:DigestValue>
     </hash>
   </file>
   <file name="Content\Characters\Heroes\Battle\The Absolutely-Not-Into-It Love Interest.xnb" size="884923">

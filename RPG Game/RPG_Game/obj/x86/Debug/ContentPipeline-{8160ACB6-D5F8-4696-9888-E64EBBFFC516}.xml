@@ -217,6 +217,15 @@
       <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Characters\Heroes\Portraits\The Absolutely-Not-Into-It Love Interest.xnb</Output>
       <Time>2016-07-22T11:59:43+01:00</Time>
     </Item>
+    <Item>
+      <Source>Characters\Friendlies\Navigation\Shopkeep The First.png</Source>
+      <Name>Characters\Friendlies\Navigation\Shopkeep The First</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Characters\Friendlies\Navigation\Shopkeep The First.xnb</Output>
+      <Time>2016-08-04T10:42:12+01:00</Time>
+    </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
       <ContentProjectGUID>{8160ACB6-D5F8-4696-9888-E64EBBFFC516}</ContentProjectGUID>

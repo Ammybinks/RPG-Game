@@ -11,9 +11,9 @@ namespace RPG_Game
     {
         public void Statue(NaviState naviState, GameTime gameTime)
         {
-            if (line == null)
+            if (typingStrings == null)
             {
-                Initialize(naviState);
+                naviState.currentEvent = this;
 
                 eventBox = new Box();
 
@@ -24,25 +24,28 @@ namespace RPG_Game
                 eventBox.SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
 
                 naviState.pointer.Scale = new Vector2(0.4f, 0.4f);
-                naviState.pointer.UpperLeft = new Vector2(1360 - naviState.pointer.GetWidth() - 20, 1080 - naviState.pointer.GetHeight() - 20);
+                naviState.pointer.UpperLeft = new Vector2((eventBox.frameWidth + eventBox.UpperLeft.X) - naviState.pointer.GetWidth() - 20,
+                                                          (eventBox.frameHeight + eventBox.UpperLeft.Y) - naviState.pointer.GetHeight() - 20);
                 naviState.pointer.isAlive = false;
 
-                lineUpperLeft = new Vector2(580, 900);
-
-                lines = new List<string>();
-                lines.Add("This is, well. I'm not sure what it is, quite.\n");
-                lines.Add("Maybe some sort of altar? I've seen stranger.");
-                line = "";
-                previousLines = "";
+                typingStrings = new TypingStrings();
+                typingStrings.lines = new List<string>();
+                typingStrings.lines.Add("This is, well. I'm not sure what it is, quite.\n");
+                typingStrings.lines.Add("Maybe some sort of altar? I've seen stranger.");
+                typingStrings.line = "";
+                typingStrings.previousLines = "";
             }
 
-            Type(naviState, gameTime, 0.01);
+            if(naviState.Type(typingStrings, gameTime, 0.01))
+            {
+                complete = true;
+            }
 
             if(complete)
             {
                 if(runOnce)
                 {
-                    Uninitialize(naviState);
+                    Unload(naviState);
 
                     runOnce = false;
                 }

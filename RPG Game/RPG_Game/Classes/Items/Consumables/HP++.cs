@@ -126,7 +126,8 @@ namespace RPG_Game
                 Consume(naviState);
 
                 naviState.pointer.Scale = new Vector2(0.4f, 0.4f);
-                naviState.pointer.UpperLeft = new Vector2(1360 - naviState.pointer.GetWidth() - 20, 1080 - naviState.pointer.GetHeight() - 20);
+                naviState.pointer.UpperLeft = new Vector2((box.frameWidth + box.UpperLeft.X) - naviState.pointer.GetWidth() - 20,
+                                                          (box.frameHeight + box.UpperLeft.Y) - naviState.pointer.GetHeight() - 20);
                 naviState.pointer.isAlive = true;
 
                 LoadOnce(naviState);

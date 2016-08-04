@@ -1,9 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System;
-using System.Linq;
-using System.Text;
 
 namespace RPG_Game
 {
@@ -16,9 +13,12 @@ namespace RPG_Game
         public Event currentEvent;
         public Action<NaviState, GameTime> eventAction;
 
+        [NonSerialized()]public Mover occupier;
+
         public Vector2 currentFrame;
 
         public bool interactable;
+        public bool occupied;
         public bool walkable;
 
         public List<TileParts> tiles;
