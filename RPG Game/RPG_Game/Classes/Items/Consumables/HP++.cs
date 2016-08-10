@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace RPG_Game
 {
@@ -9,12 +7,14 @@ namespace RPG_Game
     {
         public HPPlusPlus()
         {
-            buyingWorth = 50;
-            sellingWorth = 10;
+            buyingWorth = 250;
+            sellingWorth = 50;
 
-            heldCount = 1;
+            heldCount = 0;
             maxStack = 99;
-            
+
+            moveInBulk = false;
+
             mapUsable = true;
             battleUsable = false;
 

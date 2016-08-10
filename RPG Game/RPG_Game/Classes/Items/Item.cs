@@ -17,15 +17,17 @@ namespace RPG_Game
         public string name;
         public string description;
 
+        public bool moveInBulk;
+
         public bool battleUsable = false;
         public bool mapUsable = false;
 
         public Item()
         {
-            buyingWorth = 9001;
-            sellingWorth = -9001;
+            buyingWorth = -1;
+            sellingWorth = -1;
 
-            heldCount = 1;
+            heldCount = -1;
             maxStack = 1;
 
             iconFrame = new Vector2(1, 1);

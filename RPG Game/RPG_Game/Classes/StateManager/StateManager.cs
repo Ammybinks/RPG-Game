@@ -15,7 +15,9 @@ namespace RPG_Game
 
         internal MouseState currentMouseState;
         internal MouseState oldMouseState;
+
         internal Point mousePosition;
+        internal int oldScrollWheelValue;
         internal bool mouseMoving;
 
         internal Input upInput = new Input();
@@ -23,6 +25,8 @@ namespace RPG_Game
         internal Input leftInput = new Input();
         internal Input rightInput = new Input();
         internal Input activateInput = new Input();
+        internal Input upMenuInput = new Input();
+        internal Input downMenuInput = new Input();
         internal Input menuInput = new Input();
 
         internal Texture2D pointerTexture;
@@ -31,6 +35,7 @@ namespace RPG_Game
         internal List<Box> allBoxes = new List<Box>();
 
         internal List<Button> activeButtons;
+        internal List<Button> drawButtons;
 
         internal Texture2D iconTexture;
         internal Button button;
@@ -39,6 +44,9 @@ namespace RPG_Game
         internal Texture2D cornerTexture;
         internal Texture2D wallTexture;
         internal Texture2D backTexture;
+
+        internal Texture2D arrowTexture;
+        internal Texture2D arrowSelectedTexture;
 
         internal SpriteFont calibri;
 
@@ -98,22 +106,52 @@ namespace RPG_Game
                 activateInput.inputState = Input.inputStates.pressed;
                 activateInput.inputType = Input.inputTypes.mouse;
             }
-            else
+            else if(currentMouseState.LeftButton == ButtonState.Pressed && oldMouseState.LeftButton == ButtonState.Pressed)
+            {
+                activateInput.inputState = Input.inputStates.held;
+                activateInput.inputType = Input.inputTypes.mouse;
+            }
+            else if(currentMouseState.LeftButton == ButtonState.Released)
             {
                 activateInput.inputState = Input.inputStates.released;
                 activateInput.inputType = Input.inputTypes.mouse;
             }
-
-
+            
             if (currentMouseState.RightButton == ButtonState.Pressed && oldMouseState.RightButton == ButtonState.Released)
             {
                 menuInput.inputState = Input.inputStates.pressed;
                 menuInput.inputType = Input.inputTypes.mouse;
             }
-            else
+            else if (currentMouseState.RightButton == ButtonState.Pressed && oldMouseState.RightButton == ButtonState.Pressed)
+            {
+                menuInput.inputState = Input.inputStates.held;
+                menuInput.inputType = Input.inputTypes.mouse;
+            }
+            else if(currentMouseState.RightButton == ButtonState.Released)
             {
                 menuInput.inputState = Input.inputStates.released;
                 menuInput.inputType = Input.inputTypes.mouse;
+            }
+
+            if (currentMouseState.ScrollWheelValue > oldMouseState.ScrollWheelValue)
+            {
+                upInput.inputState = Input.inputStates.pressed;
+                upInput.inputType = Input.inputTypes.scrollWheel;
+            }
+
+            if (currentMouseState.ScrollWheelValue < oldMouseState.ScrollWheelValue)
+            {
+                downInput.inputState = Input.inputStates.pressed;
+                downInput.inputType = Input.inputTypes.scrollWheel;
+            }
+
+            if(currentMouseState.ScrollWheelValue == oldMouseState.ScrollWheelValue && currentMouseState.ScrollWheelValue != oldScrollWheelValue)
+            {
+                upInput.inputState = Input.inputStates.released;
+                upInput.inputType = Input.inputTypes.scrollWheel;
+
+                downInput.inputState = Input.inputStates.released;
+                downInput.inputType = Input.inputTypes.scrollWheel;
             }
             ////Keyboard input handling
             //Up input handling
@@ -226,6 +264,7 @@ namespace RPG_Game
 
             mousePosition = new Point(currentMouseState.X, currentMouseState.Y);
 
+            oldScrollWheelValue = oldMouseState.ScrollWheelValue;
             oldKeyState = currentKeyState;
             oldMouseState = currentMouseState;
         }

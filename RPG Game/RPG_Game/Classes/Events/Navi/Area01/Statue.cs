@@ -7,9 +7,9 @@ using Microsoft.Xna.Framework;
 namespace RPG_Game
 {
     [Serializable()]
-    public class Area01 : Event
+    class Statue : Event
     {
-        public void Statue(NaviState naviState, GameTime gameTime)
+        public override bool Call(GameTime gameTime, NaviState naviState)
         {
             if (typingStrings == null)
             {
@@ -36,24 +36,14 @@ namespace RPG_Game
                 typingStrings.previousLines = "";
             }
 
-            if(naviState.Type(typingStrings, gameTime, 0.01))
+            if (naviState.Type(typingStrings, gameTime, 0.01))
             {
-                complete = true;
+                Complete(naviState);
+
+                return true;
             }
 
-            if(complete)
-            {
-                if(runOnce)
-                {
-                    Unload(naviState);
-
-                    runOnce = false;
-                }
-                else
-                {
-                    runOnce = true;
-                }
-            }
+            return false;
         }
     }
 }

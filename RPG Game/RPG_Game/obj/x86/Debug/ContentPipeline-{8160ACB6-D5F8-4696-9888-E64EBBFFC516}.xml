@@ -182,6 +182,15 @@
       <Time>2016-07-07T10:49:31.8733692+01:00</Time>
     </Item>
     <Item>
+      <Source>Characters\Friendlies\Navigation\Shopkeep The First.png</Source>
+      <Name>Characters\Friendlies\Navigation\Shopkeep The First</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Characters\Friendlies\Navigation\Shopkeep The First.xnb</Output>
+      <Time>2016-08-04T10:42:12+01:00</Time>
+    </Item>
+    <Item>
       <Source>Characters\Heroes\Portraits\The Adorable Manchild.png</Source>
       <Name>Characters\Heroes\Portraits\The Adorable Manchild</Name>
       <Importer>TextureImporter</Importer>
@@ -218,13 +227,22 @@
       <Time>2016-07-22T11:59:43+01:00</Time>
     </Item>
     <Item>
-      <Source>Characters\Friendlies\Navigation\Shopkeep The First.png</Source>
-      <Name>Characters\Friendlies\Navigation\Shopkeep The First</Name>
+      <Source>Misc\Interface\Interface Arrow Selected.png</Source>
+      <Name>Misc\Interface\Interface Arrow Selected</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Characters\Friendlies\Navigation\Shopkeep The First.xnb</Output>
-      <Time>2016-08-04T10:42:12+01:00</Time>
+      <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Misc\Interface\Interface Arrow Selected.xnb</Output>
+      <Time>2016-08-09T15:45:53.1552664+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Misc\Interface\Interface Arrow.png</Source>
+      <Name>Misc\Interface\Interface Arrow</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Misc\Interface\Interface Arrow.xnb</Output>
+      <Time>2016-08-09T15:32:53.9772874+01:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>

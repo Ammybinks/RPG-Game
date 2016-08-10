@@ -17,7 +17,7 @@ namespace RPG_Game
 
         public Ability()
         {
-            cost = 0;
+            cost = -1;
             name = "This ability isn't meant to be used, dummy";
 
             battleUsable = false;

@@ -90,7 +90,7 @@
     <Compile Include="Classes\Abilities\Hearo\Murder.cs" />
     <Compile Include="Classes\Abilities\Hiero\Bountiful Light.cs" />
     <Compile Include="Classes\Events\Event.cs" />
-    <Compile Include="Classes\Events\Navi\Area01.cs" />
+    <Compile Include="Classes\Events\Navi\Area01\Statue.cs" />
     <Compile Include="Classes\Items\Consumables\HP++.cs" />
     <Compile Include="Classes\Items\Consumables\HP+.cs" />
     <Compile Include="Classes\Items\Consumables\HP.cs" />
@@ -98,10 +98,12 @@
     <Compile Include="Classes\SpriteBase\Parts\Box\Box.cs" />
     <Compile Include="Classes\SpriteBase\Parts\Box\MultiBox\MultiBox.cs" />
     <Compile Include="Classes\SpriteBase\Parts\Button\Button.cs" />
+    <Compile Include="Classes\SpriteBase\Parts\Button\EventButton.cs" />
     <Compile Include="Classes\SpriteBase\Parts\Button\MultiButton\MultiButton.cs" />
     <Compile Include="Classes\SpriteBase\Parts\Parts.cs" />
     <Compile Include="Classes\SpriteBase\Sprite\Actors\AIMover\AIMover.cs" />
-    <Compile Include="Classes\SpriteBase\Sprite\Actors\AIMover\EventMover\Area 1\Shopkeep1.cs" />
+    <Compile Include="Classes\SpriteBase\Sprite\Actors\AIMover\EventMover\Shopkeep\Area 1\Shantae.cs" />
+    <Compile Include="Classes\SpriteBase\Sprite\Actors\AIMover\EventMover\Shopkeep\Shopkeep.cs" />
     <Compile Include="Classes\SpriteBase\Sprite\Actors\Battler.cs" />
     <Compile Include="Classes\SpriteBase\Sprite\Actors\AIMover\EventMover\EventMover.cs" />
     <Compile Include="Classes\SpriteBase\Sprite\Actors\Mover.cs" />

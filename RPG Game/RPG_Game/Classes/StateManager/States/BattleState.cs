@@ -85,6 +85,9 @@ namespace RPG_Game
             backgroundSprite.Scale = new Vector2(2f, 2f);
 
             heldItems = main.heldItems;
+
+            activeButtons = new List<Button>();
+            drawButtons = new List<Button>();
             //Miscellaneous Initialization Ends//
 
 
@@ -493,9 +496,17 @@ namespace RPG_Game
                 {
                     allBoxes[i].DrawParts(spriteBatch);
 
+                    int skipIndex = 0;
+
                     for (int o = 0; o < allBoxes[i].buttons.Count; o++)
                     {
-                        if(o == buttonIndex)
+                        if (allBoxes[i].GetButtons()[o].selectable == false)
+                        {
+                            temp = false;
+
+                            skipIndex++;
+                        }
+                        else if (allBoxes[i].activatorState == currentState && o - skipIndex == buttonIndex)
                         {
                             temp = true;
                         }
@@ -725,12 +736,11 @@ namespace RPG_Game
             //Switch to Battle Menu State
             ActivateState(3);
 
-            for (int i = 0; i < allBoxes.Count; i++)
+            activeButtons.Clear();
+
+            for (int i = 0; i < battleBox.buttons.Count; i++)
             {
-                if (allBoxes[i].activatorState == currentState)
-                {
-                    activeButtons = allBoxes[i].buttons;
-                }
+                activeButtons.Add(battleBox.buttons[i]);
             }
         }
 
@@ -742,36 +752,85 @@ namespace RPG_Game
             MultiButton tempButton;
 
             skillsBox.buttons.Clear();
-            skillsBox.buttons.Capacity = 0;
+            drawButtons.Clear();
 
+            tempButton = new MultiButton();
+            tempButton.extraButtons = new List<Button>();
+
+            tempButton.selectable = false;
+            tempButton.UpperLeft = new Vector2(skillsBox.UpperLeft.X + 80, skillsBox.UpperLeft.Y + 10);
+            tempButton.display = "Ability";
+            tempButton.frameWidth = skillsBox.frameWidth - 165;
+            tempButton.frameHeight = 50;
+            tempButton.SetParts(cornerTexture, wallTexture, backTexture);
+            for (int i = 0; i < tempButton.parts.Count; i++)
+            {
+                tempButton.parts[i].drawColour = Color.Navy;
+            }
+            tempButton.icon = null;
+
+            tempButton.extraButtons.Add(new Button());
+            tempButton.extraButtons[0].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth(), skillsBox.UpperLeft.Y + 10);
+            tempButton.extraButtons[0].display = "Cost";
+            tempButton.extraButtons[0].frameWidth = 75;
+            tempButton.extraButtons[0].frameHeight = 50;
+            tempButton.extraButtons[0].SetParts(cornerTexture, wallTexture, backTexture);
+            for (int i = 0; i < tempButton.extraButtons[0].parts.Count; i++)
+            {
+                tempButton.extraButtons[0].parts[i].drawColour = Color.Navy;
+            }
+            tempButton.extraButtons[0].icon = null;
+
+            tempButton.displayColour = Color.PaleGoldenrod;
+            tempButton.extraButtons[0].displayColour = Color.PaleGoldenrod;
+
+            skillsBox.buttons.Add(tempButton);
+
+            for (int i = 0; i < actor.abilities.Count; i++)
+            {
+                if (actor.abilities[i].name.Equals("--Overwhelming Ineptitude--"))
+                {
+                    actor.abilities.RemoveAt(i);
+                }
+            }
             if (actor.abilities.Count == 0)
             {
                 Ability ability = new Ability();
                 ability.name = "--Overwhelming Ineptitude--";
                 ability.description = actor.name + " doesn't seem very clever.\nThey don't know a single ability,\nand might not be much use in a fight.";
                 ability.iconFrame = new Vector2(5, 0);
-                ability.cost = 137;
                 actor.abilities.Add(ability);
             }
+
+            string tempString;
 
             for (int i = 0; i < actor.abilities.Count; i++)
             {
                 tempButton = new MultiButton();
                 tempButton.extraButtons = new List<Button>();
 
-                tempButton.UpperLeft = new Vector2(skillsBox.UpperLeft.X + 80, skillsBox.UpperLeft.Y + 10 + (60 * i));
+                tempButton.UpperLeft = new Vector2(skillsBox.UpperLeft.X + 80, skillsBox.UpperLeft.Y + 10 + (60 * (i + 1)));
                 tempButton.display = actor.abilities[i].name;
                 tempButton.icon.SetTexture(iconTexture, 16, 20);
                 tempButton.icon.setCurrentFrame((int)actor.abilities[i].iconFrame.X, (int)actor.abilities[i].iconFrame.Y);
-                tempButton.frameWidth = skillsBox.frameWidth - 160;
+                tempButton.frameWidth = skillsBox.frameWidth - 165;
                 tempButton.frameHeight = 50;
                 tempButton.SetParts(cornerTexture, wallTexture, backTexture);
                 tempButton.icon.UpperLeft = new Vector2(tempButton.UpperLeft.X + 10, tempButton.UpperLeft.Y + 9);
 
+                if (actor.abilities[i].cost.ToString().Equals("-1"))
+                {
+                    tempString = "------";
+                }
+                else
+                {
+                    tempString = actor.abilities[i].cost.ToString();
+                }
+
                 tempButton.extraButtons.Add(new Button());
-                tempButton.extraButtons[0].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth(), skillsBox.UpperLeft.Y + 10 + (60 * i));
-                tempButton.extraButtons[0].display = actor.abilities[i].cost.ToString();
-                tempButton.extraButtons[0].frameWidth = 70;
+                tempButton.extraButtons[0].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth(), skillsBox.UpperLeft.Y + 10 + (60 * (i + 1)));
+                tempButton.extraButtons[0].display = tempString;
+                tempButton.extraButtons[0].frameWidth = 75;
                 tempButton.extraButtons[0].frameHeight = 50;
                 tempButton.extraButtons[0].SetParts(cornerTexture, wallTexture, backTexture);
                 tempButton.extraButtons[0].icon = null;
@@ -784,20 +843,38 @@ namespace RPG_Game
                 tempButton.extraButtons[1].SetParts(cornerTexture, wallTexture, backTexture);
                 tempButton.extraButtons[1].showOnSelected = true;
                 tempButton.extraButtons[1].icon = null;
-
-
+                
                 if (!actor.abilities[i].battleUsable)
                 {
-                    tempButton.displayColour = Color.Gray;
-                    tempButton.extraButtons[0].displayColour = Color.Gray;
+                    tempButton.displayColour = Color.OrangeRed;
+                    tempButton.extraButtons[0].displayColour = Color.OrangeRed;
                 }
+
                 skillsBox.buttons.Add(tempButton);
             }
 
             skillsBox.frameHeight = (int)skillsBox.buttons[skillsBox.buttons.Count - 1].UpperLeft.Y + 60;
             skillsBox.SetParts(cornerTexture, wallTexture, backTexture);
 
-            activeButtons = skillsBox.buttons;
+            activeButtons.Clear();
+            drawButtons.Clear();
+
+            for (int i = 0; i < skillsBox.buttons.Count; i++)
+            {
+                if (skillsBox.buttons[i].selectable)
+                {
+                    tempButton = (MultiButton)skillsBox.buttons[i];
+
+                    tempButton.extraButtons[1].UpperLeft = new Vector2(skillsBox.UpperLeft.X + 80, skillsBox.UpperLeft.Y + skillsBox.frameHeight);
+                    tempButton.extraButtons[1].SetParts(cornerTexture, wallTexture, backTexture);
+
+                    activeButtons.Add(tempButton);
+                }
+                else
+                {
+                    drawButtons.Add(skillsBox.buttons[i]);
+                }
+            }
 
             buttonIndex = 0;
         }
@@ -809,36 +886,85 @@ namespace RPG_Game
             MultiButton tempButton;
 
             itemsBox.buttons.Clear();
-            itemsBox.buttons.Capacity = 0;
+            drawButtons.Clear();
 
+            tempButton = new MultiButton();
+            tempButton.extraButtons = new List<Button>();
+
+            tempButton.selectable = false;
+            tempButton.UpperLeft = new Vector2(itemsBox.UpperLeft.X + 80, itemsBox.UpperLeft.Y + 10);
+            tempButton.display = "Item";
+            tempButton.frameWidth = itemsBox.frameWidth - 165;
+            tempButton.frameHeight = 50;
+            tempButton.SetParts(cornerTexture, wallTexture, backTexture);
+            for (int i = 0; i < tempButton.parts.Count; i++)
+            {
+                tempButton.parts[i].drawColour = Color.Navy;
+            }
+            tempButton.icon = null;
+
+            tempButton.extraButtons.Add(new Button());
+            tempButton.extraButtons[0].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth(), itemsBox.UpperLeft.Y + 10);
+            tempButton.extraButtons[0].display = "Qty.";
+            tempButton.extraButtons[0].frameWidth = 75;
+            tempButton.extraButtons[0].frameHeight = 50;
+            tempButton.extraButtons[0].SetParts(cornerTexture, wallTexture, backTexture);
+            for (int i = 0; i < tempButton.extraButtons[0].parts.Count; i++)
+            {
+                tempButton.extraButtons[0].parts[i].drawColour = Color.Navy;
+            }
+            tempButton.extraButtons[0].icon = null;
+
+            tempButton.displayColour = Color.PaleGoldenrod;
+            tempButton.extraButtons[0].displayColour = Color.PaleGoldenrod;
+
+            itemsBox.buttons.Add(tempButton);
+
+            for (int i = 0; i < heldItems.Count; i++)
+            {
+                if (heldItems[i].name.Equals("--Empty, really empty--"))
+                {
+                    heldItems.RemoveAt(i);
+                }
+            }
             if (heldItems.Count == 0)
             {
                 Item item = new Item();
                 item.name = "--Empty, really empty--";
                 item.description = "Looks like you don't have any items on you,\nmaybe this is a good time to stock up?";
-                item.iconFrame = new Vector2(7, 10);
-                item.heldCount = 13;
+                item.iconFrame = new Vector2(8, 10);
                 heldItems.Add(item);
             }
+
+            string tempString;
 
             for (int i = 0; i < heldItems.Count; i++)
             {
                 tempButton = new MultiButton();
                 tempButton.extraButtons = new List<Button>();
 
-                tempButton.UpperLeft = new Vector2(itemsBox.UpperLeft.X + 80, itemsBox.UpperLeft.Y + 10 + (60 * i));
+                tempButton.UpperLeft = new Vector2(itemsBox.UpperLeft.X + 80, itemsBox.UpperLeft.Y + 10 + (60 * (i + 1)));
                 tempButton.display = heldItems[i].name;
                 tempButton.icon.SetTexture(iconTexture, 16, 20);
                 tempButton.icon.setCurrentFrame((int)heldItems[i].iconFrame.X, (int)heldItems[i].iconFrame.Y);
-                tempButton.frameWidth = skillsBox.frameWidth - 140;
+                tempButton.frameWidth = skillsBox.frameWidth - 165;
                 tempButton.frameHeight = 50;
                 tempButton.SetParts(cornerTexture, wallTexture, backTexture);
                 tempButton.icon.UpperLeft = new Vector2(tempButton.UpperLeft.X + 10, tempButton.UpperLeft.Y + 9);
 
+                if (heldItems[i].heldCount.ToString().Equals("-1"))
+                {
+                    tempString = "------";
+                }
+                else
+                {
+                    tempString = heldItems[i].heldCount.ToString();
+                }
+
                 tempButton.extraButtons.Add(new Button());
-                tempButton.extraButtons[0].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth(), itemsBox.UpperLeft.Y + 10 + (60 * i));
-                tempButton.extraButtons[0].display = heldItems[i].heldCount.ToString();
-                tempButton.extraButtons[0].frameWidth = 50;
+                tempButton.extraButtons[0].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth(), itemsBox.UpperLeft.Y + 10 + (60 * (i + 1)));
+                tempButton.extraButtons[0].display = tempString;
+                tempButton.extraButtons[0].frameWidth = 75;
                 tempButton.extraButtons[0].frameHeight = 50;
                 tempButton.extraButtons[0].SetParts(cornerTexture, wallTexture, backTexture);
                 tempButton.extraButtons[0].icon = null;
@@ -854,8 +980,8 @@ namespace RPG_Game
 
                 if (!heldItems[i].battleUsable)
                 {
-                    tempButton.displayColour = Color.Gray;
-                    tempButton.extraButtons[0].displayColour = Color.Gray;
+                    tempButton.displayColour = Color.OrangeRed;
+                    tempButton.extraButtons[0].displayColour = Color.OrangeRed;
                 }
                 itemsBox.buttons.Add(tempButton);
             }
@@ -863,7 +989,25 @@ namespace RPG_Game
             itemsBox.frameHeight = (int)itemsBox.buttons[itemsBox.buttons.Count - 1].UpperLeft.Y + 60;
             itemsBox.SetParts(cornerTexture, wallTexture, backTexture);
 
-            activeButtons = itemsBox.buttons;
+            activeButtons.Clear();
+            drawButtons.Clear();
+
+            for (int i = 0; i < itemsBox.buttons.Count; i++)
+            {
+                if (itemsBox.buttons[i].selectable)
+                {
+                    tempButton = (MultiButton)itemsBox.buttons[i];
+
+                    tempButton.extraButtons[1].UpperLeft = new Vector2(itemsBox.UpperLeft.X + 80, itemsBox.UpperLeft.Y + itemsBox.frameHeight);
+                    tempButton.extraButtons[1].SetParts(cornerTexture, wallTexture, backTexture);
+
+                    activeButtons.Add(tempButton);
+                }
+                else
+                {
+                    drawButtons.Add(itemsBox.buttons[i]);
+                }
+            }
 
             buttonIndex = 0;
         }

@@ -15,6 +15,14 @@ namespace RPG_Game
                 temp.Add(multiButtons[i]);
             }
 
+            if (buttons != null)
+            {
+                for (int i = 0; i < buttons.Count; i++)
+                {
+                    temp.Add(buttons[i]);
+                }
+            }
+
             return temp;
         }
     }

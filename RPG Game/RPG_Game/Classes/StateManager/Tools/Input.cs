@@ -14,7 +14,8 @@
         public enum inputTypes
         {
             mouse,
-            keyboard
+            keyboard,
+            scrollWheel
         }
 
         public inputTypes inputType = inputTypes.keyboard;

@@ -46,12 +46,14 @@ namespace RPG_Game
         public int frameWidth;
         public int frameHeight;
 
+        public Color drawColour = Color.White;
+
         // This internal member shows the current animation frame on the current line (should be 0 -> numFrames-1)
         protected int currentFrame = 0;
 
         // This internal member shows the current animation line
         protected int currentLine = 0;
-
+        
         public int getCurrentFrame()
         {
             return currentFrame;
@@ -123,7 +125,7 @@ namespace RPG_Game
             {
                 float radians = MathHelper.ToRadians((float)RotationAngle);
 
-                theSpriteBatch.Draw(spriteTexture, UpperLeft + Origin, imageRect, Color.White,
+                theSpriteBatch.Draw(spriteTexture, UpperLeft + Origin, imageRect, drawColour,
                                     -radians, Origin / Scale, Scale, SpriteEffects.None, LayerDepth);
             }
         }

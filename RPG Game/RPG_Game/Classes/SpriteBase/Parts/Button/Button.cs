@@ -13,7 +13,8 @@ namespace RPG_Game
         public Color displayColour = Color.Black;
 
         public bool showOnSelected;
-        
+        public bool selectable = true;
+
         public Action<GameTime> action;
 
         public virtual void DrawParts(SpriteBatch spriteBatch, SpriteFont font, bool isSelected)

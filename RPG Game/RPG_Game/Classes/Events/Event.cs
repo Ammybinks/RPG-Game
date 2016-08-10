@@ -8,13 +8,14 @@ namespace RPG_Game
     [Serializable()]
     public class Event
     {
-        public bool complete;
-
         internal TypingStrings typingStrings;
         
         [NonSerialized()]public Box eventBox;
         
-        internal bool runOnce;
+        public virtual bool Call(GameTime gameTime, NaviState naviState)
+        {
+            return true;
+        }
 
         public virtual void DrawAll(SpriteBatch spriteBatch, SpriteFont spriteFont)
         {
@@ -28,14 +29,18 @@ namespace RPG_Game
                                        Color.Black);
             }
         }
-        
-        internal void Unload(NaviState naviState)
+
+        internal void Complete(NaviState naviState)
         {
+            naviState.ActivateState(0);
+
             naviState.currentEvent = null;
 
             typingStrings = null;
+        }
 
-            complete = false;
+        internal void Unload(NaviState naviState)
+        {
         }
     }
 }
