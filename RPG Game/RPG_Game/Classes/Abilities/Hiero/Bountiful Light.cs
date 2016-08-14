@@ -17,7 +17,7 @@ namespace RPG_Game
         {
             iconFrame = new Vector2(6, 4);
 
-            cost = 20;
+            cost = 100;
 
             battleUsable = true;
             mapUsable = true;
@@ -37,7 +37,7 @@ namespace RPG_Game
 
             return temp;
         }
-
+        
         public override void DrawAll(SpriteBatch spriteBatch, SpriteFont spriteFont)
         {
             if (box != null)
@@ -95,6 +95,8 @@ namespace RPG_Game
                     battleState.damageDealt = 250;
                     battleState.target.health += (int)battleState.damageDealt;
 
+                    battleState.actor.mana -= cost;
+
                     if (battleState.target.health >= battleState.target.maxHealth)
                     {
                         battleState.target.health = battleState.target.maxHealth;
@@ -139,7 +141,9 @@ namespace RPG_Game
                 {
                     naviState.target.health = naviState.target.maxHealth;
                 }
-                
+
+                naviState.actor.mana -= cost;
+
                 naviState.pointer.Scale = new Vector2(0.4f, 0.4f);
                 naviState.pointer.UpperLeft = new Vector2((box.frameWidth + box.UpperLeft.X) - naviState.pointer.GetWidth() - 20,
                                                           (box.frameHeight + box.UpperLeft.Y) - naviState.pointer.GetHeight() - 20);
@@ -158,7 +162,7 @@ namespace RPG_Game
                 box = null;
                 runOnce = false;
 
-                Complete(naviState);
+                Complete(naviState, gameTime);
 
                 return true;
             }

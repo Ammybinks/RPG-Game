@@ -10,6 +10,9 @@ namespace RPG_Game
         public int maxHealth;
         public int health;
 
+        public int maxMana;
+        public int mana;
+
         public float PhAtk;
         public float MgAtk;
 

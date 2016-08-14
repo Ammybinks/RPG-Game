@@ -10,7 +10,7 @@ namespace RPG_Game
         {
             iconFrame = new Vector2(10, 0);
 
-            cost = 100;
+            cost = 25;
 
             battleUsable = true;
             mapUsable = false;
@@ -81,6 +81,8 @@ namespace RPG_Game
                     battleState.damageDealt = ((battleState.actor.PhAtk * ((100 - battleState.target.PhDef) / 100)) * 1000) * -1;
                     battleState.damageDealt = (float)Math.Round(battleState.damageDealt, 0, MidpointRounding.AwayFromZero);
                     battleState.target.health += (int)battleState.damageDealt;
+
+                    battleState.actor.mana -= cost;
 
                     //Reset the damage indicator
                     battleState.damageLocation = 30;

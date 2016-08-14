@@ -22,7 +22,7 @@ namespace RPG_Game
         HPPlus hPotionPlus = new HPPlus();
         HPPlusPlus hPotionPlusPlus = new HPPlusPlus();
 
-        int currentState = 0;
+        int currentState = 1;
         List<StateManager> states = new List<StateManager>();
 
         NaviState naviState = new NaviState();
@@ -76,7 +76,7 @@ namespace RPG_Game
             hPotionPlus.heldCount = 5;
             heldItems.Add(hPotionPlus);
 
-            hPotionPlusPlus.heldCount = 20;
+            hPotionPlusPlus.heldCount = 1;
             heldItems.Add(hPotionPlusPlus);
 
             //Heroes Initialization Begins//

@@ -20,7 +20,7 @@ namespace RPG_Game
 
         internal bool temp;
 
-        internal int quantity;
+        internal int quantity = -1;
         internal int maxQuantity;
 
         public override void DrawAll(SpriteBatch spriteBatch, SpriteFont spriteFont)
@@ -97,11 +97,6 @@ namespace RPG_Game
 
             if (quantity != -1)
             {
-                if (equivalentItems[index].heldCount == 0)
-                {
-                    naviState.heldItems.Add(equivalentItems[index]);
-                }
-
                 naviState.gold -= equivalentItems[index].buyingWorth * quantity;
 
                 equivalentItems[index].heldCount += quantity;
@@ -183,12 +178,7 @@ namespace RPG_Game
                         allItems[i].heldCount += quantity;
                     }
                 }
-
-                if (naviState.heldItems[index].heldCount == 0)
-                {
-                    naviState.heldItems.Remove(naviState.heldItems[index]);
-                }
-
+                
                 quantity = -1;
 
                 SellRefresh(naviState);
@@ -196,7 +186,7 @@ namespace RPG_Game
             
             if (temp.activate)
             {
-                if(naviState.heldItems[index].heldCount != -1)
+                if (naviState.heldItems[index].heldCount != -1)
                 {
                     SwitchState(4);
 
@@ -225,13 +215,27 @@ namespace RPG_Game
         {
             int temp;
 
-            if (equivalentItems[previousIndex].moveInBulk)
+            if (previousState == 2)
             {
-                temp = ConfirmQuantityMenu(naviState);
+                if (equivalentItems[previousIndex].moveInBulk)
+                {
+                    temp = ConfirmQuantityMenu(naviState);
+                }
+                else
+                {
+                    temp = ConfirmSingleMenu(naviState);
+                }
             }
             else
             {
-                temp = ConfirmSingleMenu(naviState);
+                if (naviState.heldItems[previousIndex].moveInBulk)
+                {
+                    temp = ConfirmQuantityMenu(naviState);
+                }
+                else
+                {
+                    temp = ConfirmSingleMenu(naviState);
+                }
             }
 
             if (temp == 0)
@@ -383,6 +387,8 @@ namespace RPG_Game
 
         internal virtual void BuyRefresh(NaviState naviState)
         {
+            InitializeItems(naviState);
+
             MultiButton tempButton;
 
             shopBox.buttons.Clear();
@@ -463,9 +469,18 @@ namespace RPG_Game
                 tempButton.SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
                 tempButton.icon.UpperLeft = new Vector2(tempButton.UpperLeft.X + 10, tempButton.UpperLeft.Y + 9);
                 
+                if(equivalentItems[i] == null)
+                {
+                    tempString = "-----";
+                }
+                else
+                {
+                    tempString = equivalentItems[i].heldCount.ToString();
+                }
+
                 tempButton.extraButtons.Add(new Button());
                 tempButton.extraButtons[0].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth(), shopBox.UpperLeft.Y + 10 + (60 * (i + 1)));
-                tempButton.extraButtons[0].display = equivalentItems[i].heldCount.ToString();
+                tempButton.extraButtons[0].display = tempString;
                 tempButton.extraButtons[0].frameWidth = 70;
                 tempButton.extraButtons[0].frameHeight = 50;
                 tempButton.extraButtons[0].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
@@ -511,15 +526,18 @@ namespace RPG_Game
                     tempButton.displayColour = Color.OrangeRed;
                     tempButton.extraButtons[1].displayColour = Color.OrangeRed;
                 }
-                if (naviState.gold < equivalentItems[i].buyingWorth)
+                if (naviState.gold < allItems[i].buyingWorth)
                 {
                     tempButton.displayColour = Color.OrangeRed;
                     tempButton.extraButtons[2].displayColour = Color.OrangeRed;
                 }
-                if (equivalentItems[i].heldCount == equivalentItems[i].maxStack)
+                if(equivalentItems[i] != null)
                 {
-                    tempButton.displayColour = Color.OrangeRed;
-                    tempButton.extraButtons[0].displayColour = Color.OrangeRed;
+                    if (equivalentItems[i].heldCount == equivalentItems[i].maxStack)
+                    {
+                        tempButton.displayColour = Color.OrangeRed;
+                        tempButton.extraButtons[0].displayColour = Color.OrangeRed;
+                    }
                 }
 
                 shopBox.buttons.Add(tempButton);
@@ -547,18 +565,13 @@ namespace RPG_Game
 
         internal virtual void SellRefresh(NaviState naviState)
         {
+            InitializeItems(naviState);
+
             MultiButton tempButton;
 
             shopBox.buttons.Clear();
             drawButtons.Clear();
-
-            for (int i = 0; i < naviState.heldItems.Count; i++)
-            {
-                if (naviState.heldItems[i].name.Equals("--Empty, really empty--"))
-                {
-                    naviState.heldItems.RemoveAt(i);
-                }
-            }
+            
             if (naviState.heldItems.Count == 0)
             {
                 Item item = new Item();
@@ -672,8 +685,8 @@ namespace RPG_Game
                 tempButton.extraButtons[2].frameHeight = 100;
                 tempButton.extraButtons[2].showOnSelected = true;
                 tempButton.extraButtons[2].icon = null;
-                
-                if(naviState.heldItems[i].heldCount == -1)
+
+                if (naviState.heldItems[i].heldCount == -1)
                 {
                     tempButton.displayColour = Color.OrangeRed;
                     tempButton.extraButtons[0].displayColour = Color.OrangeRed;
@@ -724,13 +737,27 @@ namespace RPG_Game
                     index = 0;
                 }
 
-                if (equivalentItems[previousIndex].moveInBulk)
+                if (previousState == 2)
                 {
-                    ConfirmQuantityRefresh(naviState);
+                    if (equivalentItems[previousIndex].moveInBulk)
+                    {
+                        ConfirmQuantityRefresh(naviState);
+                    }
+                    else
+                    {
+                        ConfirmSingleRefresh(naviState);
+                    }
                 }
                 else
                 {
-                    ConfirmSingleRefresh(naviState);
+                    if (naviState.heldItems[previousIndex].moveInBulk)
+                    {
+                        ConfirmQuantityRefresh(naviState);
+                    }
+                    else
+                    {
+                        ConfirmSingleRefresh(naviState);
+                    }
                 }
             }
         }
@@ -780,11 +807,11 @@ namespace RPG_Game
                 tempButton.icon = null;
                 if (previousState == 2)
                 {
-                    tempButton.display = equivalentItems[index].buyingWorth.ToString() + "G";
+                    tempButton.display = equivalentItems[previousIndex].buyingWorth.ToString() + "G";
                 }
                 else
                 {
-                    tempButton.display = equivalentItems[index].sellingWorth.ToString() + "G";
+                    tempButton.display = naviState.heldItems[previousIndex].sellingWorth.ToString() + "G";
                 }
 
                 confirmBox.buttons.Add(tempButton);
@@ -795,11 +822,11 @@ namespace RPG_Game
 
                 if (previousState == 2)
                 {
-                    confirmBox.buttons[2].display = (equivalentItems[index].buyingWorth * quantity).ToString() + "G";
+                    confirmBox.buttons[2].display = (equivalentItems[previousIndex].buyingWorth * quantity).ToString() + "G";
                 }
                 else
                 {
-                    confirmBox.buttons[2].display = (equivalentItems[index].sellingWorth * quantity).ToString() + "G";
+                    confirmBox.buttons[2].display = (naviState.heldItems[previousIndex].sellingWorth * quantity).ToString() + "G";
                 }
             }
         }
@@ -908,6 +935,24 @@ namespace RPG_Game
             tempButton.extraButtons[2].displaySize = 0.75f;
             tempButton.extraButtons[2].icon = null;
 
+            tempButton.extraButtons.Add(new Button());
+            tempButton.extraButtons[3].frameWidth = 45;
+            tempButton.extraButtons[3].frameHeight = 42;
+            tempButton.extraButtons[3].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth() + 5, tempButton.UpperLeft.Y + 90);
+            tempButton.extraButtons[3].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
+            tempButton.extraButtons[3].display = "MP:";
+            tempButton.extraButtons[3].displaySize = 0.75f;
+            tempButton.extraButtons[3].icon = null;
+
+            tempButton.extraButtons.Add(new Button());
+            tempButton.extraButtons[4].frameWidth = 115;
+            tempButton.extraButtons[4].frameHeight = 42;
+            tempButton.extraButtons[4].UpperLeft = new Vector2((tempButton.extraButtons[0].UpperLeft.X + tempButton.extraButtons[0].GetWidth()) - tempButton.extraButtons[2].GetWidth(), tempButton.UpperLeft.Y + 90);
+            tempButton.extraButtons[4].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
+            tempButton.extraButtons[4].display = naviState.heroBattler.mana.ToString() + "/" + naviState.heroBattler.maxMana.ToString();
+            tempButton.extraButtons[4].displaySize = 0.75f;
+            tempButton.extraButtons[4].icon = null;
+
             heroBox.buttons.Add(tempButton);
 
             //Hiro MultiButton
@@ -945,6 +990,24 @@ namespace RPG_Game
             tempButton.extraButtons[2].display = naviState.hiroBattler.health.ToString() + "/" + naviState.hiroBattler.maxHealth.ToString();
             tempButton.extraButtons[2].displaySize = 0.75f;
             tempButton.extraButtons[2].icon = null;
+
+            tempButton.extraButtons.Add(new Button());
+            tempButton.extraButtons[3].frameWidth = 45;
+            tempButton.extraButtons[3].frameHeight = 42;
+            tempButton.extraButtons[3].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth() + 5, tempButton.UpperLeft.Y + 90);
+            tempButton.extraButtons[3].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
+            tempButton.extraButtons[3].display = "MP:";
+            tempButton.extraButtons[3].displaySize = 0.75f;
+            tempButton.extraButtons[3].icon = null;
+
+            tempButton.extraButtons.Add(new Button());
+            tempButton.extraButtons[4].frameWidth = 115;
+            tempButton.extraButtons[4].frameHeight = 42;
+            tempButton.extraButtons[4].UpperLeft = new Vector2((tempButton.extraButtons[0].UpperLeft.X + tempButton.extraButtons[0].GetWidth()) - tempButton.extraButtons[2].GetWidth(), tempButton.UpperLeft.Y + 90);
+            tempButton.extraButtons[4].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
+            tempButton.extraButtons[4].display = naviState.hiroBattler.mana.ToString() + "/" + naviState.hiroBattler.maxMana.ToString();
+            tempButton.extraButtons[4].displaySize = 0.75f;
+            tempButton.extraButtons[4].icon = null;
 
             heroBox.buttons.Add(tempButton);
 
@@ -984,6 +1047,24 @@ namespace RPG_Game
             tempButton.extraButtons[2].displaySize = 0.75f;
             tempButton.extraButtons[2].icon = null;
 
+            tempButton.extraButtons.Add(new Button());
+            tempButton.extraButtons[3].frameWidth = 45;
+            tempButton.extraButtons[3].frameHeight = 42;
+            tempButton.extraButtons[3].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth() + 5, tempButton.UpperLeft.Y + 90);
+            tempButton.extraButtons[3].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
+            tempButton.extraButtons[3].display = "MP:";
+            tempButton.extraButtons[3].displaySize = 0.75f;
+            tempButton.extraButtons[3].icon = null;
+
+            tempButton.extraButtons.Add(new Button());
+            tempButton.extraButtons[4].frameWidth = 115;
+            tempButton.extraButtons[4].frameHeight = 42;
+            tempButton.extraButtons[4].UpperLeft = new Vector2((tempButton.extraButtons[0].UpperLeft.X + tempButton.extraButtons[0].GetWidth()) - tempButton.extraButtons[2].GetWidth(), tempButton.UpperLeft.Y + 90);
+            tempButton.extraButtons[4].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
+            tempButton.extraButtons[4].display = naviState.hearoBattler.mana.ToString() + "/" + naviState.hearoBattler.maxMana.ToString();
+            tempButton.extraButtons[4].displaySize = 0.75f;
+            tempButton.extraButtons[4].icon = null;
+
             heroBox.buttons.Add(tempButton);
 
             //Hiero MultiButton
@@ -1022,6 +1103,24 @@ namespace RPG_Game
             tempButton.extraButtons[2].displaySize = 0.75f;
             tempButton.extraButtons[2].icon = null;
 
+            tempButton.extraButtons.Add(new Button());
+            tempButton.extraButtons[3].frameWidth = 45;
+            tempButton.extraButtons[3].frameHeight = 42;
+            tempButton.extraButtons[3].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth() + 5, tempButton.UpperLeft.Y + 90);
+            tempButton.extraButtons[3].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
+            tempButton.extraButtons[3].display = "MP:";
+            tempButton.extraButtons[3].displaySize = 0.75f;
+            tempButton.extraButtons[3].icon = null;
+
+            tempButton.extraButtons.Add(new Button());
+            tempButton.extraButtons[4].frameWidth = 115;
+            tempButton.extraButtons[4].frameHeight = 42;
+            tempButton.extraButtons[4].UpperLeft = new Vector2((tempButton.extraButtons[0].UpperLeft.X + tempButton.extraButtons[0].GetWidth()) - tempButton.extraButtons[2].GetWidth(), tempButton.UpperLeft.Y + 90);
+            tempButton.extraButtons[4].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
+            tempButton.extraButtons[4].display = naviState.hieroBattler.mana.ToString() + "/" + naviState.hieroBattler.maxMana.ToString();
+            tempButton.extraButtons[4].displaySize = 0.75f;
+            tempButton.extraButtons[4].icon = null;
+
             heroBox.buttons.Add(tempButton);
 
             int temp = tempButton.GetHeight();
@@ -1054,13 +1153,24 @@ namespace RPG_Game
 
         internal void InitializeItems(NaviState naviState)
         {
-            for(int i = 0; i < allItems.Count; i++)
+            naviState.heldItems.Clear();
+            equivalentItems.Clear();
+
+            for (int i = 0; i < naviState.allItems.Count; i++)
             {
-                for(int o = 0; o < naviState.heldItems.Count; o++)
+                if (naviState.allItems[i].heldCount != 0)
                 {
-                    if(allItems[i].name.Equals(naviState.heldItems[o].name))
+                    naviState.heldItems.Add(naviState.allItems[i]);
+                }
+            }
+
+            for (int i = 0; i < allItems.Count; i++)
+            {
+                for (int o = 0; o < naviState.allItems.Count; o++)
+                {
+                    if (allItems[i].name.Equals(naviState.allItems[o].name))
                     {
-                        equivalentItems.Add(naviState.heldItems[o]);
+                        equivalentItems.Add(naviState.allItems[o]);
 
                         break;
                     }

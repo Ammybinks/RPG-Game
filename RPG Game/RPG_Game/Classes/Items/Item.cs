@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace RPG_Game
 {
@@ -56,23 +55,23 @@ namespace RPG_Game
 
         public void Consume(StateManager state)
         {
-            heldCount--;
-
-            if(heldCount <= 0)
+            if(heldCount > 0)
             {
-                state.heldItems.Remove(this);
+                heldCount--;
             }
         }
 
         internal void Complete(NaviState naviState)
         {
             int tempButtons = naviState.inventoryBox.buttons.Count;
-            int tempItems = naviState.heldItems.Count;
+            int tempItems = naviState.allItems.Count;
 
-            if (naviState.heldItems.IndexOf((Item)naviState.currentAction) == -1)
+            if (heldCount == 0)
             {
                 naviState.ItemRefresh();
                 naviState.currentState = 3;
+
+                naviState.currentAction = null;
             }
             else
             {
@@ -82,7 +81,7 @@ namespace RPG_Game
 
             naviState.state[1] = false;
             naviState.previousState[1] = false;
-
+            
             runOnce = false;
         }
 

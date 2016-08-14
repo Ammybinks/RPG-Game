@@ -82,6 +82,8 @@ namespace RPG_Game
                     battleState.damageDealt = (float)Math.Round(battleState.damageDealt, 0, MidpointRounding.AwayFromZero);
                     battleState.target.health += (int)battleState.damageDealt;
 
+                    battleState.actor.mana -= cost;
+
                     //Reset the damage indicator
                     battleState.damageLocation = 30;
 

@@ -33,11 +33,14 @@ namespace RPG_Game
             return temp;
         }
         
-        internal void Complete(NaviState naviState)
+        internal void Complete(NaviState naviState, GameTime gameTime)
         {
-            if (false)
+            Ability temp = (Ability)naviState.currentAction;
+
+            if (naviState.actor.mana < temp.cost)
             {
                 naviState.SkillsRefresh();
+                naviState.currentAction = new SkillsMenuSwitcher();
                 naviState.currentState = 4;
             }
             else

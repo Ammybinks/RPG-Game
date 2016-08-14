@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 
 namespace RPG_Game
 {
+    [Serializable()]
     public class Parts : SpriteBase
     {
         public List<SpriteBase> parts = new List<SpriteBase>(9);

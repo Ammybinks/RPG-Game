@@ -91,7 +91,7 @@ namespace RPG_Game
             activeButtons = new List<Button>();
             drawButtons = new List<Button>();
 
-            heldItems = main.heldItems;
+            allItems = main.heldItems;
 
             camera = new Camera();
             camera.WorldWidth = 3840;
@@ -417,6 +417,24 @@ namespace RPG_Game
             multiButton.extraButtons[2].displaySize = 0.75f;
             multiButton.extraButtons[2].icon = null;
 
+            multiButton.extraButtons.Add(new Button());
+            multiButton.extraButtons[3].frameWidth = 45;
+            multiButton.extraButtons[3].frameHeight = 42;
+            multiButton.extraButtons[3].UpperLeft = new Vector2(multiButton.UpperLeft.X + multiButton.GetWidth() + 5, multiButton.UpperLeft.Y + 90);
+            multiButton.extraButtons[3].SetParts(cornerTexture, wallTexture, backTexture);
+            multiButton.extraButtons[3].display = "MP:";
+            multiButton.extraButtons[3].displaySize = 0.75f;
+            multiButton.extraButtons[3].icon = null;
+
+            multiButton.extraButtons.Add(new Button());
+            multiButton.extraButtons[4].frameWidth = 115;
+            multiButton.extraButtons[4].frameHeight = 42;
+            multiButton.extraButtons[4].UpperLeft = new Vector2((multiButton.extraButtons[0].UpperLeft.X + multiButton.extraButtons[0].GetWidth()) - multiButton.extraButtons[2].GetWidth(), multiButton.UpperLeft.Y + 90);
+            multiButton.extraButtons[4].SetParts(cornerTexture, wallTexture, backTexture);
+            multiButton.extraButtons[4].display = heroBattler.mana.ToString() + "/" + heroBattler.maxMana.ToString();
+            multiButton.extraButtons[4].displaySize = 0.75f;
+            multiButton.extraButtons[4].icon = null;
+
             heroBox.multiButtons.Add(multiButton);
 
             //Hiro MultiButton
@@ -454,6 +472,24 @@ namespace RPG_Game
             multiButton.extraButtons[2].display = hiroBattler.health.ToString() + "/" + hiroBattler.maxHealth.ToString();
             multiButton.extraButtons[2].displaySize = 0.75f;
             multiButton.extraButtons[2].icon = null;
+
+            multiButton.extraButtons.Add(new Button());
+            multiButton.extraButtons[3].frameWidth = 45;
+            multiButton.extraButtons[3].frameHeight = 42;
+            multiButton.extraButtons[3].UpperLeft = new Vector2(multiButton.UpperLeft.X + multiButton.GetWidth() + 5, multiButton.UpperLeft.Y + 90);
+            multiButton.extraButtons[3].SetParts(cornerTexture, wallTexture, backTexture);
+            multiButton.extraButtons[3].display = "MP:";
+            multiButton.extraButtons[3].displaySize = 0.75f;
+            multiButton.extraButtons[3].icon = null;
+
+            multiButton.extraButtons.Add(new Button());
+            multiButton.extraButtons[4].frameWidth = 115;
+            multiButton.extraButtons[4].frameHeight = 42;
+            multiButton.extraButtons[4].UpperLeft = new Vector2((multiButton.extraButtons[0].UpperLeft.X + multiButton.extraButtons[0].GetWidth()) - multiButton.extraButtons[2].GetWidth(), multiButton.UpperLeft.Y + 90);
+            multiButton.extraButtons[4].SetParts(cornerTexture, wallTexture, backTexture);
+            multiButton.extraButtons[4].display = hiroBattler.mana.ToString() + "/" + hiroBattler.maxMana.ToString();
+            multiButton.extraButtons[4].displaySize = 0.75f;
+            multiButton.extraButtons[4].icon = null;
 
             heroBox.multiButtons.Add(multiButton);
 
@@ -493,6 +529,24 @@ namespace RPG_Game
             multiButton.extraButtons[2].displaySize = 0.75f;
             multiButton.extraButtons[2].icon = null;
 
+            multiButton.extraButtons.Add(new Button());
+            multiButton.extraButtons[3].frameWidth = 45;
+            multiButton.extraButtons[3].frameHeight = 42;
+            multiButton.extraButtons[3].UpperLeft = new Vector2(multiButton.UpperLeft.X + multiButton.GetWidth() + 5, multiButton.UpperLeft.Y + 90);
+            multiButton.extraButtons[3].SetParts(cornerTexture, wallTexture, backTexture);
+            multiButton.extraButtons[3].display = "MP:";
+            multiButton.extraButtons[3].displaySize = 0.75f;
+            multiButton.extraButtons[3].icon = null;
+
+            multiButton.extraButtons.Add(new Button());
+            multiButton.extraButtons[4].frameWidth = 115;
+            multiButton.extraButtons[4].frameHeight = 42;
+            multiButton.extraButtons[4].UpperLeft = new Vector2((multiButton.extraButtons[0].UpperLeft.X + multiButton.extraButtons[0].GetWidth()) - multiButton.extraButtons[2].GetWidth(), multiButton.UpperLeft.Y + 90);
+            multiButton.extraButtons[4].SetParts(cornerTexture, wallTexture, backTexture);
+            multiButton.extraButtons[4].display = hearoBattler.mana.ToString() + "/" + hearoBattler.maxMana.ToString();
+            multiButton.extraButtons[4].displaySize = 0.75f;
+            multiButton.extraButtons[4].icon = null;
+
             heroBox.multiButtons.Add(multiButton);
 
             //Hiero MultiButton
@@ -530,6 +584,24 @@ namespace RPG_Game
             multiButton.extraButtons[2].display = hieroBattler.health.ToString() + "/" + hieroBattler.maxHealth.ToString();
             multiButton.extraButtons[2].displaySize = 0.75f;
             multiButton.extraButtons[2].icon = null;
+
+            multiButton.extraButtons.Add(new Button());
+            multiButton.extraButtons[3].frameWidth = 45;
+            multiButton.extraButtons[3].frameHeight = 42;
+            multiButton.extraButtons[3].UpperLeft = new Vector2(multiButton.UpperLeft.X + multiButton.GetWidth() + 5, multiButton.UpperLeft.Y + 90);
+            multiButton.extraButtons[3].SetParts(cornerTexture, wallTexture, backTexture);
+            multiButton.extraButtons[3].display = "MP:";
+            multiButton.extraButtons[3].displaySize = 0.75f;
+            multiButton.extraButtons[3].icon = null;
+
+            multiButton.extraButtons.Add(new Button());
+            multiButton.extraButtons[4].frameWidth = 115;
+            multiButton.extraButtons[4].frameHeight = 42;
+            multiButton.extraButtons[4].UpperLeft = new Vector2((multiButton.extraButtons[0].UpperLeft.X + multiButton.extraButtons[0].GetWidth()) - multiButton.extraButtons[2].GetWidth(), multiButton.UpperLeft.Y + 90);
+            multiButton.extraButtons[4].SetParts(cornerTexture, wallTexture, backTexture);
+            multiButton.extraButtons[4].display = hieroBattler.mana.ToString() + "/" + hieroBattler.maxMana.ToString();
+            multiButton.extraButtons[4].displaySize = 0.75f;
+            multiButton.extraButtons[4].icon = null;
 
             heroBox.multiButtons.Add(multiButton);
 
@@ -850,11 +922,14 @@ namespace RPG_Game
 
             if (temp.activate)
             {
-                if (actor.abilities[buttonIndex].mapUsable)
+                if (actor.mana > actor.abilities[buttonIndex].cost)
                 {
-                    TargetSwitch(gameTime);
+                    if (actor.abilities[buttonIndex].mapUsable)
+                    {
+                        TargetSwitch(gameTime);
 
-                    currentAction = actor.abilities[buttonIndex];
+                        currentAction = actor.abilities[buttonIndex];
+                    }
                 }
             }
             else if (temp.menu)
@@ -990,14 +1065,17 @@ namespace RPG_Game
             tempButton.extraButtons[0].displayColour = Color.PaleGoldenrod;
 
             inventoryBox.buttons.Add(tempButton);
+            
+            heldItems.Clear();
 
-            for (int i = 0; i < heldItems.Count; i++)
+            for (int i = 0; i < allItems.Count; i++)
             {
-                if (heldItems[i].name.Equals("--Empty, really empty--"))
+                if (allItems[i].heldCount != 0)
                 {
-                    heldItems.RemoveAt(i);
+                    heldItems.Add(allItems[i]);
                 }
             }
+
             if (heldItems.Count == 0)
             {
                 Item item = new Item();
@@ -1052,6 +1130,7 @@ namespace RPG_Game
                     tempButton.displayColour = Color.OrangeRed;
                     tempButton.extraButtons[0].displayColour = Color.OrangeRed;
                 }
+
                 inventoryBox.buttons.Add(tempButton);
             }
 
@@ -1085,20 +1164,16 @@ namespace RPG_Game
         private void SkillsSwitch(GameTime gameTime)
         {
             TargetSwitch(gameTime);
-
-            SkillsMenuSwitcher switcher = new SkillsMenuSwitcher();
-
-            currentAction = switcher;
+            
+            currentAction = new SkillsMenuSwitcher();
         }
 
         public void SkillsMenuSwitch(GameTime gameTime)
         {
             //Switch to Skill Menu State
             SwitchState(4, gameTime);
-
-            SkillsMenuSwitcher switcher = new SkillsMenuSwitcher();
-
-            currentAction = switcher;
+            
+            currentAction = new SkillsMenuSwitcher();
 
             SkillsRefresh();
         }
@@ -1201,11 +1276,17 @@ namespace RPG_Game
                 tempButton.extraButtons[1].icon = null;
 
 
+                if (actor.mana < actor.abilities[i].cost)
+                {
+                    tempButton.displayColour = Color.OrangeRed;
+                    tempButton.extraButtons[0].displayColour = Color.OrangeRed;
+                }
                 if (!actor.abilities[i].mapUsable)
                 {
                     tempButton.displayColour = Color.OrangeRed;
                     tempButton.extraButtons[0].displayColour = Color.OrangeRed;
                 }
+
                 skillsBox.buttons.Add(tempButton);
             }
 
@@ -1246,7 +1327,7 @@ namespace RPG_Game
 
         }
 
-        private void TargetSwitch(GameTime gameTime)
+        public void TargetSwitch(GameTime gameTime)
         {
             currentState = 6;
 
@@ -1262,6 +1343,8 @@ namespace RPG_Game
                 if(heroBox.multiButtons[i].selectable)
                 {
                     heroBox.multiButtons[i].extraButtons[2].display = battlers[i].health.ToString() + "/" + battlers[i].maxHealth.ToString();
+
+                    heroBox.multiButtons[i].extraButtons[4].display = battlers[i].mana.ToString() + "/" + battlers[i].maxMana.ToString();
 
                     activeButtons.Add(heroBox.multiButtons[i]);
                 }

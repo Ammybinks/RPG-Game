@@ -56,6 +56,7 @@ namespace RPG_Game
 
         internal Step step = new Step();
 
+        public List<Item> allItems = new List<Item>();
         public List<Item> heldItems = new List<Item>();
 
         internal Usable currentAction;

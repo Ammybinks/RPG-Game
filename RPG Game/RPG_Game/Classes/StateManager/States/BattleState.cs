@@ -84,7 +84,7 @@ namespace RPG_Game
             backgroundSprite.UpperLeft = new Vector2(0, (main.graphics.PreferredBackBufferHeight - backgroundSprite.GetHeight()) * -1);
             backgroundSprite.Scale = new Vector2(2f, 2f);
 
-            heldItems = main.heldItems;
+            allItems = main.heldItems;
 
             activeButtons = new List<Button>();
             drawButtons = new List<Button>();
@@ -103,6 +103,8 @@ namespace RPG_Game
             hero.battleOrigin = hero.UpperLeft;
             hero.maxHealth = 1000;
             hero.health = 1000;
+            hero.maxMana = 50;
+            hero.mana = 50;
             hero.PhAtk = 10;
             hero.PhDef = 75;
             hero.speed = 5;
@@ -132,6 +134,8 @@ namespace RPG_Game
             hiro.battleOrigin = hiro.UpperLeft;
             hiro.maxHealth = 100;
             hiro.health = 100;
+            hiro.maxMana = 0;
+            hiro.mana = 0;
             hiro.PhAtk = 5;
             hiro.PhDef = 50;
             hiro.speed = 20;
@@ -155,6 +159,8 @@ namespace RPG_Game
             hearo.battleOrigin = hearo.UpperLeft;
             hearo.maxHealth = 5;
             hearo.health = 5;
+            hearo.maxMana = 125;
+            hearo.mana = 125;
             hearo.PhAtk = 2;
             hearo.PhDef = 0;
             hearo.speed = 50;
@@ -188,6 +194,8 @@ namespace RPG_Game
             hiero.battleOrigin = hiero.UpperLeft;
             hiero.maxHealth = 50;
             hiero.health = 50;
+            hiero.maxMana = 300;
+            hiero.mana = 300;
             hiero.PhAtk = 5;
             hiero.PhDef = -100;
             hiero.speed = 25;
@@ -638,15 +646,18 @@ namespace RPG_Game
 
             if (temp.activate)
             {
-                if(actor.abilities[buttonIndex].battleUsable)
+                if (actor.mana >= actor.abilities[buttonIndex].cost)
                 {
-                    pointer.isAlive = false;
+                    if (actor.abilities[buttonIndex].battleUsable)
+                    {
+                        pointer.isAlive = false;
 
-                    ActivateState(6);
+                        ActivateState(6);
 
-                    targets = actor.abilities[buttonIndex].GetTargets(this);
+                        targets = actor.abilities[buttonIndex].GetTargets(this);
 
-                    currentAction = actor.abilities[buttonIndex];
+                        currentAction = actor.abilities[buttonIndex];
+                    }
                 }
             }
             else if (temp.menu)
@@ -664,15 +675,15 @@ namespace RPG_Game
 
             if (temp.activate)
             {
-                if(heldItems[buttonIndex].battleUsable)
+                if(allItems[buttonIndex].battleUsable)
                 {
                     pointer.isAlive = false;
 
                     ActivateState(6);
 
-                    targets = heldItems[buttonIndex].GetTargets(this);
+                    targets = allItems[buttonIndex].GetTargets(this);
 
-                    currentAction = heldItems[buttonIndex];
+                    currentAction = allItems[buttonIndex];
                 }
             }
             else if (temp.menu)
@@ -843,7 +854,12 @@ namespace RPG_Game
                 tempButton.extraButtons[1].SetParts(cornerTexture, wallTexture, backTexture);
                 tempButton.extraButtons[1].showOnSelected = true;
                 tempButton.extraButtons[1].icon = null;
-                
+
+                if (actor.mana < actor.abilities[i].cost)
+                {
+                    tempButton.displayColour = Color.OrangeRed;
+                    tempButton.extraButtons[0].displayColour = Color.OrangeRed;
+                }
                 if (!actor.abilities[i].battleUsable)
                 {
                     tempButton.displayColour = Color.OrangeRed;
@@ -920,45 +936,45 @@ namespace RPG_Game
 
             itemsBox.buttons.Add(tempButton);
 
-            for (int i = 0; i < heldItems.Count; i++)
+            for (int i = 0; i < allItems.Count; i++)
             {
-                if (heldItems[i].name.Equals("--Empty, really empty--"))
+                if (allItems[i].name.Equals("--Empty, really empty--"))
                 {
-                    heldItems.RemoveAt(i);
+                    allItems.RemoveAt(i);
                 }
             }
-            if (heldItems.Count == 0)
+            if (allItems.Count == 0)
             {
                 Item item = new Item();
                 item.name = "--Empty, really empty--";
                 item.description = "Looks like you don't have any items on you,\nmaybe this is a good time to stock up?";
                 item.iconFrame = new Vector2(8, 10);
-                heldItems.Add(item);
+                allItems.Add(item);
             }
 
             string tempString;
 
-            for (int i = 0; i < heldItems.Count; i++)
+            for (int i = 0; i < allItems.Count; i++)
             {
                 tempButton = new MultiButton();
                 tempButton.extraButtons = new List<Button>();
 
                 tempButton.UpperLeft = new Vector2(itemsBox.UpperLeft.X + 80, itemsBox.UpperLeft.Y + 10 + (60 * (i + 1)));
-                tempButton.display = heldItems[i].name;
+                tempButton.display = allItems[i].name;
                 tempButton.icon.SetTexture(iconTexture, 16, 20);
-                tempButton.icon.setCurrentFrame((int)heldItems[i].iconFrame.X, (int)heldItems[i].iconFrame.Y);
+                tempButton.icon.setCurrentFrame((int)allItems[i].iconFrame.X, (int)allItems[i].iconFrame.Y);
                 tempButton.frameWidth = skillsBox.frameWidth - 165;
                 tempButton.frameHeight = 50;
                 tempButton.SetParts(cornerTexture, wallTexture, backTexture);
                 tempButton.icon.UpperLeft = new Vector2(tempButton.UpperLeft.X + 10, tempButton.UpperLeft.Y + 9);
 
-                if (heldItems[i].heldCount.ToString().Equals("-1"))
+                if (allItems[i].heldCount.ToString().Equals("-1"))
                 {
                     tempString = "------";
                 }
                 else
                 {
-                    tempString = heldItems[i].heldCount.ToString();
+                    tempString = allItems[i].heldCount.ToString();
                 }
 
                 tempButton.extraButtons.Add(new Button());
@@ -971,14 +987,14 @@ namespace RPG_Game
 
                 tempButton.extraButtons.Add(new Button());
                 tempButton.extraButtons[1].UpperLeft = new Vector2(itemsBox.UpperLeft.X + 80, 200);
-                tempButton.extraButtons[1].display = heldItems[i].description;
+                tempButton.extraButtons[1].display = allItems[i].description;
                 tempButton.extraButtons[1].frameWidth = skillsBox.frameWidth - 90;
                 tempButton.extraButtons[1].frameHeight = 100;
                 tempButton.extraButtons[1].SetParts(cornerTexture, wallTexture, backTexture);
                 tempButton.extraButtons[1].showOnSelected = true;
                 tempButton.extraButtons[1].icon = null;
 
-                if (!heldItems[i].battleUsable)
+                if (!allItems[i].battleUsable)
                 {
                     tempButton.displayColour = Color.OrangeRed;
                     tempButton.extraButtons[0].displayColour = Color.OrangeRed;

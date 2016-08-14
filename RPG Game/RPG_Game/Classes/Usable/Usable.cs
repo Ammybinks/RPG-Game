@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -18,7 +17,7 @@ namespace RPG_Game
         {
 
         }
-
+        
         public virtual bool Call(GameTime gameTime, BattleState battleState)
         {
             return true;
