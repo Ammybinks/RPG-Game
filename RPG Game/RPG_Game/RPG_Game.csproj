@@ -106,6 +106,8 @@
     <Compile Include="Classes\SpriteBase\Sprite\Actors\AIMover\EventMover\Shopkeep\Shopkeep.cs" />
     <Compile Include="Classes\SpriteBase\Sprite\Actors\Battler.cs" />
     <Compile Include="Classes\SpriteBase\Sprite\Actors\AIMover\EventMover\EventMover.cs" />
+    <Compile Include="Classes\SpriteBase\Sprite\Actors\Enemy\Enemy.cs" />
+    <Compile Include="Classes\SpriteBase\Sprite\Actors\Hero\Hero.cs" />
     <Compile Include="Classes\SpriteBase\Sprite\Actors\Mover.cs" />
     <Compile Include="Classes\SpriteBase\Sprite\Sprite.cs" />
     <Compile Include="Classes\StateManager\States\BattleState.cs" />

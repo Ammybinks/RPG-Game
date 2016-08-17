@@ -697,7 +697,7 @@ namespace RPG_Game
             }
 
 
-            heroBox.buttons[4].display = naviState.gold.ToString();
+            heroBox.buttons[4].display = naviState.gold + "G";
 
             shopBox.frameHeight = (int)shopBox.buttons[shopBox.buttons.Count - 1].UpperLeft.Y + 60;
             shopBox.SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);

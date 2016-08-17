@@ -30,7 +30,9 @@ namespace RPG_Game
         internal Input menuInput = new Input();
 
         internal Texture2D pointerTexture;
+
         internal Sprite pointer = new Sprite();
+        internal Sprite extraPointer = new Sprite();
         
         internal List<Box> allBoxes = new List<Box>();
 
@@ -67,9 +69,13 @@ namespace RPG_Game
         internal bool[] previousState = new bool[8];
         internal int currentState;
 
+        public int gold;
+
         private bool switching = false;
 
         public bool quitting = false;
+
+        public bool finished = false;
 
         public virtual void LoadContent(Main main)
         {
@@ -358,6 +364,13 @@ namespace RPG_Game
         }
 
 
+        internal SpriteBase PointerInitialise(StateManager state)
+        {
+            SpriteBase sprite = new SpriteBase();
+
+            return sprite;
+        }
+
 
         internal MenuUpdateReturn MenuUpdate()
         {
@@ -372,12 +385,17 @@ namespace RPG_Game
         }
         internal MenuUpdateReturn MenuUpdate(List<SpriteBase> list, int index)
         {
-            pointer.isAlive = true;
-
-            if(index >= list.Count)
+            return MenuUpdate(list, index, null);
+        }
+        internal MenuUpdateReturn MenuUpdate(List<SpriteBase> list, int index, List<SpriteBase> extraList)
+        {
+            if (index >= list.Count)
             {
                 index = list.Count - 1;
             }
+
+            pointer.isAlive = true;
+
             Rectangle buttonRect = new Rectangle((int)list[index].UpperLeft.X,
                                                  (int)list[index].UpperLeft.Y,
                                                  list[index].frameWidth,
@@ -398,6 +416,39 @@ namespace RPG_Game
                     }
                 }
             }
+
+            Rectangle extraButtonRect;
+
+            if (extraList != null)
+            {
+                extraPointer.isAlive = true;
+
+                extraButtonRect = new Rectangle((int)extraList[index].UpperLeft.X,
+                                                (int)extraList[index].UpperLeft.Y,
+                                                extraList[index].frameWidth,
+                                                extraList[index].frameHeight);
+
+                if (mouseMoving)
+                {
+                    for (int i = 0; i < extraList.Count; i++)
+                    {
+                        extraButtonRect = new Rectangle((int)extraList[i].UpperLeft.X,
+                                                        (int)extraList[i].UpperLeft.Y,
+                                                        extraList[i].frameWidth,
+                                                        extraList[i].frameHeight);
+
+                        if (extraButtonRect.Contains(mousePosition))
+                        {
+                            index = i;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                extraButtonRect = new Rectangle(0, 0, 0, 0);
+            }
+
 
             if (upInput.inputState == Input.inputStates.pressed)
             {
@@ -431,7 +482,7 @@ namespace RPG_Game
 
             if (activateInput.inputState == Input.inputStates.pressed)
             {
-                if (activateInput.inputType != Input.inputTypes.mouse | buttonRect.Contains(mousePosition))
+                if (activateInput.inputType != Input.inputTypes.mouse | (buttonRect.Contains(mousePosition) || extraButtonRect.Contains(mousePosition)))
                 {
                     returnValue.activate = true;
                 }
@@ -448,6 +499,18 @@ namespace RPG_Game
             else
             {
                 returnValue.menu = false;
+            }
+
+            if (activateInput.inputState == Input.inputStates.pressed)
+            {
+                if (activateInput.inputType != Input.inputTypes.mouse | buttonRect.Contains(mousePosition))
+                {
+                    returnValue.activate = true;
+                }
+            }
+            else
+            {
+                returnValue.activate = false;
             }
 
             return returnValue;

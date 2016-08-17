@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace RPG_Game
 {
@@ -11,22 +12,22 @@ namespace RPG_Game
         Sprite backgroundSprite = new Sprite();
         
         Texture2D heroTexture;
-        Battler hero;
+        Hero hero;
 
         Texture2D hiroTexture;
-        Battler hiro;
+        Hero hiro;
 
         Texture2D hearoTexture;
-        Battler hearo;
+        Hero hearo;
 
         Texture2D hieroTexture;
-        Battler hiero;
+        Hero hiero;
 
         Texture2D werewolfTexture;
-        Battler werewolf;
+        Enemy werewolf;
 
-        public List<Battler> heroes = new List<Battler>(4);
-        public List<Battler> enemies = new List<Battler>(4);
+        public List<Hero> heroes = new List<Hero>(4);
+        public List<Enemy> enemies = new List<Enemy>(4);
 
         public List<Battler> battlers = new List<Battler>();
         
@@ -43,6 +44,7 @@ namespace RPG_Game
         Random rand = new Random();
 
         Box battleBox;
+        MultiBox statusBox;
         Box skillsBox;
         Box itemsBox;
 
@@ -55,6 +57,8 @@ namespace RPG_Game
 
         public override void LoadContent(Main main)
         {
+            gold = main.gold;
+
             calibri = main.Content.Load<SpriteFont>("Fonts\\Calibri");
 
             background = main.Content.Load<Texture2D>("World\\Battle Backs\\Translucent");
@@ -77,9 +81,6 @@ namespace RPG_Game
             werewolfTexture = main.Content.Load<Texture2D>("Characters\\Enemies\\Werewolf");
             
             //Miscellaneous Initialization Begins//
-            pointer.SetTexture(pointerTexture);
-            pointer.Scale = new Vector2(0.8f, 0.8f);
-
             backgroundSprite.SetTexture(background);
             backgroundSprite.UpperLeft = new Vector2(0, (main.graphics.PreferredBackBufferHeight - backgroundSprite.GetHeight()) * -1);
             backgroundSprite.Scale = new Vector2(2f, 2f);
@@ -88,6 +89,20 @@ namespace RPG_Game
 
             activeButtons = new List<Button>();
             drawButtons = new List<Button>();
+
+            pointer = new Sprite();
+
+            pointer.SetTexture(pointerTexture);
+            pointer.Scale = new Vector2(0.8f, 0.8f);
+            pointer.Origin = pointer.GetCenter();
+
+            extraPointer = new Sprite();
+
+            extraPointer.SetTexture(pointerTexture);
+            extraPointer.drawColour = Color.White;
+            extraPointer.Scale = new Vector2(0.8f, 0.8f);
+            extraPointer.Origin = extraPointer.GetCenter();
+            extraPointer.isAlive = false;
             //Miscellaneous Initialization Ends//
 
 
@@ -110,10 +125,13 @@ namespace RPG_Game
             hero.speed = 5;
             hero.Acc = 100;
             hero.Eva = 0;
+            hero.XP = 0;
+            hero.XPToLevel = 50;
+            hero.Level = 1;
             hero.friendly = true;
             hero.meterSprite.SetTexture(meterTexture);
             hero.meterSprite.UpperLeft = new Vector2(hero.UpperLeft.X,
-                                                     hero.UpperLeft.Y + hero.meterSprite.GetHeight() + (hero.GetHeight()) + 20);
+                                                     hero.UpperLeft.Y + hero.meterSprite.GetHeight() + (hero.GetHeight()));
             hero.shadow.SetTexture(shadowTexture);
             heroes.Add(hero);
 
@@ -141,10 +159,13 @@ namespace RPG_Game
             hiro.speed = 20;
             hiro.Acc = 100;
             hiro.Eva = 0;
+            hiro.XP = 0;
+            hiro.XPToLevel = 50;
+            hiro.Level = 1;
             hiro.friendly = true;
             hiro.meterSprite.SetTexture(meterTexture);
             hiro.meterSprite.UpperLeft = new Vector2(hiro.UpperLeft.X,
-                                                     hiro.UpperLeft.Y + hiro.meterSprite.GetHeight() + (hiro.GetHeight()) + 20);
+                                                     hiro.UpperLeft.Y + hiro.meterSprite.GetHeight() + (hiro.GetHeight()));
             hiro.shadow.SetTexture(shadowTexture);
             heroes.Add(hiro);
 
@@ -166,10 +187,13 @@ namespace RPG_Game
             hearo.speed = 50;
             hearo.Acc = 100;
             hearo.Eva = 50;
+            hearo.XP = 0;
+            hearo.XPToLevel = 50;
+            hearo.Level = 1;
             hearo.friendly = true;
             hearo.meterSprite.SetTexture(meterTexture);
             hearo.meterSprite.UpperLeft = new Vector2(hearo.UpperLeft.X,
-                                                      hearo.UpperLeft.Y + hearo.meterSprite.GetHeight() + (hearo.GetHeight()) + 20);
+                                                      hearo.UpperLeft.Y + hearo.meterSprite.GetHeight() + (hearo.GetHeight()));
             hearo.shadow.SetTexture(shadowTexture);
 
             ////Hearo Ability Initialization
@@ -201,10 +225,13 @@ namespace RPG_Game
             hiero.speed = 25;
             hiero.Acc = 100;
             hiero.Eva = 0;
+            hiero.XP = 0;
+            hiero.XPToLevel = 50;
+            hiero.Level = 1;
             hiero.friendly = true;
             hiero.meterSprite.SetTexture(meterTexture);
             hiero.meterSprite.UpperLeft = new Vector2(hiero.UpperLeft.X,
-                                                      hiero.UpperLeft.Y + hiero.meterSprite.GetHeight() + (hiero.GetHeight()) + 20);
+                                                      hiero.UpperLeft.Y + hiero.meterSprite.GetHeight() + (hiero.GetHeight()));
             hiero.shadow.SetTexture(shadowTexture);
             heroes.Add(hiero);
 
@@ -216,7 +243,7 @@ namespace RPG_Game
             //Heroes Initialization Ends//
 
             //Enemies Initialization Begins//
-            werewolf = new Battler();
+            werewolf = new Enemy();
             werewolf.name = "Wolfy";
             werewolf.SetTexture(werewolfTexture);
             werewolf.Scale = new Vector2(0.5f, 0.5f);
@@ -232,11 +259,13 @@ namespace RPG_Game
             werewolf.friendly = false;
             werewolf.meterSprite.SetTexture(meterTexture);
             werewolf.meterSprite.UpperLeft = new Vector2(werewolf.UpperLeft.X,
-                                                      werewolf.UpperLeft.Y + werewolf.meterSprite.GetHeight() + (werewolf.GetHeight()) + 20);
+                                                         werewolf.UpperLeft.Y + werewolf.meterSprite.GetHeight() + (werewolf.GetHeight()));
+            werewolf.goldYield = 50;
+            werewolf.XPYield = 15;
             enemies.Add(werewolf);
             ////enemies.Add(werewolf);
 
-            werewolf = new Battler();
+            werewolf = new Enemy();
             werewolf.name = "Webber";
             werewolf.SetTexture(werewolfTexture);
             werewolf.Scale = new Vector2(0.5f, 0.5f);
@@ -252,10 +281,12 @@ namespace RPG_Game
             werewolf.friendly = false;
             werewolf.meterSprite.SetTexture(meterTexture);
             werewolf.meterSprite.UpperLeft = new Vector2(werewolf.UpperLeft.X,
-                                                      werewolf.UpperLeft.Y + werewolf.meterSprite.GetHeight() + (werewolf.GetHeight()) + 20);
+                                                         werewolf.UpperLeft.Y + werewolf.meterSprite.GetHeight() + (werewolf.GetHeight()));
+            werewolf.goldYield = 50;
+            werewolf.XPYield = 15;
             enemies.Add(werewolf);
 
-            werewolf = new Battler();
+            werewolf = new Enemy();
             werewolf.name = "Woody";
             werewolf.SetTexture(werewolfTexture);
             werewolf.Scale = new Vector2(0.5f, 0.5f);
@@ -271,10 +302,12 @@ namespace RPG_Game
             werewolf.friendly = false;
             werewolf.meterSprite.SetTexture(meterTexture);
             werewolf.meterSprite.UpperLeft = new Vector2(werewolf.UpperLeft.X,
-                                                      werewolf.UpperLeft.Y + werewolf.meterSprite.GetHeight() + (werewolf.GetHeight()) + 20);
+                                                         werewolf.UpperLeft.Y + werewolf.meterSprite.GetHeight() + (werewolf.GetHeight()));
+            werewolf.goldYield = 50;
+            werewolf.XPYield = 15;
             enemies.Add(werewolf);
 
-            werewolf = new Battler();
+            werewolf = new Enemy();
             werewolf.name = "Waxwell";
             werewolf.SetTexture(werewolfTexture);
             werewolf.Scale = new Vector2(0.5f, 0.5f);
@@ -290,7 +323,9 @@ namespace RPG_Game
             werewolf.friendly = false;
             werewolf.meterSprite.SetTexture(meterTexture);
             werewolf.meterSprite.UpperLeft = new Vector2(werewolf.UpperLeft.X,
-                                                      werewolf.UpperLeft.Y + werewolf.meterSprite.GetHeight() + (werewolf.GetHeight()) + 20);
+                                                         werewolf.UpperLeft.Y + werewolf.meterSprite.GetHeight() + (werewolf.GetHeight()));
+            werewolf.goldYield = 50;
+            werewolf.XPYield = 15;
             enemies.Add(werewolf);
 
             //Boxes Initialization Begins//
@@ -343,6 +378,19 @@ namespace RPG_Game
             button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 10, button.UpperLeft.Y + 9);
             battleBox.buttons.Add(button);
 
+            statusBox = new MultiBox();
+            statusBox.frameWidth = 970;
+            statusBox.frameHeight = 250;
+            statusBox.UpperLeft = new Vector2(5 + battleBox.GetWidth(), main.graphics.PreferredBackBufferHeight - statusBox.GetHeight() - 5);
+            statusBox.SetParts(cornerTexture, wallTexture, backTexture);
+            statusBox.activatorState = -1;
+            statusBox.multiButtons = new List<MultiButton>();
+            allBoxes.Add(statusBox);
+
+            targets = heroes.Cast<SpriteBase>().ToList();
+
+            StatusRefresh();
+
             //skillsMenu Box
             skillsBox = new Box();
             skillsBox.frameWidth = 800;
@@ -370,7 +418,7 @@ namespace RPG_Game
             stateMethods[4] = SkillsMenu;
             stateMethods[5] = ItemsMenu;
             stateMethods[6] = TargetMenu;
-            stateMethods[7] = StateSwitch;
+            stateMethods[7] = BattleEnd;
 
             switchStateMethods[0] = MenuSwitch;
             switchStateMethods[1] = MenuSwitch;
@@ -381,15 +429,13 @@ namespace RPG_Game
             switchStateMethods[6] = TargetSwitch;
             switchStateMethods[7] = MenuSwitch;
 
-            targetState = 1;
+            targetState = 0;
 
             FightBegin();
         }
         
         public override void Update(GameTime gameTime)
         {
-            targetState = 1;
-
             //Execute main update method
             stateMethods[currentState].Invoke(gameTime);
 
@@ -433,16 +479,6 @@ namespace RPG_Game
                 enemies[i].Draw(spriteBatch);
 
                 enemies[i].meterSprite.Draw(spriteBatch);
-
-                spriteBatch.DrawString(calibri,
-                                       enemies[i].health.ToString(),
-                                       new Vector2(enemies[i].UpperLeft.X,
-                                       enemies[i].UpperLeft.Y + enemies[i].GetHeight() + 5),
-                                       Color.Black,
-                                       0,
-                                       new Vector2(0, 0),
-                                       0.75f,
-                                       SpriteEffects.None, 0);
             }
 
             //Hero Draw Cycle
@@ -453,22 +489,13 @@ namespace RPG_Game
                 heroes[i].Draw(spriteBatch);
 
                 heroes[i].meterSprite.Draw(spriteBatch);
-
-                spriteBatch.DrawString(calibri,
-                                       heroes[i].health.ToString(),
-                                       new Vector2(heroes[i].UpperLeft.X,
-                                       heroes[i].UpperLeft.Y + heroes[i].GetHeight() + 5),
-                                       Color.Black,
-                                       0,
-                                       new Vector2(0, 0),
-                                       0.75f,
-                                       SpriteEffects.None, 0);
             }
 
             //Damage Balloon Draw
             if (damageDealt != 0)
             {
                 Color tempColor = new Color();
+
                 float tempDamage = damageDealt;
 
                 if (tempDamage < 0)
@@ -500,13 +527,13 @@ namespace RPG_Game
             //Boxes \ Buttons Draw Cycle
             for (int i = 0; i < allBoxes.Count; i++)
             {
-                if (state[allBoxes[i].activatorState])
+                if (allBoxes[i].activatorState == -1 || state[allBoxes[i].activatorState])
                 {
                     allBoxes[i].DrawParts(spriteBatch);
 
                     int skipIndex = 0;
 
-                    for (int o = 0; o < allBoxes[i].buttons.Count; o++)
+                    for (int o = 0; o < allBoxes[i].GetButtons().Count; o++)
                     {
                         if (allBoxes[i].GetButtons()[o].selectable == false)
                         {
@@ -523,12 +550,14 @@ namespace RPG_Game
                             temp = false;
                         }
 
-                        allBoxes[i].buttons[o].DrawParts(spriteBatch, calibri, temp);
+                        allBoxes[i].GetButtons()[o].DrawParts(spriteBatch, calibri, temp);
                     }
                 }
             }
 
+
             pointer.Draw(spriteBatch);
+            extraPointer.Draw(spriteBatch);
         }
 
         //Ticks up all the battler's meters based on their speed values, and allows them to act if theirs is full
@@ -604,7 +633,17 @@ namespace RPG_Game
         {
             if (currentAction.Call(gameTime, this))
             {
-                if (enemies.Count == 0)
+                List<Battler> tempEnemies = new List<Battler>();
+
+                for(int i = 0; i < enemies.Count; i++)
+                {
+                    if(enemies[i].isAlive)
+                    {
+                        tempEnemies.Add(enemies[i]);
+                    }
+                }
+
+                if (tempEnemies.Count == 0)
                 {
                     //Switch to Track Switch State
                     ActivateState(7);
@@ -613,6 +652,15 @@ namespace RPG_Game
                 {
                     //Switch to Idle State
                     ActivateState(0);
+
+                    targets.Clear();
+
+                    for(int i = 0; i < heroes.Count; i++)
+                    {
+                        targets.Add(heroes[i]);
+                    }
+
+                    StatusRefresh();
                 }
             }
         }
@@ -650,11 +698,11 @@ namespace RPG_Game
                 {
                     if (actor.abilities[buttonIndex].battleUsable)
                     {
-                        pointer.isAlive = false;
-
-                        ActivateState(6);
-
                         targets = actor.abilities[buttonIndex].GetTargets(this);
+
+                        TargetSwitch();
+
+                        extraPointer.isAlive = true;
 
                         currentAction = actor.abilities[buttonIndex];
                     }
@@ -677,11 +725,9 @@ namespace RPG_Game
             {
                 if(allItems[buttonIndex].battleUsable)
                 {
-                    pointer.isAlive = false;
-
-                    ActivateState(6);
-
                     targets = allItems[buttonIndex].GetTargets(this);
+
+                    TargetSwitch();
 
                     currentAction = allItems[buttonIndex];
                 }
@@ -697,7 +743,17 @@ namespace RPG_Game
 
         private void TargetMenu(GameTime gameTime)
         {
-            if (targets.Count == 1)
+            List<SpriteBase> availableTargets = new List<SpriteBase>();
+
+            for(int i = 0; i < targets.Count; i++)
+            {
+                if(targets[i].isAlive)
+                {
+                    availableTargets.Add(targets[i]);
+                }
+            }
+
+            if (availableTargets.Count == 1)
             {
                 //Switch to Animating State
                 ActivateState(2);
@@ -709,38 +765,52 @@ namespace RPG_Game
             }
             else
             {
-                MenuUpdateReturn temp = MenuUpdate(targets, targetIndex);
+                MenuUpdateReturn temp = MenuUpdate(targets, targetIndex, statusBox.multiButtons.Cast<SpriteBase>().ToList());
                 targetIndex = temp.index;
 
-                pointer.UpperLeft = new Vector2(targets[targetIndex].UpperLeft.X - pointer.GetWidth() - 5,
-                                                targets[targetIndex].UpperLeft.Y + targets[targetIndex].GetHeight() - 5);
+                pointer.UpperLeft = new Vector2(statusBox.multiButtons[targetIndex].UpperLeft.X - pointer.GetWidth() - 5,
+                                                statusBox.multiButtons[targetIndex].UpperLeft.Y + 5);
 
+                if (targets[targetIndex].isAlive)
+                {
+                    extraPointer.UpperLeft = new Vector2(targets[targetIndex].UpperLeft.X - pointer.GetWidth() - 5,
+                                                         targets[targetIndex].UpperLeft.Y + targets[targetIndex].GetHeight() - 5);
+                }
+                else
+                {
+                    extraPointer.isAlive = false;
+                }
 
                 if (temp.activate)
                 {
-                    pointer.isAlive = false;
+                    if(targets[targetIndex].isAlive)
+                    {
+                        pointer.isAlive = false;
+                        extraPointer.isAlive = false;
 
-                    //Switch to Animating State
-                    ActivateState(2);
+                        //Switch to Animating State
+                        ActivateState(2);
 
-                    target = (Battler)targets[targetIndex];
-                    targets.Clear();
-                    targets.Capacity = 0;
-                    timer = gameTime.TotalGameTime.TotalSeconds + 1;
+                        target = (Battler)targets[targetIndex];
+                        timer = gameTime.TotalGameTime.TotalSeconds + 1;
+                    }
                 }
                 else if (temp.menu)
                 {
                     SwitchState(6, gameTime);
+
+                    targets.Clear();
+
+                    for(int i = 0; i < heroes.Count; i++)
+                    {
+                        targets.Add(heroes[i]);
+                    }
+
+                    StatusRefresh();
                 }
             }
         }
 
-        private void StateSwitch(GameTime gameTime)
-        {
-            targetState = 0;
-
-            ActivateState(0);
-        }
 
         private void MenuSwitch(GameTime gameTime)
         {
@@ -748,6 +818,10 @@ namespace RPG_Game
             ActivateState(3);
 
             activeButtons.Clear();
+
+            pointer.SetTexture(pointerTexture);
+            pointer.Scale = new Vector2(0.8f, 0.8f);
+            pointer.Origin = pointer.GetCenter();
 
             for (int i = 0; i < battleBox.buttons.Count; i++)
             {
@@ -874,6 +948,10 @@ namespace RPG_Game
 
             activeButtons.Clear();
             drawButtons.Clear();
+
+            pointer.SetTexture(pointerTexture);
+            pointer.Scale = new Vector2(0.8f, 0.8f);
+            pointer.Origin = pointer.GetCenter();
 
             for (int i = 0; i < skillsBox.buttons.Count; i++)
             {
@@ -1007,6 +1085,10 @@ namespace RPG_Game
 
             activeButtons.Clear();
             drawButtons.Clear();
+            
+            pointer.SetTexture(pointerTexture);
+            pointer.Scale = new Vector2(0.8f, 0.8f);
+            pointer.Origin = pointer.GetCenter();
 
             for (int i = 0; i < itemsBox.buttons.Count; i++)
             {
@@ -1040,7 +1122,145 @@ namespace RPG_Game
                 targets.Add(enemies[i]);
             }
 
+            StatusRefresh();
+
+            extraPointer.isAlive = true;
+
             currentAction = attack;
+        }
+
+        private void TargetSwitch()
+        {
+            //Switch to Target Menu State
+            ActivateState(6);
+
+            StatusRefresh();
+        }
+
+        private void BattleEnd(GameTime gameTime)
+        {
+            double goldIncrease = 0;
+
+            for(int i = 0; i < enemies.Count; i++)
+            {
+                double temp;
+
+                temp = rand.Next(0, 101);
+                temp += 50;
+                temp /= 100;
+                temp *= enemies[i].goldYield;
+
+                goldIncrease += temp;
+                
+                for(int o = 0; o < heroes.Count; o++)
+                {
+                    temp = rand.Next(0, 101);
+                    temp += 50;
+                    temp /= 100;
+                    temp *= enemies[i].XPYield;
+
+                    heroes[i].XP += (int)Math.Round(temp, 0, MidpointRounding.AwayFromZero);
+
+                    while(heroes[i].XP > heroes[i].XPToLevel)
+                    {
+                        heroes[i].Level++;
+
+                        heroes[i].XP -= heroes[i].XPToLevel;
+
+                        heroes[i].XPToLevel = (int)Math.Round(heroes[i].XPToLevel * 1.5, 0, MidpointRounding.AwayFromZero);
+                    }
+                }
+                //gold += enemies[i].goldYield * ((rand.Next(0, 101) + 50) / 100);
+            }
+
+            gold += (int)Math.Round(goldIncrease, 0, MidpointRounding.AwayFromZero);
+
+            ActivateState(0);
+            
+            finished = true;
+        }
+
+
+        public void StatusRefresh()
+        {
+            statusBox.multiButtons.Clear();
+
+            for (int i = 0; i < targets.Count; i++)
+            {
+                statusBox.multiButtons.Add(new MultiButton());
+
+                statusBox.multiButtons[i].frameWidth = statusBox.GetWidth() - 480;
+                statusBox.multiButtons[i].frameHeight = 50;
+                statusBox.multiButtons[i].UpperLeft = new Vector2(statusBox.UpperLeft.X + 70, statusBox.UpperLeft.Y + 10 + (60 * i));
+                statusBox.multiButtons[i].SetParts(cornerTexture, wallTexture, backTexture);
+                statusBox.multiButtons[i].display = (targets[i] as Battler).name;
+                statusBox.multiButtons[i].icon = null;
+                statusBox.multiButtons[i].extraButtons = new List<Button>();
+                if(!targets[i].isAlive)
+                {
+                    statusBox.multiButtons[i].displayColour = Color.OrangeRed;
+                }
+
+                statusBox.multiButtons[i].extraButtons.Add(new Button());
+                statusBox.multiButtons[i].extraButtons[0].displayColour = Color.DarkGreen;
+                statusBox.multiButtons[i].extraButtons[0].frameWidth = 75;
+                statusBox.multiButtons[i].extraButtons[0].frameHeight = 50;
+                statusBox.multiButtons[i].extraButtons[0].UpperLeft = new Vector2(statusBox.multiButtons[i].UpperLeft.X + statusBox.multiButtons[i].GetWidth(),
+                                                                                  statusBox.multiButtons[i].UpperLeft.Y);
+                statusBox.multiButtons[i].extraButtons[0].SetParts(cornerTexture, wallTexture, backTexture);
+                statusBox.multiButtons[i].extraButtons[0].display = (targets[i] as Battler).health.ToString();
+                statusBox.multiButtons[i].extraButtons[0].icon = null;
+
+                statusBox.multiButtons[i].extraButtons.Add(new Button());
+                statusBox.multiButtons[i].extraButtons[1].displayColour = Color.DarkGreen;
+                statusBox.multiButtons[i].extraButtons[1].frameWidth = 50;
+                statusBox.multiButtons[i].extraButtons[1].frameHeight = 50;
+                statusBox.multiButtons[i].extraButtons[1].UpperLeft = new Vector2(statusBox.multiButtons[i].extraButtons[0].UpperLeft.X + statusBox.multiButtons[i].extraButtons[0].GetWidth(),
+                                                                                  statusBox.multiButtons[i].extraButtons[0].UpperLeft.Y);
+                statusBox.multiButtons[i].extraButtons[1].SetParts(cornerTexture, wallTexture, backTexture);
+                statusBox.multiButtons[i].extraButtons[1].display = " /";
+                statusBox.multiButtons[i].extraButtons[1].icon = null;
+
+                statusBox.multiButtons[i].extraButtons.Add(new Button());
+                statusBox.multiButtons[i].extraButtons[2].displayColour = Color.DarkGreen;
+                statusBox.multiButtons[i].extraButtons[2].frameWidth = 75;
+                statusBox.multiButtons[i].extraButtons[2].frameHeight = 50;
+                statusBox.multiButtons[i].extraButtons[2].UpperLeft = new Vector2(statusBox.multiButtons[i].extraButtons[1].UpperLeft.X + statusBox.multiButtons[i].extraButtons[1].GetWidth(),
+                                                                                  statusBox.multiButtons[i].extraButtons[1].UpperLeft.Y);
+                statusBox.multiButtons[i].extraButtons[2].SetParts(cornerTexture, wallTexture, backTexture);
+                statusBox.multiButtons[i].extraButtons[2].display = (targets[i] as Battler).maxHealth.ToString();
+                statusBox.multiButtons[i].extraButtons[2].icon = null;
+
+                statusBox.multiButtons[i].extraButtons.Add(new Button());
+                statusBox.multiButtons[i].extraButtons[3].displayColour = Color.DodgerBlue;
+                statusBox.multiButtons[i].extraButtons[3].frameWidth = 75;
+                statusBox.multiButtons[i].extraButtons[3].frameHeight = 50;
+                statusBox.multiButtons[i].extraButtons[3].UpperLeft = new Vector2(statusBox.multiButtons[i].extraButtons[2].UpperLeft.X + statusBox.multiButtons[i].extraButtons[2].GetWidth(),
+                                                                                  statusBox.multiButtons[i].extraButtons[2].UpperLeft.Y);
+                statusBox.multiButtons[i].extraButtons[3].SetParts(cornerTexture, wallTexture, backTexture);
+                statusBox.multiButtons[i].extraButtons[3].display = (targets[i] as Battler).mana.ToString();
+                statusBox.multiButtons[i].extraButtons[3].icon = null;
+
+                statusBox.multiButtons[i].extraButtons.Add(new Button());
+                statusBox.multiButtons[i].extraButtons[4].displayColour = Color.DodgerBlue;
+                statusBox.multiButtons[i].extraButtons[4].frameWidth = 50;
+                statusBox.multiButtons[i].extraButtons[4].frameHeight = 50;
+                statusBox.multiButtons[i].extraButtons[4].UpperLeft = new Vector2(statusBox.multiButtons[i].extraButtons[3].UpperLeft.X + statusBox.multiButtons[i].extraButtons[3].GetWidth(),
+                                                                                  statusBox.multiButtons[i].extraButtons[3].UpperLeft.Y);
+                statusBox.multiButtons[i].extraButtons[4].SetParts(cornerTexture, wallTexture, backTexture);
+                statusBox.multiButtons[i].extraButtons[4].display = " /";
+                statusBox.multiButtons[i].extraButtons[4].icon = null;
+
+                statusBox.multiButtons[i].extraButtons.Add(new Button());
+                statusBox.multiButtons[i].extraButtons[5].displayColour = Color.DodgerBlue;
+                statusBox.multiButtons[i].extraButtons[5].frameWidth = 75;
+                statusBox.multiButtons[i].extraButtons[5].frameHeight = 50;
+                statusBox.multiButtons[i].extraButtons[5].UpperLeft = new Vector2(statusBox.multiButtons[i].extraButtons[4].UpperLeft.X + statusBox.multiButtons[i].extraButtons[4].GetWidth(),
+                                                                                  statusBox.multiButtons[i].extraButtons[4].UpperLeft.Y);
+                statusBox.multiButtons[i].extraButtons[5].SetParts(cornerTexture, wallTexture, backTexture);
+                statusBox.multiButtons[i].extraButtons[5].display = (targets[i] as Battler).maxMana.ToString();
+                statusBox.multiButtons[i].extraButtons[5].icon = null;
+            }
         }
 
 
@@ -1058,7 +1278,6 @@ namespace RPG_Game
 
         private void FightBegin()
         {
-
             List<Battler> temp = new List<Battler>();
 
             for (int i = 0; i < heroes.Count; i++)

@@ -38,7 +38,10 @@ namespace RPG_Game
         {
             List<SpriteBase> temp = new List<SpriteBase>();
 
-            temp.Add(battleState.actor);
+            for(int i = 0; i < battleState.heroes.Count; i++)
+            {
+                temp.Add(battleState.heroes[i]);
+            }
 
             return temp;
         }

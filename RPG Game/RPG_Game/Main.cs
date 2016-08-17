@@ -28,13 +28,15 @@ namespace RPG_Game
         NaviState naviState = new NaviState();
         BattleState battleState = new BattleState();
         
-        public Battler hero;
+        public Hero hero;
         
-        public Battler hiro;
+        public Hero hiro;
         
-        public Battler hearo;
+        public Hero hearo;
         
-        public Battler hiero;
+        public Hero hiero;
+
+        public int gold = 1000;
 
         public Main()
         {
@@ -81,16 +83,16 @@ namespace RPG_Game
 
             //Heroes Initialization Begins//
             //Hero Initialization
-            hero = new Battler();
+            hero = new Hero();
 
             //Hiro Initialization
-            hiro = new Battler();
+            hiro = new Hero();
 
             //Hearo Initialization
-            hearo = new Battler();
+            hearo = new Hero();
 
             //Hiero Initialization
-            hiero = new Battler();
+            hiero = new Hero();
             //Heroes Initialization Ends//
 
             battleState.LoadContent(this);
@@ -123,8 +125,17 @@ namespace RPG_Game
                     states[i].GetInput(gameTime);
                     states[i].Update(gameTime);
 
-                    currentState = states[i].targetState;
-                    states[i].targetState = i;
+                    if(states[i].finished)
+                    {
+                        states[i].finished = false;
+
+                        gold = states[i].gold;
+
+                        currentState = states[i].targetState;
+
+                        states[currentState].gold = gold;
+                    }
+
 
                     if(states[i].quitting)
                     {
@@ -148,7 +159,7 @@ namespace RPG_Game
 
             for (int i = 0; i < states.Count; i++)
             {
-                if (states[i].targetState == currentState)
+                if (i == currentState)
                 {
                     states[i].Draw(spriteBatch, this);
                 }

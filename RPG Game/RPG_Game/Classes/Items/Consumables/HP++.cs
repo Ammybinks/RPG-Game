@@ -58,9 +58,8 @@ namespace RPG_Game
                 //If the target is dead
                 if (battleState.target.health <= 0)
                 {
-                    battleState.battlers.Remove(battleState.target);
-                    battleState.enemies.Remove(battleState.target);
-                    battleState.heroes.Remove(battleState.target);
+                    battleState.target.isAlive = false;
+                    battleState.target.meterSprite.isAlive = false;
                 }
 
                 //Reset target to a neutral frame
@@ -82,6 +81,8 @@ namespace RPG_Game
                     {
                         battleState.target.health = battleState.target.maxHealth;
                     }
+
+                    battleState.StatusRefresh();
 
                     //Reset the damage indicator
                     battleState.damageLocation = 30;
@@ -118,6 +119,7 @@ namespace RPG_Game
                 }
 
                 naviState.target.health += 100;
+
                 if (naviState.target.health > naviState.target.maxHealth)
                 {
                     naviState.target.health = naviState.target.maxHealth;
