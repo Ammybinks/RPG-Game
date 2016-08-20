@@ -94,7 +94,9 @@
     <Compile Include="Classes\Items\Consumables\HP++.cs" />
     <Compile Include="Classes\Items\Consumables\HP+.cs" />
     <Compile Include="Classes\Items\Consumables\HP.cs" />
+    <Compile Include="Classes\Items\Consumables\MonsterGoop.cs" />
     <Compile Include="Classes\Items\Item.cs" />
+    <Compile Include="Classes\Items\Misc\PotentialDrops.cs" />
     <Compile Include="Classes\SpriteBase\Parts\Box\Box.cs" />
     <Compile Include="Classes\SpriteBase\Parts\Box\MultiBox\MultiBox.cs" />
     <Compile Include="Classes\SpriteBase\Parts\Button\Button.cs" />
@@ -106,6 +108,7 @@
     <Compile Include="Classes\SpriteBase\Sprite\Actors\AIMover\EventMover\Shopkeep\Shopkeep.cs" />
     <Compile Include="Classes\SpriteBase\Sprite\Actors\Battler.cs" />
     <Compile Include="Classes\SpriteBase\Sprite\Actors\AIMover\EventMover\EventMover.cs" />
+    <Compile Include="Classes\SpriteBase\Sprite\Actors\Enemy\Enemies\Werewolf.cs" />
     <Compile Include="Classes\SpriteBase\Sprite\Actors\Enemy\Enemy.cs" />
     <Compile Include="Classes\SpriteBase\Sprite\Actors\Hero\Hero.cs" />
     <Compile Include="Classes\SpriteBase\Sprite\Actors\Mover.cs" />

@@ -87,7 +87,6 @@ namespace RPG_Game
                     {
                         battleState.target.health = 0;
                     }
-
                     battleState.StatusRefresh();
 
                     //Reset the damage indicator

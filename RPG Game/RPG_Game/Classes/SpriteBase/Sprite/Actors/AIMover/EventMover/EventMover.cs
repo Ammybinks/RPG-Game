@@ -16,7 +16,7 @@ namespace RPG_Game
         internal int previousState;
 
         internal int index;
-        internal int previousIndex;
+        internal int previousIndex = -1;
 
         public virtual void Call(GameTime gameTime, NaviState naviState)
         {

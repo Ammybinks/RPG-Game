@@ -24,7 +24,7 @@ namespace RPG_Game
         Hero hiero;
 
         Texture2D werewolfTexture;
-        Enemy werewolf;
+        Werewolf werewolf;
 
         public List<Hero> heroes = new List<Hero>(4);
         public List<Enemy> enemies = new List<Enemy>(4);
@@ -243,7 +243,7 @@ namespace RPG_Game
             //Heroes Initialization Ends//
 
             //Enemies Initialization Begins//
-            werewolf = new Enemy();
+            werewolf = new Werewolf(main);
             werewolf.name = "Wolfy";
             werewolf.SetTexture(werewolfTexture);
             werewolf.Scale = new Vector2(0.5f, 0.5f);
@@ -265,7 +265,7 @@ namespace RPG_Game
             enemies.Add(werewolf);
             ////enemies.Add(werewolf);
 
-            werewolf = new Enemy();
+            werewolf = new Werewolf(main);
             werewolf.name = "Webber";
             werewolf.SetTexture(werewolfTexture);
             werewolf.Scale = new Vector2(0.5f, 0.5f);
@@ -286,7 +286,7 @@ namespace RPG_Game
             werewolf.XPYield = 15;
             enemies.Add(werewolf);
 
-            werewolf = new Enemy();
+            werewolf = new Werewolf(main);
             werewolf.name = "Woody";
             werewolf.SetTexture(werewolfTexture);
             werewolf.Scale = new Vector2(0.5f, 0.5f);
@@ -307,7 +307,7 @@ namespace RPG_Game
             werewolf.XPYield = 15;
             enemies.Add(werewolf);
 
-            werewolf = new Enemy();
+            werewolf = new Werewolf(main);
             werewolf.name = "Waxwell";
             werewolf.SetTexture(werewolfTexture);
             werewolf.Scale = new Vector2(0.5f, 0.5f);
@@ -568,18 +568,21 @@ namespace RPG_Game
 
             for (int i = 0; i < battlers.Count; i++)
             {
-                battlers[i].meter += battlers[i].speed / 100;
-
-                //If the meter is full for this character
-                if (battlers[i].meter >= 100)
+                if(battlers[i].isAlive)
                 {
-                    //Add it to the list of potential actors this turn
-                    potentialActions.Capacity++;
-                    potentialActions.Add(battlers[i]);
-                }
+                    battlers[i].meter += battlers[i].speed / 100;
 
-                //Scale the display bar in accordance with the actor's current meter
-                battlers[i].meterSprite.Scale = new Vector2(battlers[i].meter / 100, 1);
+                    //If the meter is full for this character
+                    if (battlers[i].meter >= 100)
+                    {
+                        //Add it to the list of potential actors this turn
+                        potentialActions.Capacity++;
+                        potentialActions.Add(battlers[i]);
+                    }
+
+                    //Scale the display bar in accordance with the actor's current meter
+                    battlers[i].meterSprite.Scale = new Vector2(battlers[i].meter / 100, 1);
+                }
             }
 
             //If we have at least one character acting this turn
@@ -701,9 +704,7 @@ namespace RPG_Game
                         targets = actor.abilities[buttonIndex].GetTargets(this);
 
                         TargetSwitch();
-
-                        extraPointer.isAlive = true;
-
+                        
                         currentAction = actor.abilities[buttonIndex];
                     }
                 }
@@ -735,6 +736,8 @@ namespace RPG_Game
             else if (temp.menu)
             {
                 SwitchState(5, gameTime);
+
+                buttonIndex = 0;
             }
 
 
@@ -758,10 +761,11 @@ namespace RPG_Game
                 //Switch to Animating State
                 ActivateState(2);
 
-                target = (Battler)targets[0];
-                targets.Clear();
-                targets.Capacity = 0;
+                target = (Battler)availableTargets[0];
                 timer = gameTime.TotalGameTime.TotalSeconds + 1;
+
+                pointer.isAlive = false;
+                extraPointer.isAlive = false;
             }
             else
             {
@@ -805,6 +809,9 @@ namespace RPG_Game
                     {
                         targets.Add(heroes[i]);
                     }
+
+                    pointer.isAlive = false;
+                    extraPointer.isAlive = false;
 
                     StatusRefresh();
                 }
@@ -1014,45 +1021,48 @@ namespace RPG_Game
 
             itemsBox.buttons.Add(tempButton);
 
+            heldItems.Clear();
+
             for (int i = 0; i < allItems.Count; i++)
             {
-                if (allItems[i].name.Equals("--Empty, really empty--"))
+                if (allItems[i].heldCount != 0)
                 {
-                    allItems.RemoveAt(i);
+                    heldItems.Add(allItems[i]);
                 }
             }
-            if (allItems.Count == 0)
+            
+            if (heldItems.Count == 0)
             {
                 Item item = new Item();
                 item.name = "--Empty, really empty--";
                 item.description = "Looks like you don't have any items on you,\nmaybe this is a good time to stock up?";
                 item.iconFrame = new Vector2(8, 10);
-                allItems.Add(item);
+                heldItems.Add(item);
             }
 
             string tempString;
 
-            for (int i = 0; i < allItems.Count; i++)
+            for (int i = 0; i < heldItems.Count; i++)
             {
                 tempButton = new MultiButton();
                 tempButton.extraButtons = new List<Button>();
 
                 tempButton.UpperLeft = new Vector2(itemsBox.UpperLeft.X + 80, itemsBox.UpperLeft.Y + 10 + (60 * (i + 1)));
-                tempButton.display = allItems[i].name;
+                tempButton.display = heldItems[i].name;
                 tempButton.icon.SetTexture(iconTexture, 16, 20);
-                tempButton.icon.setCurrentFrame((int)allItems[i].iconFrame.X, (int)allItems[i].iconFrame.Y);
+                tempButton.icon.setCurrentFrame((int)heldItems[i].iconFrame.X, (int)heldItems[i].iconFrame.Y);
                 tempButton.frameWidth = skillsBox.frameWidth - 165;
                 tempButton.frameHeight = 50;
                 tempButton.SetParts(cornerTexture, wallTexture, backTexture);
                 tempButton.icon.UpperLeft = new Vector2(tempButton.UpperLeft.X + 10, tempButton.UpperLeft.Y + 9);
 
-                if (allItems[i].heldCount.ToString().Equals("-1"))
+                if (heldItems[i].heldCount.ToString().Equals("-1"))
                 {
                     tempString = "------";
                 }
                 else
                 {
-                    tempString = allItems[i].heldCount.ToString();
+                    tempString = heldItems[i].heldCount.ToString();
                 }
 
                 tempButton.extraButtons.Add(new Button());
@@ -1065,14 +1075,14 @@ namespace RPG_Game
 
                 tempButton.extraButtons.Add(new Button());
                 tempButton.extraButtons[1].UpperLeft = new Vector2(itemsBox.UpperLeft.X + 80, 200);
-                tempButton.extraButtons[1].display = allItems[i].description;
+                tempButton.extraButtons[1].display = heldItems[i].description;
                 tempButton.extraButtons[1].frameWidth = skillsBox.frameWidth - 90;
                 tempButton.extraButtons[1].frameHeight = 100;
                 tempButton.extraButtons[1].SetParts(cornerTexture, wallTexture, backTexture);
                 tempButton.extraButtons[1].showOnSelected = true;
                 tempButton.extraButtons[1].icon = null;
 
-                if (!allItems[i].battleUsable)
+                if (!heldItems[i].battleUsable)
                 {
                     tempButton.displayColour = Color.OrangeRed;
                     tempButton.extraButtons[0].displayColour = Color.OrangeRed;
@@ -1123,9 +1133,7 @@ namespace RPG_Game
             }
 
             StatusRefresh();
-
-            extraPointer.isAlive = true;
-
+            
             currentAction = attack;
         }
 
@@ -1170,7 +1178,37 @@ namespace RPG_Game
                         heroes[i].XPToLevel = (int)Math.Round(heroes[i].XPToLevel * 1.5, 0, MidpointRounding.AwayFromZero);
                     }
                 }
-                //gold += enemies[i].goldYield * ((rand.Next(0, 101) + 50) / 100);
+
+                if (enemies[i].potentialDrops != null)
+                {
+                    int result = rand.Next(0, 101);
+                    int rollOver = 0;
+
+                    for (int o = 0; o < enemies[i].potentialDrops.Count; o++)
+                    {
+                        if(result > rollOver && result < enemies[i].potentialDrops[o].proportion + rollOver)
+                        {
+                            result = rand.Next(0, 101);
+                            rollOver = 0;
+
+                            for(int p = 0; p < enemies[i].potentialDrops[o].potentialCounts.Count; p++)
+                            {
+                                if(result > rollOver && result < enemies[i].potentialDrops[o].potentialCounts[p].proportion + rollOver)
+                                {
+                                    enemies[i].potentialDrops[o].item.heldCount += enemies[i].potentialDrops[o].potentialCounts[p].count;
+
+                                    break;
+                                }
+
+                                rollOver += enemies[i].potentialDrops[o].potentialCounts[p].proportion;
+                            }
+
+                            break;
+                        }
+
+                        rollOver += enemies[i].potentialDrops[o].proportion;
+                    }
+                }
             }
 
             gold += (int)Math.Round(goldIncrease, 0, MidpointRounding.AwayFromZero);

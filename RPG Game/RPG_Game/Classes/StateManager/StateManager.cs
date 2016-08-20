@@ -395,7 +395,7 @@ namespace RPG_Game
             }
 
             pointer.isAlive = true;
-
+            
             Rectangle buttonRect = new Rectangle((int)list[index].UpperLeft.X,
                                                  (int)list[index].UpperLeft.Y,
                                                  list[index].frameWidth,
@@ -405,14 +405,17 @@ namespace RPG_Game
             {
                 for (int i = 0; i < list.Count; i++)
                 {
-                    buttonRect = new Rectangle((int)list[i].UpperLeft.X,
-                                               (int)list[i].UpperLeft.Y,
-                                               list[i].frameWidth,
-                                               list[i].frameHeight);
-
-                    if (buttonRect.Contains(mousePosition))
+                    if(list[i].isAlive)
                     {
-                        index = i;
+                        buttonRect = new Rectangle((int)list[i].UpperLeft.X,
+                                                   (int)list[i].UpperLeft.Y,
+                                                   list[i].frameWidth,
+                                                   list[i].frameHeight);
+
+                        if (buttonRect.Contains(mousePosition))
+                        {
+                            index = i;
+                        }
                     }
                 }
             }

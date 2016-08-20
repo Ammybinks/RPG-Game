@@ -21,6 +21,7 @@ namespace RPG_Game
         HP hPotion = new HP();
         HPPlus hPotionPlus = new HPPlus();
         HPPlusPlus hPotionPlusPlus = new HPPlusPlus();
+        MonsterGoop monsterGoop = new MonsterGoop();
 
         int currentState = 1;
         List<StateManager> states = new List<StateManager>();
@@ -80,6 +81,9 @@ namespace RPG_Game
 
             hPotionPlusPlus.heldCount = 1;
             heldItems.Add(hPotionPlusPlus);
+
+            monsterGoop.heldCount = 0;
+            heldItems.Add(monsterGoop);
 
             //Heroes Initialization Begins//
             //Hero Initialization

@@ -910,7 +910,7 @@ namespace RPG_Game
             tempButton.icon.UpperLeft = new Vector2(tempButton.UpperLeft.X + 3, tempButton.UpperLeft.Y + 2);
 
             tempButton.extraButtons.Add(new Button());
-            tempButton.extraButtons[0].frameWidth = 560;
+            tempButton.extraButtons[0].frameWidth = 490;
             tempButton.extraButtons[0].frameHeight = 50;
             tempButton.extraButtons[0].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth() + 5, tempButton.UpperLeft.Y);
             tempButton.extraButtons[0].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
@@ -918,40 +918,69 @@ namespace RPG_Game
             tempButton.extraButtons[0].icon = null;
 
             tempButton.extraButtons.Add(new Button());
-            tempButton.extraButtons[1].frameWidth = 45;
-            tempButton.extraButtons[1].frameHeight = 42;
-            tempButton.extraButtons[1].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth() + 5, tempButton.UpperLeft.Y + 50);
+            tempButton.extraButtons[1].frameWidth = 85;
+            tempButton.extraButtons[1].frameHeight = 50;
+            tempButton.extraButtons[1].UpperLeft = new Vector2(tempButton.extraButtons[0].UpperLeft.X + tempButton.extraButtons[0].GetWidth(), tempButton.extraButtons[0].UpperLeft.Y);
             tempButton.extraButtons[1].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
-            tempButton.extraButtons[1].display = "HP:";
-            tempButton.extraButtons[1].displaySize = 0.75f;
+            tempButton.extraButtons[1].display = "L" + naviState.heroBattler.Level;
             tempButton.extraButtons[1].icon = null;
 
             tempButton.extraButtons.Add(new Button());
-            tempButton.extraButtons[2].frameWidth = 115;
+            tempButton.extraButtons[2].frameWidth = 45;
             tempButton.extraButtons[2].frameHeight = 42;
-            tempButton.extraButtons[2].UpperLeft = new Vector2((tempButton.extraButtons[0].UpperLeft.X + tempButton.extraButtons[0].GetWidth()) - tempButton.extraButtons[2].GetWidth(), tempButton.UpperLeft.Y + 50);
+            tempButton.extraButtons[2].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth() + 5, tempButton.UpperLeft.Y + 50);
             tempButton.extraButtons[2].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
-            tempButton.extraButtons[2].display = naviState.heroBattler.health.ToString() + "/" + naviState.heroBattler.maxHealth.ToString();
+            tempButton.extraButtons[2].display = "HP:";
             tempButton.extraButtons[2].displaySize = 0.75f;
             tempButton.extraButtons[2].icon = null;
 
             tempButton.extraButtons.Add(new Button());
-            tempButton.extraButtons[3].frameWidth = 45;
+            tempButton.extraButtons[3].frameWidth = 115;
             tempButton.extraButtons[3].frameHeight = 42;
-            tempButton.extraButtons[3].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth() + 5, tempButton.UpperLeft.Y + 90);
+            tempButton.extraButtons[3].UpperLeft = new Vector2((tempButton.extraButtons[0].UpperLeft.X + tempButton.extraButtons[0].GetWidth()) - 30,
+                                                                tempButton.UpperLeft.Y + 50);
             tempButton.extraButtons[3].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
-            tempButton.extraButtons[3].display = "MP:";
+            tempButton.extraButtons[3].display = naviState.heroBattler.health.ToString() + "/" + naviState.heroBattler.maxHealth.ToString();
             tempButton.extraButtons[3].displaySize = 0.75f;
             tempButton.extraButtons[3].icon = null;
 
             tempButton.extraButtons.Add(new Button());
-            tempButton.extraButtons[4].frameWidth = 115;
+            tempButton.extraButtons[4].frameWidth = 45;
             tempButton.extraButtons[4].frameHeight = 42;
-            tempButton.extraButtons[4].UpperLeft = new Vector2((tempButton.extraButtons[0].UpperLeft.X + tempButton.extraButtons[0].GetWidth()) - tempButton.extraButtons[2].GetWidth(), tempButton.UpperLeft.Y + 90);
+            tempButton.extraButtons[4].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth() + 5, tempButton.UpperLeft.Y + 90);
             tempButton.extraButtons[4].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
-            tempButton.extraButtons[4].display = naviState.heroBattler.mana.ToString() + "/" + naviState.heroBattler.maxMana.ToString();
+            tempButton.extraButtons[4].display = "MP:";
             tempButton.extraButtons[4].displaySize = 0.75f;
             tempButton.extraButtons[4].icon = null;
+
+            tempButton.extraButtons.Add(new Button());
+            tempButton.extraButtons[5].frameWidth = 115;
+            tempButton.extraButtons[5].frameHeight = 42;
+            tempButton.extraButtons[5].UpperLeft = new Vector2((tempButton.extraButtons[0].UpperLeft.X + tempButton.extraButtons[0].GetWidth()) - 30,
+                                                                tempButton.UpperLeft.Y + 90);
+            tempButton.extraButtons[5].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
+            tempButton.extraButtons[5].display = naviState.heroBattler.mana.ToString() + "/" + naviState.heroBattler.maxMana.ToString();
+            tempButton.extraButtons[5].displaySize = 0.75f;
+            tempButton.extraButtons[5].icon = null;
+
+            tempButton.extraButtons.Add(new Button());
+            tempButton.extraButtons[6].frameWidth = 45;
+            tempButton.extraButtons[6].frameHeight = 42;
+            tempButton.extraButtons[6].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth() + 6, tempButton.UpperLeft.Y + 130);
+            tempButton.extraButtons[6].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
+            tempButton.extraButtons[6].display = "XP:";
+            tempButton.extraButtons[6].displaySize = 0.75f;
+            tempButton.extraButtons[6].icon = null;
+
+            tempButton.extraButtons.Add(new Button());
+            tempButton.extraButtons[7].frameWidth = 115;
+            tempButton.extraButtons[7].frameHeight = 42;
+            tempButton.extraButtons[7].UpperLeft = new Vector2((tempButton.extraButtons[0].UpperLeft.X + tempButton.extraButtons[0].GetWidth()) - 30,
+                                                                tempButton.UpperLeft.Y + 130);
+            tempButton.extraButtons[7].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
+            tempButton.extraButtons[7].display = naviState.heroBattler.XP.ToString() + "/" + naviState.heroBattler.XPToLevel.ToString();
+            tempButton.extraButtons[7].displaySize = 0.75f;
+            tempButton.extraButtons[7].icon = null;
 
             heroBox.buttons.Add(tempButton);
 
@@ -966,7 +995,7 @@ namespace RPG_Game
             tempButton.icon.UpperLeft = new Vector2(tempButton.UpperLeft.X + 3, tempButton.UpperLeft.Y + 2);
 
             tempButton.extraButtons.Add(new Button());
-            tempButton.extraButtons[0].frameWidth = 560;
+            tempButton.extraButtons[0].frameWidth = 490;
             tempButton.extraButtons[0].frameHeight = 50;
             tempButton.extraButtons[0].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth() + 5, tempButton.UpperLeft.Y);
             tempButton.extraButtons[0].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
@@ -974,40 +1003,69 @@ namespace RPG_Game
             tempButton.extraButtons[0].icon = null;
 
             tempButton.extraButtons.Add(new Button());
-            tempButton.extraButtons[1].frameWidth = 45;
-            tempButton.extraButtons[1].frameHeight = 42;
-            tempButton.extraButtons[1].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth() + 5, tempButton.UpperLeft.Y + 50);
+            tempButton.extraButtons[1].frameWidth = 85;
+            tempButton.extraButtons[1].frameHeight = 50;
+            tempButton.extraButtons[1].UpperLeft = new Vector2(tempButton.extraButtons[0].UpperLeft.X + tempButton.extraButtons[0].GetWidth(), tempButton.extraButtons[0].UpperLeft.Y);
             tempButton.extraButtons[1].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
-            tempButton.extraButtons[1].display = "HP:";
-            tempButton.extraButtons[1].displaySize = 0.75f;
+            tempButton.extraButtons[1].display = "L" + naviState.hiroBattler.Level;
             tempButton.extraButtons[1].icon = null;
 
             tempButton.extraButtons.Add(new Button());
-            tempButton.extraButtons[2].frameWidth = 115;
+            tempButton.extraButtons[2].frameWidth = 45;
             tempButton.extraButtons[2].frameHeight = 42;
-            tempButton.extraButtons[2].UpperLeft = new Vector2((tempButton.extraButtons[0].UpperLeft.X + tempButton.extraButtons[0].GetWidth()) - tempButton.extraButtons[2].GetWidth(), tempButton.UpperLeft.Y + 50);
+            tempButton.extraButtons[2].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth() + 5, tempButton.UpperLeft.Y + 50);
             tempButton.extraButtons[2].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
-            tempButton.extraButtons[2].display = naviState.hiroBattler.health.ToString() + "/" + naviState.hiroBattler.maxHealth.ToString();
+            tempButton.extraButtons[2].display = "HP:";
             tempButton.extraButtons[2].displaySize = 0.75f;
             tempButton.extraButtons[2].icon = null;
 
             tempButton.extraButtons.Add(new Button());
-            tempButton.extraButtons[3].frameWidth = 45;
+            tempButton.extraButtons[3].frameWidth = 115;
             tempButton.extraButtons[3].frameHeight = 42;
-            tempButton.extraButtons[3].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth() + 5, tempButton.UpperLeft.Y + 90);
+            tempButton.extraButtons[3].UpperLeft = new Vector2((tempButton.extraButtons[0].UpperLeft.X + tempButton.extraButtons[0].GetWidth()) - 30,
+                                                                tempButton.UpperLeft.Y + 50);
             tempButton.extraButtons[3].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
-            tempButton.extraButtons[3].display = "MP:";
+            tempButton.extraButtons[3].display = naviState.hiroBattler.health.ToString() + "/" + naviState.hiroBattler.maxHealth.ToString();
             tempButton.extraButtons[3].displaySize = 0.75f;
             tempButton.extraButtons[3].icon = null;
 
             tempButton.extraButtons.Add(new Button());
-            tempButton.extraButtons[4].frameWidth = 115;
+            tempButton.extraButtons[4].frameWidth = 45;
             tempButton.extraButtons[4].frameHeight = 42;
-            tempButton.extraButtons[4].UpperLeft = new Vector2((tempButton.extraButtons[0].UpperLeft.X + tempButton.extraButtons[0].GetWidth()) - tempButton.extraButtons[2].GetWidth(), tempButton.UpperLeft.Y + 90);
+            tempButton.extraButtons[4].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth() + 5, tempButton.UpperLeft.Y + 90);
             tempButton.extraButtons[4].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
-            tempButton.extraButtons[4].display = naviState.hiroBattler.mana.ToString() + "/" + naviState.hiroBattler.maxMana.ToString();
+            tempButton.extraButtons[4].display = "MP:";
             tempButton.extraButtons[4].displaySize = 0.75f;
             tempButton.extraButtons[4].icon = null;
+
+            tempButton.extraButtons.Add(new Button());
+            tempButton.extraButtons[5].frameWidth = 115;
+            tempButton.extraButtons[5].frameHeight = 42;
+            tempButton.extraButtons[5].UpperLeft = new Vector2((tempButton.extraButtons[0].UpperLeft.X + tempButton.extraButtons[0].GetWidth()) - 30,
+                                                                tempButton.UpperLeft.Y + 90);
+            tempButton.extraButtons[5].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
+            tempButton.extraButtons[5].display = naviState.hiroBattler.mana.ToString() + "/" + naviState.hiroBattler.maxMana.ToString();
+            tempButton.extraButtons[5].displaySize = 0.75f;
+            tempButton.extraButtons[5].icon = null;
+
+            tempButton.extraButtons.Add(new Button());
+            tempButton.extraButtons[6].frameWidth = 45;
+            tempButton.extraButtons[6].frameHeight = 42;
+            tempButton.extraButtons[6].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth() + 6, tempButton.UpperLeft.Y + 130);
+            tempButton.extraButtons[6].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
+            tempButton.extraButtons[6].display = "XP:";
+            tempButton.extraButtons[6].displaySize = 0.75f;
+            tempButton.extraButtons[6].icon = null;
+
+            tempButton.extraButtons.Add(new Button());
+            tempButton.extraButtons[7].frameWidth = 115;
+            tempButton.extraButtons[7].frameHeight = 42;
+            tempButton.extraButtons[7].UpperLeft = new Vector2((tempButton.extraButtons[0].UpperLeft.X + tempButton.extraButtons[0].GetWidth()) - 30,
+                                                                tempButton.UpperLeft.Y + 130);
+            tempButton.extraButtons[7].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
+            tempButton.extraButtons[7].display = naviState.hiroBattler.XP.ToString() + "/" + naviState.hiroBattler.XPToLevel.ToString();
+            tempButton.extraButtons[7].displaySize = 0.75f;
+            tempButton.extraButtons[7].icon = null;
 
             heroBox.buttons.Add(tempButton);
 
@@ -1022,7 +1080,7 @@ namespace RPG_Game
             tempButton.icon.UpperLeft = new Vector2(tempButton.UpperLeft.X + 3, tempButton.UpperLeft.Y + 2);
 
             tempButton.extraButtons.Add(new Button());
-            tempButton.extraButtons[0].frameWidth = 560;
+            tempButton.extraButtons[0].frameWidth = 490;
             tempButton.extraButtons[0].frameHeight = 50;
             tempButton.extraButtons[0].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth() + 5, tempButton.UpperLeft.Y);
             tempButton.extraButtons[0].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
@@ -1030,40 +1088,69 @@ namespace RPG_Game
             tempButton.extraButtons[0].icon = null;
 
             tempButton.extraButtons.Add(new Button());
-            tempButton.extraButtons[1].frameWidth = 45;
-            tempButton.extraButtons[1].frameHeight = 42;
-            tempButton.extraButtons[1].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth() + 5, tempButton.UpperLeft.Y + 50);
+            tempButton.extraButtons[1].frameWidth = 85;
+            tempButton.extraButtons[1].frameHeight = 50;
+            tempButton.extraButtons[1].UpperLeft = new Vector2(tempButton.extraButtons[0].UpperLeft.X + tempButton.extraButtons[0].GetWidth(), tempButton.extraButtons[0].UpperLeft.Y);
             tempButton.extraButtons[1].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
-            tempButton.extraButtons[1].display = "HP:";
-            tempButton.extraButtons[1].displaySize = 0.75f;
+            tempButton.extraButtons[1].display = "L" + naviState.hearoBattler.Level;
             tempButton.extraButtons[1].icon = null;
 
             tempButton.extraButtons.Add(new Button());
-            tempButton.extraButtons[2].frameWidth = 115;
+            tempButton.extraButtons[2].frameWidth = 45;
             tempButton.extraButtons[2].frameHeight = 42;
-            tempButton.extraButtons[2].UpperLeft = new Vector2((tempButton.extraButtons[0].UpperLeft.X + tempButton.extraButtons[0].GetWidth()) - tempButton.extraButtons[2].GetWidth(), tempButton.UpperLeft.Y + 50);
+            tempButton.extraButtons[2].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth() + 5, tempButton.UpperLeft.Y + 50);
             tempButton.extraButtons[2].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
-            tempButton.extraButtons[2].display = naviState.hearoBattler.health.ToString() + "/" + naviState.hearoBattler.maxHealth.ToString();
+            tempButton.extraButtons[2].display = "HP:";
             tempButton.extraButtons[2].displaySize = 0.75f;
             tempButton.extraButtons[2].icon = null;
 
             tempButton.extraButtons.Add(new Button());
-            tempButton.extraButtons[3].frameWidth = 45;
+            tempButton.extraButtons[3].frameWidth = 115;
             tempButton.extraButtons[3].frameHeight = 42;
-            tempButton.extraButtons[3].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth() + 5, tempButton.UpperLeft.Y + 90);
+            tempButton.extraButtons[3].UpperLeft = new Vector2((tempButton.extraButtons[0].UpperLeft.X + tempButton.extraButtons[0].GetWidth()) - 30,
+                                                                tempButton.UpperLeft.Y + 50);
             tempButton.extraButtons[3].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
-            tempButton.extraButtons[3].display = "MP:";
+            tempButton.extraButtons[3].display = naviState.hearoBattler.health.ToString() + "/" + naviState.hearoBattler.maxHealth.ToString();
             tempButton.extraButtons[3].displaySize = 0.75f;
             tempButton.extraButtons[3].icon = null;
 
             tempButton.extraButtons.Add(new Button());
-            tempButton.extraButtons[4].frameWidth = 115;
+            tempButton.extraButtons[4].frameWidth = 45;
             tempButton.extraButtons[4].frameHeight = 42;
-            tempButton.extraButtons[4].UpperLeft = new Vector2((tempButton.extraButtons[0].UpperLeft.X + tempButton.extraButtons[0].GetWidth()) - tempButton.extraButtons[2].GetWidth(), tempButton.UpperLeft.Y + 90);
+            tempButton.extraButtons[4].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth() + 5, tempButton.UpperLeft.Y + 90);
             tempButton.extraButtons[4].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
-            tempButton.extraButtons[4].display = naviState.hearoBattler.mana.ToString() + "/" + naviState.hearoBattler.maxMana.ToString();
+            tempButton.extraButtons[4].display = "MP:";
             tempButton.extraButtons[4].displaySize = 0.75f;
             tempButton.extraButtons[4].icon = null;
+
+            tempButton.extraButtons.Add(new Button());
+            tempButton.extraButtons[5].frameWidth = 115;
+            tempButton.extraButtons[5].frameHeight = 42;
+            tempButton.extraButtons[5].UpperLeft = new Vector2((tempButton.extraButtons[0].UpperLeft.X + tempButton.extraButtons[0].GetWidth()) - 30,
+                                                                tempButton.UpperLeft.Y + 90);
+            tempButton.extraButtons[5].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
+            tempButton.extraButtons[5].display = naviState.hearoBattler.mana.ToString() + "/" + naviState.hearoBattler.maxMana.ToString();
+            tempButton.extraButtons[5].displaySize = 0.75f;
+            tempButton.extraButtons[5].icon = null;
+
+            tempButton.extraButtons.Add(new Button());
+            tempButton.extraButtons[6].frameWidth = 45;
+            tempButton.extraButtons[6].frameHeight = 42;
+            tempButton.extraButtons[6].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth() + 6, tempButton.UpperLeft.Y + 130);
+            tempButton.extraButtons[6].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
+            tempButton.extraButtons[6].display = "XP:";
+            tempButton.extraButtons[6].displaySize = 0.75f;
+            tempButton.extraButtons[6].icon = null;
+
+            tempButton.extraButtons.Add(new Button());
+            tempButton.extraButtons[7].frameWidth = 115;
+            tempButton.extraButtons[7].frameHeight = 42;
+            tempButton.extraButtons[7].UpperLeft = new Vector2((tempButton.extraButtons[0].UpperLeft.X + tempButton.extraButtons[0].GetWidth()) - 30,
+                                                                tempButton.UpperLeft.Y + 130);
+            tempButton.extraButtons[7].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
+            tempButton.extraButtons[7].display = naviState.hearoBattler.XP.ToString() + "/" + naviState.hearoBattler.XPToLevel.ToString();
+            tempButton.extraButtons[7].displaySize = 0.75f;
+            tempButton.extraButtons[7].icon = null;
 
             heroBox.buttons.Add(tempButton);
 
@@ -1078,7 +1165,7 @@ namespace RPG_Game
             tempButton.icon.UpperLeft = new Vector2(tempButton.UpperLeft.X + 3, tempButton.UpperLeft.Y + 2);
 
             tempButton.extraButtons.Add(new Button());
-            tempButton.extraButtons[0].frameWidth = 560;
+            tempButton.extraButtons[0].frameWidth = 490;
             tempButton.extraButtons[0].frameHeight = 50;
             tempButton.extraButtons[0].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth() + 5, tempButton.UpperLeft.Y);
             tempButton.extraButtons[0].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
@@ -1086,40 +1173,69 @@ namespace RPG_Game
             tempButton.extraButtons[0].icon = null;
 
             tempButton.extraButtons.Add(new Button());
-            tempButton.extraButtons[1].frameWidth = 45;
-            tempButton.extraButtons[1].frameHeight = 42;
-            tempButton.extraButtons[1].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth() + 5, tempButton.UpperLeft.Y + 50);
+            tempButton.extraButtons[1].frameWidth = 85;
+            tempButton.extraButtons[1].frameHeight = 50;
+            tempButton.extraButtons[1].UpperLeft = new Vector2(tempButton.extraButtons[0].UpperLeft.X + tempButton.extraButtons[0].GetWidth(), tempButton.extraButtons[0].UpperLeft.Y);
             tempButton.extraButtons[1].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
-            tempButton.extraButtons[1].display = "HP:";
-            tempButton.extraButtons[1].displaySize = 0.75f;
+            tempButton.extraButtons[1].display = "L" + naviState.hieroBattler.Level;
             tempButton.extraButtons[1].icon = null;
 
             tempButton.extraButtons.Add(new Button());
-            tempButton.extraButtons[2].frameWidth = 115;
+            tempButton.extraButtons[2].frameWidth = 45;
             tempButton.extraButtons[2].frameHeight = 42;
-            tempButton.extraButtons[2].UpperLeft = new Vector2((tempButton.extraButtons[0].UpperLeft.X + tempButton.extraButtons[0].GetWidth()) - tempButton.extraButtons[2].GetWidth(), tempButton.UpperLeft.Y + 50);
+            tempButton.extraButtons[2].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth() + 5, tempButton.UpperLeft.Y + 50);
             tempButton.extraButtons[2].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
-            tempButton.extraButtons[2].display = naviState.hieroBattler.health.ToString() + "/" + naviState.hieroBattler.maxHealth.ToString();
+            tempButton.extraButtons[2].display = "HP:";
             tempButton.extraButtons[2].displaySize = 0.75f;
             tempButton.extraButtons[2].icon = null;
 
             tempButton.extraButtons.Add(new Button());
-            tempButton.extraButtons[3].frameWidth = 45;
+            tempButton.extraButtons[3].frameWidth = 115;
             tempButton.extraButtons[3].frameHeight = 42;
-            tempButton.extraButtons[3].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth() + 5, tempButton.UpperLeft.Y + 90);
+            tempButton.extraButtons[3].UpperLeft = new Vector2((tempButton.extraButtons[0].UpperLeft.X + tempButton.extraButtons[0].GetWidth()) - 30,
+                                                                tempButton.UpperLeft.Y + 50);
             tempButton.extraButtons[3].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
-            tempButton.extraButtons[3].display = "MP:";
+            tempButton.extraButtons[3].display = naviState.hieroBattler.health.ToString() + "/" + naviState.hieroBattler.maxHealth.ToString();
             tempButton.extraButtons[3].displaySize = 0.75f;
             tempButton.extraButtons[3].icon = null;
 
             tempButton.extraButtons.Add(new Button());
-            tempButton.extraButtons[4].frameWidth = 115;
+            tempButton.extraButtons[4].frameWidth = 45;
             tempButton.extraButtons[4].frameHeight = 42;
-            tempButton.extraButtons[4].UpperLeft = new Vector2((tempButton.extraButtons[0].UpperLeft.X + tempButton.extraButtons[0].GetWidth()) - tempButton.extraButtons[2].GetWidth(), tempButton.UpperLeft.Y + 90);
+            tempButton.extraButtons[4].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth() + 5, tempButton.UpperLeft.Y + 90);
             tempButton.extraButtons[4].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
-            tempButton.extraButtons[4].display = naviState.hieroBattler.mana.ToString() + "/" + naviState.hieroBattler.maxMana.ToString();
+            tempButton.extraButtons[4].display = "MP:";
             tempButton.extraButtons[4].displaySize = 0.75f;
             tempButton.extraButtons[4].icon = null;
+
+            tempButton.extraButtons.Add(new Button());
+            tempButton.extraButtons[5].frameWidth = 115;
+            tempButton.extraButtons[5].frameHeight = 42;
+            tempButton.extraButtons[5].UpperLeft = new Vector2((tempButton.extraButtons[0].UpperLeft.X + tempButton.extraButtons[0].GetWidth()) - 30,
+                                                                tempButton.UpperLeft.Y + 90);
+            tempButton.extraButtons[5].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
+            tempButton.extraButtons[5].display = naviState.hieroBattler.mana.ToString() + "/" + naviState.hieroBattler.maxMana.ToString();
+            tempButton.extraButtons[5].displaySize = 0.75f;
+            tempButton.extraButtons[5].icon = null;
+
+            tempButton.extraButtons.Add(new Button());
+            tempButton.extraButtons[6].frameWidth = 45;
+            tempButton.extraButtons[6].frameHeight = 42;
+            tempButton.extraButtons[6].UpperLeft = new Vector2(tempButton.UpperLeft.X + tempButton.GetWidth() + 6, tempButton.UpperLeft.Y + 130);
+            tempButton.extraButtons[6].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
+            tempButton.extraButtons[6].display = "XP:";
+            tempButton.extraButtons[6].displaySize = 0.75f;
+            tempButton.extraButtons[6].icon = null;
+
+            tempButton.extraButtons.Add(new Button());
+            tempButton.extraButtons[7].frameWidth = 115;
+            tempButton.extraButtons[7].frameHeight = 42;
+            tempButton.extraButtons[7].UpperLeft = new Vector2((tempButton.extraButtons[0].UpperLeft.X + tempButton.extraButtons[0].GetWidth()) - 30,
+                                                                tempButton.UpperLeft.Y + 130);
+            tempButton.extraButtons[7].SetParts(naviState.cornerTexture, naviState.wallTexture, naviState.backTexture);
+            tempButton.extraButtons[7].display = naviState.hieroBattler.XP.ToString() + "/" + naviState.hieroBattler.XPToLevel.ToString();
+            tempButton.extraButtons[7].displaySize = 0.75f;
+            tempButton.extraButtons[7].icon = null;
 
             heroBox.buttons.Add(tempButton);
 
