@@ -15,7 +15,7 @@ namespace RPG_Game
         public bool showOnSelected;
         public bool selectable = true;
 
-        public Action<GameTime> action;
+        public Action action;
 
         public virtual void DrawParts(SpriteBatch spriteBatch, SpriteFont font, bool isSelected)
         {

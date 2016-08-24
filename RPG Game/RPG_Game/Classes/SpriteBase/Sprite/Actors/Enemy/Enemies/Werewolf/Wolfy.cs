@@ -1,14 +1,11 @@
 ﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 
 namespace RPG_Game
 {
-    class Werewolf : Enemy
+    class Wolfy : Werewolf
     {
-        public Werewolf()
-        {
-
-        }
-        public Werewolf(Main main)
+        public Wolfy(Main main, NaviState naviState)
         {
             potentialDrops = new List<PotentialDrops>();
             potentialDrops.Add(new PotentialDrops());
@@ -29,6 +26,22 @@ namespace RPG_Game
             potentialDrops[1].potentialCounts.Add(new PotentialCount());
             potentialDrops[1].potentialCounts[1].count = 5;
             potentialDrops[1].potentialCounts[1].proportion = 5;
+
+            name = "Wolfy";
+            SetTexture(naviState.werewolfTexture);
+            Scale = new Vector2(1f, 1f);
+            maxHealth = 20;
+            health = 20;
+            healthDeviance = 15;
+            PhAtk = 99999;
+            PhDef = 0;
+            speed = 1;
+            speedDeviance = 100;
+            Acc = 100;
+            Eva = 0;
+            friendly = false;
+            goldYield = 50;
+            XPYield = 15;
         }
     }
 }

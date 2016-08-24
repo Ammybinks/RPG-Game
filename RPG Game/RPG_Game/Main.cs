@@ -23,7 +23,7 @@ namespace RPG_Game
         HPPlusPlus hPotionPlusPlus = new HPPlusPlus();
         MonsterGoop monsterGoop = new MonsterGoop();
 
-        int currentState = 1;
+        int currentState = 0;
         List<StateManager> states = new List<StateManager>();
 
         NaviState naviState = new NaviState();
@@ -133,11 +133,9 @@ namespace RPG_Game
                     {
                         states[i].finished = false;
 
-                        gold = states[i].gold;
-
                         currentState = states[i].targetState;
 
-                        states[currentState].gold = gold;
+                        states[currentState].ReInitialize(states[i], this);
                     }
 
 

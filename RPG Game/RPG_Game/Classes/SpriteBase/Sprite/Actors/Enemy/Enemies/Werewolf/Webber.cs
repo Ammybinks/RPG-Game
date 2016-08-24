@@ -1,14 +1,11 @@
 ﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 
 namespace RPG_Game
 {
-    class Werewolf : Enemy
+    class Webber : Werewolf
     {
-        public Werewolf()
-        {
-
-        }
-        public Werewolf(Main main)
+        public Webber(Main main, NaviState naviState)
         {
             potentialDrops = new List<PotentialDrops>();
             potentialDrops.Add(new PotentialDrops());
@@ -29,6 +26,22 @@ namespace RPG_Game
             potentialDrops[1].potentialCounts.Add(new PotentialCount());
             potentialDrops[1].potentialCounts[1].count = 5;
             potentialDrops[1].potentialCounts[1].proportion = 5;
+
+            name = "Webber";
+            SetTexture(naviState.werewolfTexture);
+            Scale = new Vector2(0.75f, 0.75f);
+            maxHealth = 35;
+            health = 35;
+            healthDeviance = 25;
+            PhAtk = 100;
+            PhDef = 50;
+            speed = 10;
+            speedDeviance = 10;
+            Acc = 100;
+            Eva = 0;
+            friendly = false;
+            goldYield = 50;
+            XPYield = 15;
         }
     }
 }

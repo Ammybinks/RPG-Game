@@ -11,7 +11,7 @@ namespace RPG_Game
 
             naviState.actor = naviState.target;
 
-            naviState.SkillsMenuSwitch(gameTime);
+            naviState.SkillsMenuSwitch();
 
             return true;
         }

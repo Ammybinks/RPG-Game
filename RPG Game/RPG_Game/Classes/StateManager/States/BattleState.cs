@@ -23,9 +23,6 @@ namespace RPG_Game
         Texture2D hieroTexture;
         Hero hiero;
 
-        Texture2D werewolfTexture;
-        Werewolf werewolf;
-
         public List<Hero> heroes = new List<Hero>(4);
         public List<Enemy> enemies = new List<Enemy>(4);
 
@@ -58,7 +55,7 @@ namespace RPG_Game
         public override void LoadContent(Main main)
         {
             gold = main.gold;
-
+            
             calibri = main.Content.Load<SpriteFont>("Fonts\\Calibri");
 
             background = main.Content.Load<Texture2D>("World\\Battle Backs\\Translucent");
@@ -77,8 +74,6 @@ namespace RPG_Game
             hiroTexture = main.Content.Load<Texture2D>("Characters\\Heroes\\Battle\\The Absolutely-Not-Into-It Love Interest");
             hearoTexture = main.Content.Load<Texture2D>("Characters\\Heroes\\Battle\\The Endearing Father Figure");
             hieroTexture = main.Content.Load<Texture2D>("Characters\\Heroes\\Battle\\The Comic Relief");
-
-            werewolfTexture = main.Content.Load<Texture2D>("Characters\\Enemies\\Werewolf");
             
             //Miscellaneous Initialization Begins//
             backgroundSprite.SetTexture(background);
@@ -242,92 +237,6 @@ namespace RPG_Game
             
             //Heroes Initialization Ends//
 
-            //Enemies Initialization Begins//
-            werewolf = new Werewolf(main);
-            werewolf.name = "Wolfy";
-            werewolf.SetTexture(werewolfTexture);
-            werewolf.Scale = new Vector2(0.5f, 0.5f);
-            werewolf.UpperLeft = new Vector2(1200, 200);
-            werewolf.battleOrigin = werewolf.UpperLeft;
-            werewolf.maxHealth = 20;
-            werewolf.health = 20;
-            werewolf.PhAtk = 99999;
-            werewolf.PhDef = 0;
-            werewolf.speed = 1;
-            werewolf.Acc = 100;
-            werewolf.Eva = 0;
-            werewolf.friendly = false;
-            werewolf.meterSprite.SetTexture(meterTexture);
-            werewolf.meterSprite.UpperLeft = new Vector2(werewolf.UpperLeft.X,
-                                                         werewolf.UpperLeft.Y + werewolf.meterSprite.GetHeight() + (werewolf.GetHeight()));
-            werewolf.goldYield = 50;
-            werewolf.XPYield = 15;
-            enemies.Add(werewolf);
-            ////enemies.Add(werewolf);
-
-            werewolf = new Werewolf(main);
-            werewolf.name = "Webber";
-            werewolf.SetTexture(werewolfTexture);
-            werewolf.Scale = new Vector2(0.5f, 0.5f);
-            werewolf.UpperLeft = new Vector2(1000, 300);
-            werewolf.battleOrigin = werewolf.UpperLeft;
-            werewolf.maxHealth = 35;
-            werewolf.health = 35;
-            werewolf.PhAtk = 100;
-            werewolf.PhDef = 50;
-            werewolf.speed = 10;
-            werewolf.Acc = 100;
-            werewolf.Eva = 0;
-            werewolf.friendly = false;
-            werewolf.meterSprite.SetTexture(meterTexture);
-            werewolf.meterSprite.UpperLeft = new Vector2(werewolf.UpperLeft.X,
-                                                         werewolf.UpperLeft.Y + werewolf.meterSprite.GetHeight() + (werewolf.GetHeight()));
-            werewolf.goldYield = 50;
-            werewolf.XPYield = 15;
-            enemies.Add(werewolf);
-
-            werewolf = new Werewolf(main);
-            werewolf.name = "Woody";
-            werewolf.SetTexture(werewolfTexture);
-            werewolf.Scale = new Vector2(0.5f, 0.5f);
-            werewolf.UpperLeft = new Vector2(1200, 400);
-            werewolf.battleOrigin = werewolf.UpperLeft;
-            werewolf.maxHealth = 5;
-            werewolf.health = 5;
-            werewolf.PhAtk = 2;
-            werewolf.PhDef = 0;
-            werewolf.speed = 49;
-            werewolf.Acc = 100;
-            werewolf.Eva = 0;
-            werewolf.friendly = false;
-            werewolf.meterSprite.SetTexture(meterTexture);
-            werewolf.meterSprite.UpperLeft = new Vector2(werewolf.UpperLeft.X,
-                                                         werewolf.UpperLeft.Y + werewolf.meterSprite.GetHeight() + (werewolf.GetHeight()));
-            werewolf.goldYield = 50;
-            werewolf.XPYield = 15;
-            enemies.Add(werewolf);
-
-            werewolf = new Werewolf(main);
-            werewolf.name = "Waxwell";
-            werewolf.SetTexture(werewolfTexture);
-            werewolf.Scale = new Vector2(0.5f, 0.5f);
-            werewolf.UpperLeft = new Vector2(1000, 500);
-            werewolf.battleOrigin = werewolf.UpperLeft;
-            werewolf.maxHealth = 50;
-            werewolf.health = 50;
-            werewolf.PhAtk = 10;
-            werewolf.PhDef = -50;
-            werewolf.speed = 5;
-            werewolf.Acc = 100;
-            werewolf.Eva = 0;
-            werewolf.friendly = false;
-            werewolf.meterSprite.SetTexture(meterTexture);
-            werewolf.meterSprite.UpperLeft = new Vector2(werewolf.UpperLeft.X,
-                                                         werewolf.UpperLeft.Y + werewolf.meterSprite.GetHeight() + (werewolf.GetHeight()));
-            werewolf.goldYield = 50;
-            werewolf.XPYield = 15;
-            enemies.Add(werewolf);
-
             //Boxes Initialization Begins//
             //Battle Menu Box
             battleBox = new Box();
@@ -430,14 +339,14 @@ namespace RPG_Game
             switchStateMethods[7] = MenuSwitch;
 
             targetState = 0;
-
-            FightBegin();
         }
         
         public override void Update(GameTime gameTime)
         {
+            this.gameTime = gameTime;
+
             //Execute main update method
-            stateMethods[currentState].Invoke(gameTime);
+            stateMethods[currentState].Invoke();
 
             //Update characters
             //Heroes
@@ -560,9 +469,205 @@ namespace RPG_Game
             extraPointer.Draw(spriteBatch);
         }
 
+
+        public override void ReInitialize(StateManager state, Main main)
+        {
+            if(state is NaviState)
+            {
+                NaviState tempState = (NaviState)state;
+
+                Vector2[] potentialPositions = { new Vector2(1200, 200), new Vector2(1000, 300), new Vector2(1200, 400), new Vector2(1000, 500) };
+
+                string[] potentialLetters = { "A", "B", "C", "D", "E", "F", "G", "H" };
+                
+                int rollOverBase = 0;
+
+
+                enemies.Clear();
+
+                if (tempState.potentialEnemies != null)
+                {
+                    for (int i = 0; i < tempState.potentialEnemies.Count; i++)
+                    {
+                        if (tempState.potentialEnemies[i].required)
+                        {
+                            enemies.Add(tempState.potentialEnemies[i].enemy);
+
+                            tempState.potentialEnemies.Remove(tempState.potentialEnemies[i]);
+                        }
+                    }
+
+                    for (int i = enemies.Count; i < 4; i++)
+                    {
+                        int result = rand.Next(1, 101 - rollOverBase);
+                        int rollOver = 0;
+
+                        for (int o = 0; o < tempState.potentialEnemies.Count; o++)
+                        {
+                            if (result <= tempState.potentialEnemies[o].proportion + rollOver)
+                            {
+                                enemies.Add(tempState.potentialEnemies[o].enemy);
+
+                                rollOverBase += tempState.potentialEnemies[o].proportion;
+
+                                tempState.potentialEnemies.Remove(tempState.potentialEnemies[o]);
+
+                                break;
+                            }
+
+                            rollOver += tempState.potentialEnemies[o].proportion;
+                        }
+                    }
+                }
+                else if (tempState.potentialTroops != null)
+                {
+                    int result = rand.Next(1, 101);
+                    int rollOver = 0;
+
+                    for(int i = 0; i < tempState.potentialTroops.Count; i++)
+                    {
+                        if(result <= tempState.potentialTroops[i].proportion + rollOver)
+                        {
+                            for (int o = 0; o < tempState.potentialTroops[i].enemies.Count; o++)
+                            {
+                                enemies.Add((Enemy)tempState.potentialTroops[i].enemies[o]);
+                            }
+
+                            break;
+                        }
+                        rollOver += tempState.potentialTroops[i].proportion;
+                    }
+                }
+
+                for(int i = 0; i < enemies.Count; i++)
+                {
+                    enemies[i].UpperLeft = potentialPositions[i];
+                    enemies[i].battleOrigin = enemies[i].UpperLeft;
+                    enemies[i].meterSprite.SetTexture(meterTexture);
+                    enemies[i].meterSprite.UpperLeft = new Vector2(enemies[i].UpperLeft.X,
+                                                                   enemies[i].UpperLeft.Y + enemies[i].meterSprite.GetHeight() + (enemies[i].GetHeight()));
+
+                    double tempDouble;
+
+                    tempDouble = rand.Next(0, enemies[i].healthDeviance * 2 + 1);
+                    tempDouble += 100;
+                    if (enemies[i].healthDeviance < 100)
+                    {
+                        tempDouble -= enemies[i].healthDeviance;
+                    }
+                    tempDouble /= 100;
+                    tempDouble *= enemies[i].maxHealth;
+
+                    enemies[i].maxHealth = (int)Math.Round(tempDouble, 0, MidpointRounding.AwayFromZero);
+                    enemies[i].health = enemies[i].maxHealth;
+                    
+
+                    tempDouble = rand.Next(0, enemies[i].manaDeviance * 2 + 1);
+                    tempDouble += 100;
+                    if (enemies[i].manaDeviance < 100)
+                    {
+                        tempDouble -= enemies[i].manaDeviance;
+                    }
+                    tempDouble /= 100;
+                    tempDouble *= enemies[i].maxMana;
+                    
+                    enemies[i].maxMana = (int)Math.Round(tempDouble, 0, MidpointRounding.AwayFromZero);
+                    enemies[i].mana = enemies[i].maxMana;
+
+
+                    tempDouble = rand.Next(0, enemies[i].speedDeviance * 2 + 1);
+                    tempDouble += 100;
+                    if (enemies[i].speedDeviance <= 100)
+                    {
+                        tempDouble -= enemies[i].speedDeviance;
+                    }
+                    tempDouble /= 100;
+                    tempDouble *= enemies[i].speed;
+
+                    enemies[i].speed = (int)Math.Round(tempDouble, 0, MidpointRounding.AwayFromZero);
+
+
+                    tempDouble = rand.Next(0, enemies[i].accDeviance * 2 + 1);
+                    tempDouble += 100;
+                    if (enemies[i].accDeviance < 100)
+                    {
+                        tempDouble -= enemies[i].accDeviance;
+                    }
+                    tempDouble /= 100;
+                    tempDouble *= enemies[i].Acc;
+
+                    enemies[i].Acc = (int)Math.Round(tempDouble, 0, MidpointRounding.AwayFromZero);
+
+
+                    tempDouble = rand.Next(0, enemies[i].evaDeviance * 2 + 1);
+                    tempDouble += 100;
+                    if (enemies[i].evaDeviance < 100)
+                    {
+                        tempDouble -= enemies[i].evaDeviance;
+                    }
+                    tempDouble /= 100;
+                    tempDouble *= enemies[i].Eva;
+
+                    enemies[i].Eva = (int)Math.Round(tempDouble, 0, MidpointRounding.AwayFromZero);
+
+
+                    bool previouslyDuplicated = false;
+                    List<Enemy> duplicates = new List<Enemy>();
+
+                    for(int o = i + 1; o < enemies.Count; o++)
+                    {
+                        if(enemies[o].name == enemies[i].name)
+                        {
+                            if(!previouslyDuplicated)
+                            {
+                                duplicates.Add(enemies[i]);
+
+                                previouslyDuplicated = true;
+                            }
+
+                            duplicates.Add(enemies[o]);
+                        }
+                    }
+
+                    for(int o = 0; o < duplicates.Count; o++)
+                    {
+                        duplicates[o].name += " " + potentialLetters[o];
+                    }
+                }
+
+                List<Battler> temp = new List<Battler>();
+
+                for (int i = 0; i < heroes.Count; i++)
+                {
+                    heroes[i].meter = 0;
+
+                    temp.Capacity += 1;
+                    temp.Add(heroes[i]);
+                }
+                for (int i = 0; i < enemies.Count; i++)
+                {
+                    heroes[i].meter = 0;
+
+                    temp.Capacity += 1;
+                    temp.Add(enemies[i]);
+                }
+                battlers.Clear();
+                battlers.Capacity = (temp.Count);
+
+                for (int i = 0; i < temp.Count; i++)
+                {
+                    battlers.Add(temp[i]);
+                }
+            }
+
+            targets = heroes.Cast<SpriteBase>().ToList();
+
+            StatusRefresh();
+        }
+
         //Ticks up all the battler's meters based on their speed values, and allows them to act if theirs is full
         //If two or more characters are able to act in the same tick, randomly choose between them
-        private void Idle(GameTime gameTime)
+        private void Idle()
         {
             List<Battler> potentialActions = new List<Battler>();
 
@@ -576,7 +681,6 @@ namespace RPG_Game
                     if (battlers[i].meter >= 100)
                     {
                         //Add it to the list of potential actors this turn
-                        potentialActions.Capacity++;
                         potentialActions.Add(battlers[i]);
                     }
 
@@ -607,14 +711,14 @@ namespace RPG_Game
             }
         }
 
-        private void StepForwards(GameTime gameTime)
+        private void StepForwards()
         {
             if (step.Invoke(gameTime, timer, 2, 0.25, actor, new Vector2(IFF(actor), 0)))
             {
                 //If the actor is playable
                 if (actor.friendly)
                 {
-                    MenuSwitch(gameTime);
+                    MenuSwitch();
                 }
                 else
                 {
@@ -632,7 +736,7 @@ namespace RPG_Game
             }
         }
 
-        private void Animate(GameTime gameTime)
+        private void Animate()
         {
             if (currentAction.Call(gameTime, this))
             {
@@ -668,7 +772,7 @@ namespace RPG_Game
             }
         }
 
-        private void Menu(GameTime gameTime)
+        private void Menu()
         {
             MenuUpdateReturn temp = MenuUpdate();
             buttonIndex = temp.index;
@@ -679,7 +783,7 @@ namespace RPG_Game
             {
                 pointer.isAlive = false;
 
-                activeButtons[buttonIndex].action.Invoke(gameTime);
+                activeButtons[buttonIndex].action.Invoke();
             }
 
             pointer.UpperLeft = new Vector2(activeButtons[buttonIndex].UpperLeft.X - pointer.GetWidth() - 15, activeButtons[buttonIndex].UpperLeft.Y + 5);
@@ -690,7 +794,7 @@ namespace RPG_Game
             }
         }
 
-        private void SkillsMenu(GameTime gameTime)
+        private void SkillsMenu()
         {
             MenuUpdateReturn temp = MenuUpdate();
             buttonIndex = temp.index;
@@ -703,7 +807,7 @@ namespace RPG_Game
                     {
                         targets = actor.abilities[buttonIndex].GetTargets(this);
 
-                        TargetSwitch();
+                        BaseTargetSwitch();
                         
                         currentAction = actor.abilities[buttonIndex];
                     }
@@ -717,7 +821,7 @@ namespace RPG_Game
             pointer.UpperLeft = new Vector2(activeButtons[buttonIndex].UpperLeft.X - pointer.GetWidth() - 15, activeButtons[buttonIndex].UpperLeft.Y + 5);
         }
 
-        private void ItemsMenu(GameTime gameTime)
+        private void ItemsMenu()
         {
             MenuUpdateReturn temp = MenuUpdate();
             buttonIndex = temp.index;
@@ -728,7 +832,7 @@ namespace RPG_Game
                 {
                     targets = allItems[buttonIndex].GetTargets(this);
 
-                    TargetSwitch();
+                    BaseTargetSwitch();
 
                     currentAction = allItems[buttonIndex];
                 }
@@ -744,7 +848,7 @@ namespace RPG_Game
             pointer.UpperLeft = new Vector2(activeButtons[buttonIndex].UpperLeft.X - pointer.GetWidth() - 15, activeButtons[buttonIndex].UpperLeft.Y + 5);
         }
 
-        private void TargetMenu(GameTime gameTime)
+        private void TargetMenu()
         {
             List<SpriteBase> availableTargets = new List<SpriteBase>();
 
@@ -819,7 +923,7 @@ namespace RPG_Game
         }
 
 
-        private void MenuSwitch(GameTime gameTime)
+        private void MenuSwitch()
         {
             //Switch to Battle Menu State
             ActivateState(3);
@@ -836,7 +940,7 @@ namespace RPG_Game
             }
         }
 
-        private void SkillsSwitch(GameTime gameTime)
+        private void SkillsSwitch()
         {
             //Switch to Skill Menu State
             SwitchState(4, gameTime);
@@ -980,7 +1084,7 @@ namespace RPG_Game
             buttonIndex = 0;
         }
 
-        private void ItemSwitch(GameTime gameTime)
+        private void ItemSwitch()
         {
             SwitchState(5, gameTime);
 
@@ -1120,7 +1224,7 @@ namespace RPG_Game
             buttonIndex = 0;
         }
 
-        private void TargetSwitch(GameTime gameTime)
+        private void TargetSwitch()
         {
             //Switch to Target Menu State
             ActivateState(6);
@@ -1137,7 +1241,7 @@ namespace RPG_Game
             currentAction = attack;
         }
 
-        private void TargetSwitch()
+        private void BaseTargetSwitch()
         {
             //Switch to Target Menu State
             ActivateState(6);
@@ -1145,76 +1249,10 @@ namespace RPG_Game
             StatusRefresh();
         }
 
-        private void BattleEnd(GameTime gameTime)
+        private void BattleEnd()
         {
-            double goldIncrease = 0;
-
-            for(int i = 0; i < enemies.Count; i++)
-            {
-                double temp;
-
-                temp = rand.Next(0, 101);
-                temp += 50;
-                temp /= 100;
-                temp *= enemies[i].goldYield;
-
-                goldIncrease += temp;
-                
-                for(int o = 0; o < heroes.Count; o++)
-                {
-                    temp = rand.Next(0, 101);
-                    temp += 50;
-                    temp /= 100;
-                    temp *= enemies[i].XPYield;
-
-                    heroes[i].XP += (int)Math.Round(temp, 0, MidpointRounding.AwayFromZero);
-
-                    while(heroes[i].XP > heroes[i].XPToLevel)
-                    {
-                        heroes[i].Level++;
-
-                        heroes[i].XP -= heroes[i].XPToLevel;
-
-                        heroes[i].XPToLevel = (int)Math.Round(heroes[i].XPToLevel * 1.5, 0, MidpointRounding.AwayFromZero);
-                    }
-                }
-
-                if (enemies[i].potentialDrops != null)
-                {
-                    int result = rand.Next(0, 101);
-                    int rollOver = 0;
-
-                    for (int o = 0; o < enemies[i].potentialDrops.Count; o++)
-                    {
-                        if(result > rollOver && result < enemies[i].potentialDrops[o].proportion + rollOver)
-                        {
-                            result = rand.Next(0, 101);
-                            rollOver = 0;
-
-                            for(int p = 0; p < enemies[i].potentialDrops[o].potentialCounts.Count; p++)
-                            {
-                                if(result > rollOver && result < enemies[i].potentialDrops[o].potentialCounts[p].proportion + rollOver)
-                                {
-                                    enemies[i].potentialDrops[o].item.heldCount += enemies[i].potentialDrops[o].potentialCounts[p].count;
-
-                                    break;
-                                }
-
-                                rollOver += enemies[i].potentialDrops[o].potentialCounts[p].proportion;
-                            }
-
-                            break;
-                        }
-
-                        rollOver += enemies[i].potentialDrops[o].proportion;
-                    }
-                }
-            }
-
-            gold += (int)Math.Round(goldIncrease, 0, MidpointRounding.AwayFromZero);
-
             ActivateState(0);
-            
+
             finished = true;
         }
 
@@ -1311,29 +1349,6 @@ namespace RPG_Game
             else
             {
                 return -1;
-            }
-        }
-
-        private void FightBegin()
-        {
-            List<Battler> temp = new List<Battler>();
-
-            for (int i = 0; i < heroes.Count; i++)
-            {
-                temp.Capacity += 1;
-                temp.Add(heroes[i]);
-            }
-            for (int i = 0; i < enemies.Count; i++)
-            {
-                temp.Capacity += 1;
-                temp.Add(enemies[i]);
-            }
-            battlers.Clear();
-            battlers.Capacity = (temp.Count);
-
-            for (int i = 0; i < temp.Count; i++)
-            {
-                battlers.Add(temp[i]);
             }
         }
     }

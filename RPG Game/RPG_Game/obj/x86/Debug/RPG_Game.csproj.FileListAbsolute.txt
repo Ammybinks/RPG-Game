@@ -45,3 +45,4 @@ C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\
 C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Characters\Friendlies\Navigation\Shopkeep The First.xnb
 C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Misc\Interface\Interface Arrow Selected.xnb
 C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Misc\Interface\Interface Arrow.xnb
+C:\Users\Nye\Dropbox\Programming\C#\Programs\RPG-Game\RPG Game\RPG_Game\bin\x86\Debug\Content\Characters\Friendlies\Navigation\Arena.xnb

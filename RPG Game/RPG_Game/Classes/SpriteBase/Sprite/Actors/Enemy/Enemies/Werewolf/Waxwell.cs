@@ -1,14 +1,11 @@
 ﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 
 namespace RPG_Game
 {
-    class Werewolf : Enemy
+    class Waxwell : Werewolf
     {
-        public Werewolf()
-        {
-
-        }
-        public Werewolf(Main main)
+        public Waxwell(Main main, NaviState naviState)
         {
             potentialDrops = new List<PotentialDrops>();
             potentialDrops.Add(new PotentialDrops());
@@ -29,6 +26,22 @@ namespace RPG_Game
             potentialDrops[1].potentialCounts.Add(new PotentialCount());
             potentialDrops[1].potentialCounts[1].count = 5;
             potentialDrops[1].potentialCounts[1].proportion = 5;
+
+            name = "Waxwell";
+            SetTexture(naviState.werewolfTexture);
+            Scale = new Vector2(0.5f, 0.5f);
+            maxHealth = 50;
+            health = 50;
+            healthDeviance = 75;
+            PhAtk = 10;
+            PhDef = -50;
+            speed = 5;
+            speedDeviance = 75;
+            Acc = 100;
+            Eva = 0;
+            friendly = false;
+            goldYield = 50;
+            XPYield = 15;
         }
     }
 }

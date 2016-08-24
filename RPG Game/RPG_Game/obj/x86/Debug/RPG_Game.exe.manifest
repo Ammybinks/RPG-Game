@@ -103,14 +103,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="RPG_Game.exe" size="123312">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="RPG_Game.exe" size="137136">
       <assemblyIdentity name="RPG_Game" version="1.0.0.0" language="neutral" processorArchitecture="x86" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>p4lTdhRbxaiurjy7WEbkDjO5+bw=</dsig:DigestValue>
+        <dsig:DigestValue>WyX9XU8PmBjV0kPis55BD/PUtPs=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -121,6 +121,15 @@
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
       <dsig:DigestValue>iTKb09lKQwtxT2ZLEXi/RxUEeoo=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Content\Characters\Friendlies\Navigation\Arena.xnb" size="110779">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>IPLL/G6vXpMZ6UK7CE4ts9hY3Mc=</dsig:DigestValue>
     </hash>
   </file>
   <file name="Content\Characters\Friendlies\Navigation\Shopkeep The First.xnb" size="110779">
@@ -354,7 +363,7 @@
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-      <dsig:DigestValue>03cGF9JBD/NcR9vUWYaFW8QfEIs=</dsig:DigestValue>
+      <dsig:DigestValue>BbXH7v7Cv8I/tkfszEJIllpEBnI=</dsig:DigestValue>
     </hash>
   </file>
   <file name="Game.ico" size="4286">

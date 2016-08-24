@@ -10,6 +10,8 @@ namespace RPG_Game
     {
         internal int targetState;
 
+        internal GameTime gameTime;
+
         internal KeyboardState currentKeyState;
         internal KeyboardState oldKeyState;
 
@@ -63,8 +65,8 @@ namespace RPG_Game
 
         internal Usable currentAction;
 
-        internal Action<GameTime>[] stateMethods = new Action<GameTime>[8];
-        internal Action<GameTime>[] switchStateMethods = new Action<GameTime>[8];
+        internal Action[] stateMethods = new Action[8];
+        internal Action[] switchStateMethods = new Action[8];
         internal bool[] state = new bool[8];
         internal bool[] previousState = new bool[8];
         internal int currentState;
@@ -285,7 +287,12 @@ namespace RPG_Game
         {
 
         }
-        
+
+        public virtual void ReInitialize(StateManager state, Main main)
+        {
+
+        }
+
         internal void ClearStates()
         {
             for(int i = 0; i < state.Length; i++)
@@ -334,7 +341,7 @@ namespace RPG_Game
                         if (previousState[i])
                         {
                             currentState = i;
-                            switchStateMethods[i].Invoke(gameTime);
+                            switchStateMethods[i].Invoke();
 
                             for (int o = 0; o < previousState.Length; o++)
                             {
@@ -435,14 +442,17 @@ namespace RPG_Game
                 {
                     for (int i = 0; i < extraList.Count; i++)
                     {
-                        extraButtonRect = new Rectangle((int)extraList[i].UpperLeft.X,
-                                                        (int)extraList[i].UpperLeft.Y,
-                                                        extraList[i].frameWidth,
-                                                        extraList[i].frameHeight);
-
-                        if (extraButtonRect.Contains(mousePosition))
+                        if(list[i].isAlive)
                         {
-                            index = i;
+                            extraButtonRect = new Rectangle((int)extraList[i].UpperLeft.X,
+                                                            (int)extraList[i].UpperLeft.Y,
+                                                            extraList[i].frameWidth,
+                                                            extraList[i].frameHeight);
+
+                            if (extraButtonRect.Contains(mousePosition))
+                            {
+                                index = i;
+                            }
                         }
                     }
                 }
@@ -452,21 +462,74 @@ namespace RPG_Game
                 extraButtonRect = new Rectangle(0, 0, 0, 0);
             }
 
+            if(!list[index].isAlive)
+            {
+                bool complete = false;
+
+                for(int i = index; i >= 0; i--)
+                {
+                    if(list[i].isAlive)
+                    {
+                        index = i;
+
+                        complete = true;
+
+                        break;
+                    }
+                }
+
+                if (!complete)
+                {
+                    for(int i = index; i < list.Count; i++)
+                    {
+                        if(list[i].isAlive)
+                        {
+                            index = i;
+
+                            complete = true;
+
+                            break;
+                        }
+                    }
+                }
+            }
 
             if (upInput.inputState == Input.inputStates.pressed)
             {
                 index -= 1;
+
                 if (index < 0)
                 {
                     index = list.Count - 1;
+                }
+
+                while (!list[index].isAlive)
+                {
+                    index -= 1;
+
+                    if (index < 0)
+                    {
+                        index = list.Count - 1;
+                    }
                 }
             }
             if (downInput.inputState == Input.inputStates.pressed)
             {
                 index += 1;
+
                 if (index > list.Count - 1)
                 {
                     index = 0;
+                }
+
+                while (!list[index].isAlive)
+                {
+                    index += 1;
+
+                    if (index > list.Count - 1)
+                    {
+                        index = 0;
+                    }
                 }
             }
 

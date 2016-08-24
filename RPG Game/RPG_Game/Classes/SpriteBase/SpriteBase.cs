@@ -53,7 +53,7 @@ namespace RPG_Game
 
         // This internal member shows the current animation line
         protected int currentLine = 0;
-        
+
         public int getCurrentFrame()
         {
             return currentFrame;
@@ -155,6 +155,5 @@ namespace RPG_Game
         {
             return new Vector2(GetWidth() / 2, GetHeight() / 2);
         }
-
     }
 }

@@ -33,8 +33,19 @@ namespace RPG_Game
         Texture2D shopkeepTexture;
         Shantae shopkeep;
 
+        Texture2D arenaTexture;
+        ArenaManager arena;
+
+        public Texture2D werewolfTexture;
+
+        public List<PotentialEnemy> potentialEnemies;
+        public List<Troop> potentialTroops;
+
         List<Mover> movers = new List<Mover>();
+        List<BattleMover> battleMovers = new List<BattleMover>();
         List<Hero> battlers = new List<Hero>();
+
+        Random rand = new Random();
 
         Camera camera;
 
@@ -55,11 +66,11 @@ namespace RPG_Game
         public Battler actor;
         
         public Event currentEvent;
-        
-        public override void LoadContent(Main main)
-        {
-            gold = main.gold;
 
+        public int encounterRate;
+
+        private void textureInitialize(Main main)
+        {
             calibri = main.Content.Load<SpriteFont>("Fonts\\Calibri");
 
             pointerTexture = main.Content.Load<Texture2D>("Misc\\Pointer");
@@ -78,32 +89,37 @@ namespace RPG_Game
             hieroMoverTexture = main.Content.Load<Texture2D>("Characters\\Heroes\\Navigation\\The Comic Relief");
 
             shopkeepTexture = main.Content.Load<Texture2D>("Characters\\Friendlies\\Navigation\\Shopkeep The First");
+            arenaTexture = main.Content.Load<Texture2D>("Characters\\Friendlies\\Navigation\\Arena");
 
             heroFace = main.Content.Load<Texture2D>("Characters\\Heroes\\Portraits\\The Adorable Manchild");
             hiroFace = main.Content.Load<Texture2D>("Characters\\Heroes\\Portraits\\The Absolutely-Not-Into-It Love Interest");
             hearoFace = main.Content.Load<Texture2D>("Characters\\Heroes\\Portraits\\The Endearing Father Figure");
             hieroFace = main.Content.Load<Texture2D>("Characters\\Heroes\\Portraits\\The Comic Relief");
 
+            werewolfTexture = main.Content.Load<Texture2D>("Characters\\Enemies\\Werewolf");
+        }
+
+        private void pointerInitialize(Main main)
+        {
             pointer = new Sprite();
 
             pointer.SetTexture(pointerTexture);
             pointer.Scale = new Vector2(0.8f, 0.8f);
             pointer.Origin = pointer.GetCenter();
+        }
 
-            activeButtons = new List<Button>();
-            drawButtons = new List<Button>();
-
-            allItems = main.heldItems;
-
+        private void cameraInitialize(Main main)
+        {
             camera = new Camera();
             camera.WorldWidth = 3840;
             camera.WorldHeight = 2160;
             camera.ViewWidth = 1920;
             camera.ViewHeight = 1080;
             camera.UpperLeft = new Vector2(0, 0);
+        }
 
-            //Mover Initialization Begins//
-
+        private void moverInitialise(Main main)
+        {
             //Hero Mover
             heroMover = new Mover();
             heroMover.ContinuousAnimation = false;
@@ -131,7 +147,8 @@ namespace RPG_Game
             hieroMover.SetTexture(heroMoverTexture, 3, 4);
             hieroMover.UpperLeft = new Vector2(hieroMover.GetWidth(), hieroMover.GetHeight());
             movers.Add(hieroMover);
-            
+
+            //Shopkeep Mover
             shopkeep = new Shantae();
             shopkeep.ContinuousAnimation = false;
             shopkeep.AnimationInterval = 100;
@@ -140,9 +157,22 @@ namespace RPG_Game
             shopkeep.gridPosition = new Vector2(49, 30);
             shopkeep.UpperLeft = new Vector2(shopkeep.gridPosition.X * 48, shopkeep.gridPosition.Y * 48);
             movers.Add(shopkeep);
-            //Mover Initialization Ends//
 
-            //Battler Initialization Begins//
+            //Arena Mover
+            arena = new ArenaManager();
+            arena.ContinuousAnimation = false;
+            arena.SetTexture(arenaTexture, 3, 4);
+            arena.setCurrentFrame(1, 0);
+            arena.Scale = new Vector2(1, 1);
+            arena.gridPosition = new Vector2(49, 20);
+            arena.UpperLeft = new Vector2(arena.gridPosition.X * 48, arena.gridPosition.Y * 48);
+            arena.InitializeTroops(this, main);
+            movers.Add(arena);
+            battleMovers.Add(arena);
+        }
+
+        private void battlerInitialise(Main main)
+        {
             //Hero Initialization
             heroBattler = main.hero;
             battlers.Add(heroBattler);
@@ -158,9 +188,10 @@ namespace RPG_Game
             //Hiero Initialization
             hieroBattler = main.hiero;
             battlers.Add(hieroBattler);
-            //Battler Initialization Ends//
+        }
 
-            //World Map Initialization Begins//
+        private void mapInitialize(Main main)
+        {
             //Grass Base
             for (int i = 0; i < map.GetLength(0); i++)
             {
@@ -262,6 +293,80 @@ namespace RPG_Game
             map[49, 31].tiles = new List<TileParts>();
             map[49, 31].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(1, 1), new Vector2(6, 13)));
             map[49, 31].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(2, 12), new Vector2(6, 13)));
+            
+
+            map[54, 23].currentEvent = new Battle01();
+            (map[54, 23].currentEvent as Battle01).InitializePotentials(this, main);
+            map[54, 23].walkable = true;
+            map[54, 23].interactable = false;
+            map[54, 23].tiles = new List<TileParts>();
+            map[54, 23].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(1, 1), new Vector2(6, 13)));
+            map[54, 23].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(3, 0), new Vector2(6, 13)));
+
+            map[55, 23].currentEvent = new Battle01();
+            (map[55, 23].currentEvent as Battle01).InitializePotentials(this, main);
+            map[55, 23].walkable = true;
+            map[55, 23].interactable = false;
+            map[55, 23].tiles = new List<TileParts>();
+            map[55, 23].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(1, 1), new Vector2(6, 13)));
+            map[55, 23].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(4, 0), new Vector2(6, 13)));
+
+            map[56, 23].currentEvent = new Battle01();
+            (map[56, 23].currentEvent as Battle01).InitializePotentials(this, main);
+            map[56, 23].walkable = true;
+            map[56, 23].interactable = false;
+            map[56, 23].tiles = new List<TileParts>();
+            map[56, 23].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(1, 1), new Vector2(6, 13)));
+            map[56, 23].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(5, 0), new Vector2(6, 13)));
+
+            map[54, 24].currentEvent = new Battle01();
+            (map[54, 24].currentEvent as Battle01).InitializePotentials(this, main);
+            map[54, 24].walkable = true;
+            map[54, 24].interactable = false;
+            map[54, 24].tiles = new List<TileParts>();
+            map[54, 24].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(1, 1), new Vector2(6, 13)));
+            map[54, 24].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(3, 1), new Vector2(6, 13)));
+
+            map[55, 24].currentEvent = new Battle01();
+            (map[55, 24].currentEvent as Battle01).InitializePotentials(this, main);
+            map[55, 24].walkable = true;
+            map[55, 24].interactable = false;
+            map[55, 24].tiles = new List<TileParts>();
+            map[55, 24].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(1, 1), new Vector2(6, 13)));
+            map[55, 24].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(4, 1), new Vector2(6, 13)));
+
+            map[56, 24].currentEvent = new Battle01();
+            (map[56, 24].currentEvent as Battle01).InitializePotentials(this, main);
+            map[56, 24].walkable = true;
+            map[56, 24].interactable = false;
+            map[56, 24].tiles = new List<TileParts>();
+            map[56, 24].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(1, 1), new Vector2(6, 13)));
+            map[56, 24].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(5, 1), new Vector2(6, 13)));
+
+            map[54, 25].currentEvent = new Battle01();
+            (map[54, 25].currentEvent as Battle01).InitializePotentials(this, main);
+            map[54, 25].walkable = true;
+            map[54, 25].interactable = false;
+            map[54, 25].tiles = new List<TileParts>();
+            map[54, 25].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(1, 1), new Vector2(6, 13)));
+            map[54, 25].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(3, 2), new Vector2(6, 13)));
+
+            map[55, 25].currentEvent = new Battle01();
+            (map[55, 25].currentEvent as Battle01).InitializePotentials(this, main);
+            map[55, 25].walkable = true;
+            map[55, 25].interactable = false;
+            map[55, 25].tiles = new List<TileParts>();
+            map[55, 25].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(1, 1), new Vector2(6, 13)));
+            map[55, 25].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(4, 2), new Vector2(6, 13)));
+
+            map[56, 25].currentEvent = new Battle01();
+            (map[56, 25].currentEvent as Battle01).InitializePotentials(this, main);
+            map[56, 25].walkable = true;
+            map[56, 25].interactable = false;
+            map[56, 25].tiles = new List<TileParts>();
+            map[56, 25].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(1, 1), new Vector2(6, 13)));
+            map[56, 25].tiles.Add(new TileParts("World\\Tilesets\\Outside", new Vector2(5, 2), new Vector2(6, 13)));
+
             //World Map Initialization Ends//
 
             //using (FileStream stream = File.Open("C:\\Users\\Nye\\Dropbox\\Programming\\C#\\Programs\\RPG-Game\\Saves\\TestMap.bin", FileMode.Create))
@@ -275,9 +380,10 @@ namespace RPG_Game
             //    BinaryFormatter formatter = new BinaryFormatter();
             //    map = (Tile[,])formatter.Deserialize(stream);
             //}
+        }
 
-            //Boxes Initialization Begins//
-            ////Base Menu Box
+        private void menuBoxInitialise(Main main)
+        {
             menuBox = new Box();
             menuBox.frameWidth = 280;
             menuBox.frameHeight = 335;
@@ -351,7 +457,10 @@ namespace RPG_Game
             button.icon.setCurrentFrame(5, 5);
             button.icon.UpperLeft = new Vector2(button.UpperLeft.X + 10, button.UpperLeft.Y + 9);
             menuBox.buttons.Add(button);
+        }
 
+        private void inventoryBoxInitialize(Main main)
+        {
             //Inventory Box
             inventoryBox = new Box();
             inventoryBox.frameWidth = 800;
@@ -361,8 +470,10 @@ namespace RPG_Game
             inventoryBox.activatorState = 3;
             inventoryBox.buttons = new List<Button>();
             allBoxes.Add(inventoryBox);
+        }
 
-            //Inventory Box
+        private void skillsBoxInitialise(Main main)
+        {
             skillsBox = new Box();
             skillsBox.frameWidth = 800;
             skillsBox.frameHeight = 800;
@@ -371,8 +482,10 @@ namespace RPG_Game
             skillsBox.activatorState = 4;
             skillsBox.buttons = new List<Button>();
             allBoxes.Add(skillsBox);
+        }
 
-            ////Hero Buttons Box
+        private void heroBoxInitialize(Main main)
+        {
             heroBox = new MultiBox();
             heroBox.frameWidth = 820;
             heroBox.frameHeight = 800;
@@ -738,7 +851,10 @@ namespace RPG_Game
             tempSingle.icon.UpperLeft = new Vector2(tempSingle.UpperLeft.X + 10, tempSingle.UpperLeft.Y + 9);
 
             heroBox.buttons.Add(tempSingle);
+        }
 
+        private void stateInitialize(Main main)
+        {
             stateMethods[0] = Movement;
             stateMethods[1] = Event;
             stateMethods[2] = Menu;
@@ -760,8 +876,43 @@ namespace RPG_Game
             targetState = 1;
         }
 
+        public override void LoadContent(Main main)
+        {
+            gold = main.gold;
+
+            allItems = main.heldItems;
+            
+            activeButtons = new List<Button>();
+            drawButtons = new List<Button>();
+
+            textureInitialize(main);
+
+            pointerInitialize(main);
+
+            cameraInitialize(main);
+
+            moverInitialise(main);
+
+            battlerInitialise(main);
+
+            mapInitialize(main);
+
+            menuBoxInitialise(main);
+
+            inventoryBoxInitialize(main);
+
+            skillsBoxInitialise(main);
+
+            heroBoxInitialize(main);
+
+            stateInitialize(main);
+        }
+
+
         public override void Update(GameTime gameTime)
         {
+            this.gameTime = gameTime;
+
             for (int i = 0; i < movers.Count; i++)
             {
                 movers[i].Animate(gameTime);
@@ -779,8 +930,9 @@ namespace RPG_Game
                 }
             }
 
-            stateMethods[currentState].Invoke(gameTime);
+            stateMethods[currentState].Invoke();
         }
+
 
         public override void Draw(SpriteBatch spriteBatch, Main main)
         {
@@ -869,7 +1021,103 @@ namespace RPG_Game
         }
 
 
-        private void Movement(GameTime gameTime)
+        public override void ReInitialize(StateManager state, Main main)
+        {
+            if(state is BattleState)
+            {
+                BattleState tempState = (BattleState)state;
+
+                double goldIncrease = 0;
+
+                for (int i = 0; i < tempState.enemies.Count; i++)
+                {
+                    double temp;
+
+                    temp = rand.Next(0, 101);
+                    temp += 50;
+                    temp /= 100;
+                    temp *= tempState.enemies[i].goldYield;
+
+                    goldIncrease += temp;
+
+                    for (int o = 0; o < tempState.heroes.Count; o++)
+                    {
+                        temp = rand.Next(0, 101);
+                        temp += 50;
+                        temp /= 100;
+                        temp *= tempState.enemies[i].XPYield;
+
+                        tempState.heroes[i].XP += (int)Math.Round(temp, 0, MidpointRounding.AwayFromZero);
+
+                        while (tempState.heroes[i].XP > tempState.heroes[i].XPToLevel)
+                        {
+                            tempState.heroes[i].Level++;
+
+                            tempState.heroes[i].XP -= tempState.heroes[i].XPToLevel;
+
+                            tempState.heroes[i].XPToLevel = (int)Math.Round(tempState.heroes[i].XPToLevel * 1.5, 0, MidpointRounding.AwayFromZero);
+                        }
+                    }
+
+                    if (tempState.enemies[i].potentialDrops != null)
+                    {
+                        int result = rand.Next(0, 101);
+                        int rollOver = 0;
+                        
+                        for (int o = 0; o < tempState.enemies[i].potentialDrops.Count; o++)
+                        {
+                            if (result > rollOver && result < tempState.enemies[i].potentialDrops[o].proportion + rollOver)
+                            {
+                                result = rand.Next(0, 101);
+                                rollOver = 0;
+
+                                for (int p = 0; p < tempState.enemies[i].potentialDrops[o].potentialCounts.Count; p++)
+                                {
+                                    if (result > rollOver && result < tempState.enemies[i].potentialDrops[o].potentialCounts[p].proportion + rollOver)
+                                    {
+                                        tempState.enemies[i].potentialDrops[o].item.heldCount += tempState.enemies[i].potentialDrops[o].potentialCounts[p].count;
+
+                                        if(tempState.enemies[i].potentialDrops[o].item.heldCount > tempState.enemies[i].potentialDrops[o].item.maxStack)
+                                        {
+                                            tempState.enemies[i].potentialDrops[o].item.heldCount = tempState.enemies[i].potentialDrops[o].item.maxStack;
+                                        }
+
+                                        break;
+                                    }
+
+                                    rollOver += tempState.enemies[i].potentialDrops[o].potentialCounts[p].proportion;
+                                }
+
+                                break;
+                            }
+
+                            rollOver += tempState.enemies[i].potentialDrops[o].proportion;
+                        }
+                    }
+                }
+
+                gold += (int)Math.Round(goldIncrease, 0, MidpointRounding.AwayFromZero);
+
+                if(eventMover != null)
+                {
+                    (eventMover as BattleMover).InitializeTroops(this, main);
+
+                    eventMover = null;
+                }
+                if(eventTile != null)
+                {
+                    (eventTile.currentEvent as BattleEvent).InitializePotentials(this, main);
+
+                    eventTile = null;
+                }
+
+                potentialEnemies = null;
+                potentialTroops = null;
+            }
+        }
+
+
+        public void Movement()
         {
             if (pointer.isAlive)
             {
@@ -883,6 +1131,13 @@ namespace RPG_Game
                     if (heroMover.UpperLeft != heroMover.gridPosition * 48)
                     {
                         heroMover.UpperLeft = heroMover.gridPosition * 48;
+                    }
+
+                    if(map[(int)heroMover.gridPosition.X, (int)heroMover.gridPosition.Y].currentEvent != null)
+                    {
+                        ActivateState(1);
+
+                        eventTile = map[(int)heroMover.gridPosition.X, (int)heroMover.gridPosition.Y];
                     }
 
                     heroMover.movementModifier = new Vector2(0, 0);
@@ -963,7 +1218,7 @@ namespace RPG_Game
                 {
                     ActivateState(6);
 
-                    MenuSwitch(gameTime);
+                    MenuSwitch();
                 }
             }
 
@@ -976,7 +1231,7 @@ namespace RPG_Game
                                            (heroMover.UpperLeft.Y + heroMover.GetHeight() / 2) - (camera.ViewHeight / 2));
         }
 
-        private void Event(GameTime gameTime)
+        private void Event()
         {
             if (currentAction != null)
             {
@@ -992,7 +1247,7 @@ namespace RPG_Game
             }
         }
 
-        private void Menu(GameTime gameTime)
+        private void Menu()
         {
             MenuUpdateReturn temp = MenuUpdate();
             buttonIndex = temp.index;
@@ -1001,7 +1256,7 @@ namespace RPG_Game
 
             if (temp.activate)
             {
-                activeButtons[buttonIndex].action.Invoke(gameTime);
+                activeButtons[buttonIndex].action.Invoke();
             }
             else if (temp.menu)
             {
@@ -1009,7 +1264,7 @@ namespace RPG_Game
             }
         }
 
-        private void Inventory(GameTime gameTime)
+        private void Inventory()
         {
             MenuUpdateReturn temp = MenuUpdate();
             buttonIndex = temp.index;
@@ -1020,7 +1275,7 @@ namespace RPG_Game
             {
                 if (heldItems[buttonIndex].mapUsable)
                 {
-                    TargetSwitch(gameTime);
+                    TargetSwitch();
 
                     currentAction = heldItems[buttonIndex];
                 }
@@ -1031,7 +1286,7 @@ namespace RPG_Game
             }
         }
 
-        private void Skills(GameTime gameTime)
+        private void Skills()
         {
             MenuUpdateReturn temp = MenuUpdate();
             buttonIndex = temp.index;
@@ -1044,7 +1299,7 @@ namespace RPG_Game
                 {
                     if (actor.abilities[buttonIndex].mapUsable)
                     {
-                        TargetSwitch(gameTime);
+                        TargetSwitch();
 
                         currentAction = actor.abilities[buttonIndex];
                     }
@@ -1053,21 +1308,21 @@ namespace RPG_Game
             else if (temp.menu)
             {
                 SwitchState(4, gameTime);
-                TargetSwitch(gameTime);
+                TargetSwitch();
             }
         }
 
-        private void Map(GameTime gameTime)
+        private void Map()
         {
 
         }
 
-        private void Status(GameTime gameTime)
+        private void Status()
         {
 
         }
 
-        private void Target(GameTime gameTime)
+        private void Target()
         {
             MenuUpdateReturn temp = MenuUpdate();
             buttonIndex = temp.index;
@@ -1093,19 +1348,19 @@ namespace RPG_Game
             }
         }
 
-        private void StateSwitch(GameTime gameTime)
+        private void StateSwitch()
         {
 
         }
 
 
-        private void MovementSwitch(GameTime gameTime)
+        private void MovementSwitch()
         {
             ClearStates();
             ActivateState(0);
         }
 
-        private void MenuSwitch(GameTime gameTime)
+        private void MenuSwitch()
         {
             SwitchState(2, gameTime);
 
@@ -1146,7 +1401,7 @@ namespace RPG_Game
             heroBox.buttons[0].display = gold + "G";
         }
 
-        private void ItemSwitch(GameTime gameTime)
+        private void ItemSwitch()
         {
             SwitchState(3, gameTime);
 
@@ -1287,14 +1542,14 @@ namespace RPG_Game
         }
 
 
-        private void SkillsSwitch(GameTime gameTime)
+        private void SkillsSwitch()
         {
-            TargetSwitch(gameTime);
+            TargetSwitch();
             
             currentAction = new SkillsMenuSwitcher();
         }
 
-        public void SkillsMenuSwitch(GameTime gameTime)
+        public void SkillsMenuSwitch()
         {
             //Switch to Skill Menu State
             SwitchState(4, gameTime);
@@ -1443,17 +1698,17 @@ namespace RPG_Game
         }
 
 
-        private void MapSwitch(GameTime gameTime)
+        private void MapSwitch()
         {
 
         }
 
-        private void StatusSwitch(GameTime gameTime)
+        private void StatusSwitch()
         {
 
         }
 
-        public void TargetSwitch(GameTime gameTime)
+        public void TargetSwitch()
         {
             currentState = 6;
 
@@ -1482,7 +1737,34 @@ namespace RPG_Game
         }
 
 
-        private void Exit(GameTime gameTime)
+        public void BattleBegin(List<PotentialEnemy> enemies)
+        {
+            finished = true;
+
+            potentialEnemies = new List<PotentialEnemy>();
+
+            for(int i = 0; i < enemies.Count; i++)
+            {
+                potentialEnemies.Add(enemies[i]);
+            }
+
+            ActivateState(0);
+        }
+        public void BattleBegin(List<Troop> troops)
+        {
+            finished = true;
+
+            potentialTroops = new List<Troop>();
+
+            for (int i = 0; i < troops.Count; i++)
+            {
+                potentialTroops.Add(troops[i]);
+            }
+
+            ActivateState(0);
+        }
+
+        private void Exit()
         {
             quitting = true;
         }
